@@ -3,6 +3,7 @@ import { ContactFormSchema, type ContactFormValues } from "./schema";
 interface Env {
   GITHUB_ISSUE_TOKEN: string;
   GITHUB_ISSUE_REPO: string;
+  ALLOWED_ORIGINS: string;
 }
 
 interface GithubIssuePayload {
@@ -11,10 +12,25 @@ interface GithubIssuePayload {
   labels?: string[];
 }
 
-function jsonResponse(data: unknown, status: number): Response {
+function corsHeaders(origin: string | null, allowList: string[]): HeadersInit {
+  const allowed = origin && allowList.includes(origin) ? origin : allowList[0];
+  return {
+    "Access-Control-Allow-Origin": allowed ?? "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Max-Age": "86400",
+    Vary: "Origin",
+  };
+}
+
+function jsonResponse(
+  data: unknown,
+  status: number,
+  cors: HeadersInit,
+): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...cors },
   });
 }
 
@@ -64,15 +80,26 @@ async function createGithubIssue(
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const origin = request.headers.get("Origin");
+    const allowList = (env.ALLOWED_ORIGINS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const cors = corsHeaders(origin, allowList);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors });
+    }
+
     if (request.method !== "POST") {
-      return new Response(null, { status: 405 });
+      return new Response(null, { status: 405, headers: cors });
     }
 
     let payload: unknown;
     try {
       payload = await request.json();
     } catch {
-      return jsonResponse({ ok: false, error: "validation" }, 400);
+      return jsonResponse({ ok: false, error: "validation" }, 400, cors);
     }
 
     const parsed = ContactFormSchema.safeParse(payload);
@@ -84,11 +111,12 @@ export default {
           fields: parsed.error.flatten().fieldErrors,
         },
         400,
+        cors,
       );
     }
 
     if (parsed.data._hp && parsed.data._hp.length > 0) {
-      return jsonResponse({ ok: true }, 200);
+      return jsonResponse({ ok: true }, 200, cors);
     }
 
     if (!env.GITHUB_ISSUE_TOKEN || !env.GITHUB_ISSUE_REPO) {
@@ -100,7 +128,7 @@ export default {
           messageLength: parsed.data.message.length,
         },
       );
-      return jsonResponse({ ok: true }, 200);
+      return jsonResponse({ ok: true }, 200, cors);
     }
 
     const result = await createGithubIssue(env, {
@@ -115,9 +143,9 @@ export default {
         result.status,
         result.error,
       );
-      return jsonResponse({ ok: false, error: "send_failed" }, 502);
+      return jsonResponse({ ok: false, error: "send_failed" }, 502, cors);
     }
 
-    return jsonResponse({ ok: true }, 200);
+    return jsonResponse({ ok: true }, 200, cors);
   },
 } satisfies ExportedHandler<Env>;

@@ -1,21 +1,21 @@
 # Cloudflare Worker — firstfluke contact → GitHub Issues
 #
 # Setup steps (run inside this directory):
-#   1) pnpm install
-#   2) pnpm wrangler login
-#   3) pnpm wrangler secret put GITHUB_ISSUE_TOKEN   # Fine-grained PAT, Issues: read+write on the target repo
-#   4) pnpm wrangler secret put GITHUB_ISSUE_REPO    # e.g. "firstfluke/contact-inbox"
-#   5) Uncomment the [[routes]] block below and replace the domain.
-#   6) pnpm deploy
+#   1) pnpm install --ignore-workspace
+#   2) ./node_modules/.bin/wrangler login
+#   3) ./node_modules/.bin/wrangler secret put GITHUB_ISSUE_TOKEN
+#      (Fine-grained PAT, Issues: read+write on the target private repo)
+#   4) ./node_modules/.bin/wrangler secret put GITHUB_ISSUE_REPO
+#      (e.g. "first-fluke/contact-inbox")
+#   5) ./node_modules/.bin/wrangler deploy
+#
+# After deploy, copy the printed URL (e.g. firstfluke-contact.<account>.workers.dev)
+# and set it as a GitHub Actions Repository Variable named NEXT_PUBLIC_CONTACT_API_URL.
 
 name = "firstfluke-contact"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
+workers_dev = true
 
-[[routes]]
-pattern = "firstfluke.com/api/contact*"
-zone_name = "firstfluke.com"
-
-[[routes]]
-pattern = "www.firstfluke.com/api/contact*"
-zone_name = "firstfluke.com"
+[vars]
+ALLOWED_ORIGINS = "https://firstfluke.com,https://www.firstfluke.com,http://localhost:3000"
