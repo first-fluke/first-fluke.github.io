@@ -12,6 +12,10 @@ name = "firstfluke-contact"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
 
-# [[routes]]
-# pattern = "firstfluke.example.com/api/contact*"
-# zone_name = "firstfluke.example.com"
+[[routes]]
+pattern = "firstfluke.com/api/contact*"
+zone_name = "firstfluke.com"
+
+[[routes]]
+pattern = "www.firstfluke.com/api/contact*"
+zone_name = "firstfluke.com"
