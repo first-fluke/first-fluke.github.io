@@ -38,7 +38,6 @@ export const SOLUTIONS: Solution[] = [
     tagline: "고객 진단·추천을 자동 생성하는 AI SaaS",
     category: "추천 · 전환",
     href: "https://curate.ai.kr",
-    iconSrc: "/icons/curate-ai.png",
   },
   {
     id: "prompt-ops",

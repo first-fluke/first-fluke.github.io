@@ -1,6 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import { useRef, type CSSProperties, type MouseEvent } from "react";
 import type { Solution } from "@/lib/solutions";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
@@ -9,31 +10,47 @@ interface SolutionCardProps {
   solution: Solution;
 }
 
-function hasIcon(iconSrc: string | undefined): iconSrc is string {
-  if (!iconSrc) return false;
-  const filePath = path.join(process.cwd(), "public", iconSrc);
-  return existsSync(filePath);
-}
-
 export function SolutionCard({ solution }: SolutionCardProps) {
   const initial = solution.name.charAt(0);
-  const iconAvailable = hasIcon(solution.iconSrc);
+  const iconSrc = solution.iconSrc;
   const isShopzy = solution.id === "shopzy";
+  const anchorRef = useRef<HTMLAnchorElement>(null);
+
+  const handleMouseMove = (event: MouseEvent<HTMLAnchorElement>) => {
+    const node = anchorRef.current;
+    if (!node) return;
+    const rect = node.getBoundingClientRect();
+    node.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
+    node.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
+  };
 
   return (
     <a
+      ref={anchorRef}
       href={solution.href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${solution.name} 외부 사이트로 이동`}
-      className={cn(
-        "group block h-full focus:outline-none",
-        "rounded-2xl",
-      )}
+      onMouseMove={handleMouseMove}
+      className="group relative block h-full rounded-2xl focus:outline-none"
+      style={
+        {
+          "--mouse-x": "50%",
+          "--mouse-y": "50%",
+        } as CSSProperties
+      }
     >
-      <Card className="flex h-full flex-col gap-5 p-6 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[var(--shadow-card-hover)] group-focus-visible:-translate-y-0.5 group-focus-visible:shadow-[var(--shadow-card-hover)] md:p-7">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{
+          background:
+            "radial-gradient(480px circle at var(--mouse-x) var(--mouse-y), rgba(122,185,76,0.24), transparent 60%)",
+        }}
+      />
+      <Card className="relative flex h-full flex-col gap-5 p-6 transition-[transform,box-shadow,border-color] duration-200 ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.015] group-hover:border-[var(--color-primary)]/40 group-hover:shadow-[var(--shadow-card-hover)] group-focus-visible:-translate-y-1.5 group-focus-visible:scale-[1.015] group-focus-visible:border-[var(--color-primary)]/40 group-focus-visible:shadow-[var(--shadow-card-hover)] md:p-7">
         <div className="flex items-start justify-between">
-          {iconAvailable ? (
+          {iconSrc ? (
             <span
               aria-hidden
               className={cn(
@@ -44,7 +61,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
               )}
             >
               <Image
-                src={solution.iconSrc!}
+                src={iconSrc}
                 alt=""
                 width={56}
                 height={56}
@@ -69,7 +86,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
             </span>
             <span
               aria-hidden
-              className="text-[var(--color-fg-muted)] transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--color-primary)] group-focus-visible:translate-x-0.5 group-focus-visible:text-[var(--color-primary)]"
+              className="inline-block text-[var(--color-fg-muted)] transition-all duration-200 group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:text-[var(--color-primary)] group-focus-visible:translate-x-1 group-focus-visible:-translate-y-0.5 group-focus-visible:scale-110 group-focus-visible:text-[var(--color-primary)]"
             >
               ↗
             </span>

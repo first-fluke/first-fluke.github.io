@@ -69,6 +69,12 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full">
       <body className="min-h-full antialiased flex flex-col">
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "if('scrollRestoration' in history){history.scrollRestoration='manual';if(!location.hash){window.scrollTo(0,0);}}",
+          }}
+        />
         {children}
         <Analytics />
         <script

@@ -19,7 +19,7 @@ export function Wordmark({ className }: WordmarkProps) {
       <Image
         src="/logo.png"
         alt=""
-        width={32}
+        width={40}
         height={40}
         priority
         unoptimized

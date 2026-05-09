@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import { SITE } from "@/lib/site";
 
 function ThreadsIcon({ className }: { className?: string }) {
@@ -16,9 +19,24 @@ function ThreadsIcon({ className }: { className?: string }) {
 }
 
 export function Footer() {
+  const reduceMotion = useReducedMotion();
+  const initial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 };
+  const inView = reduceMotion
+    ? { opacity: 1, transition: { duration: 0.3 } }
+    : {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+      };
+
   return (
-    <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-10 md:py-12">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 text-sm text-[var(--color-fg-muted)] md:px-12">
+    <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-8 md:py-10">
+      <motion.div
+        className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 text-sm text-[var(--color-fg-muted)] md:px-12"
+        initial={initial}
+        whileInView={inView}
+        viewport={{ once: true, amount: 0.4 }}
+      >
         <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
           <p>
             <span className="font-mono italic">fluke (n.)</span>{" "}
@@ -55,7 +73,7 @@ export function Footer() {
             </span>
           </nav>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

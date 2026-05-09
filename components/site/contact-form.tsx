@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,29 @@ export function ContactForm() {
 
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || isSubmitting;
+  const reduceMotion = useReducedMotion();
+  const isFormValid = React.useMemo(
+    () => ContactFormSchema.safeParse({ email, message, agree, _hp: hp }).success,
+    [email, message, agree, hp],
+  );
+  const shouldPulse = isFormValid && !isSubmitting && !reduceMotion;
+
+  const fieldStagger = {
+    hidden: {},
+    show: reduceMotion
+      ? { transition: { staggerChildren: 0 } }
+      : { transition: { staggerChildren: 0.07, delayChildren: 0.02 } },
+  };
+  const fieldItem = {
+    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
+    show: reduceMotion
+      ? { opacity: 1, transition: { duration: 0.3 } }
+      : {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+        },
+  };
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -85,7 +109,15 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+    <motion.form
+      onSubmit={handleSubmit}
+      noValidate
+      className="flex flex-col gap-5"
+      variants={fieldStagger}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+    >
       {serverError && (
         <div
           role="alert"
@@ -95,7 +127,7 @@ export function ContactForm() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
+      <motion.div variants={fieldItem} className="flex flex-col gap-2">
         <label
           htmlFor="contact-email"
           className="text-sm font-medium text-[var(--color-fg)]"
@@ -123,9 +155,9 @@ export function ContactForm() {
             {errors.email}
           </p>
         )}
-      </div>
+      </motion.div>
 
-      <div className="flex flex-col gap-2">
+      <motion.div variants={fieldItem} className="flex flex-col gap-2">
         <label
           htmlFor="contact-message"
           className="text-sm font-medium text-[var(--color-fg)]"
@@ -134,8 +166,8 @@ export function ContactForm() {
         </label>
         <Textarea
           id="contact-message"
-          placeholder="필요한 일을 알려주세요."
-          rows={6}
+          placeholder="문의 내용을 알려주세요."
+          rows={4}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           aria-invalid={Boolean(errors.message)}
@@ -153,7 +185,7 @@ export function ContactForm() {
             {errors.message}
           </p>
         )}
-      </div>
+      </motion.div>
 
       {/* Honeypot — hidden from users, bots fill it */}
       <input
@@ -167,7 +199,7 @@ export function ContactForm() {
         className="absolute left-[-9999px] h-0 w-0 opacity-0"
       />
 
-      <div className="flex flex-col gap-2">
+      <motion.div variants={fieldItem} className="flex flex-col gap-2">
         <Checkbox
           checked={agree}
           onChange={(e) => setAgree(e.target.checked)}
@@ -191,17 +223,38 @@ export function ContactForm() {
             {errors.agree}
           </p>
         )}
-      </div>
+      </motion.div>
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={isDisabled}
-        aria-disabled={isDisabled}
-        className="self-start"
-      >
-        {isSubmitting ? "보내는 중…" : "보내기"}
-      </Button>
-    </form>
+      <motion.div variants={fieldItem} className="self-start">
+        <motion.div
+          animate={
+            shouldPulse
+              ? {
+                  boxShadow: [
+                    "0 0 0 0 rgba(15,84,64,0.0)",
+                    "0 0 0 10px rgba(15,84,64,0.18)",
+                    "0 0 0 0 rgba(15,84,64,0.0)",
+                  ],
+                }
+              : { boxShadow: "0 0 0 0 rgba(15,84,64,0.0)" }
+          }
+          transition={
+            shouldPulse
+              ? { duration: 1.6, repeat: Infinity, ease: "easeOut" }
+              : { duration: 0.2 }
+          }
+          style={{ borderRadius: 9999 }}
+        >
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isDisabled}
+            aria-disabled={isDisabled}
+          >
+            {isSubmitting ? "보내는 중…" : "보내기"}
+          </Button>
+        </motion.div>
+      </motion.div>
+    </motion.form>
   );
 }

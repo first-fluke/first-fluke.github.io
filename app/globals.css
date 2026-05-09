@@ -57,6 +57,16 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+  #top {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+}
+
 @utility container-prose {
   max-width: 56ch;
   margin-inline: auto;
