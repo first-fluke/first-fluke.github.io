@@ -1,15 +1,18 @@
 import { ContactFormSchema, type ContactFormValues } from "./schema";
 
 interface Env {
-  GITHUB_ISSUE_TOKEN: string;
-  GITHUB_ISSUE_REPO: string;
+  RESEND_API_KEY: string;
+  RESEND_FROM: string;
+  CONTACT_TO_EMAIL: string;
   ALLOWED_ORIGINS: string;
 }
 
-interface GithubIssuePayload {
-  title: string;
-  body: string;
-  labels?: string[];
+interface ResendEmailPayload {
+  from: string;
+  to: string[];
+  subject: string;
+  reply_to?: string;
+  text: string;
 }
 
 function corsHeaders(origin: string | null, allowList: string[]): HeadersInit {
@@ -34,19 +37,19 @@ function jsonResponse(
   });
 }
 
-function buildIssueTitle(message: string, email: string): string {
+function buildEmailSubject(message: string, email: string): string {
   const oneLine = message.replace(/\s+/g, " ").trim();
   const snippet = oneLine.slice(0, 60);
   const truncated = oneLine.length > 60 ? `${snippet}…` : snippet;
   return `[Contact] ${truncated || email}`;
 }
 
-function buildIssueBody(
+function buildEmailText(
   data: Pick<ContactFormValues, "email" | "message">,
 ): string {
   return [
-    `**From:** ${data.email}`,
-    `**Received:** ${new Date().toISOString()}`,
+    `From: ${data.email}`,
+    `Received: ${new Date().toISOString()}`,
     "",
     "---",
     "",
@@ -54,23 +57,18 @@ function buildIssueBody(
   ].join("\n");
 }
 
-async function createGithubIssue(
-  env: Env,
-  payload: GithubIssuePayload,
+async function sendResendEmail(
+  apiKey: string,
+  payload: ResendEmailPayload,
 ): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
-  const res = await fetch(
-    `https://api.github.com/repos/${env.GITHUB_ISSUE_REPO}/issues`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.GITHUB_ISSUE_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "firstfluke-contact-worker",
-      },
-      body: JSON.stringify(payload),
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(payload),
+  });
   if (!res.ok) {
     const error = await res.text();
     return { ok: false, status: res.status, error };
@@ -119,27 +117,26 @@ export default {
       return jsonResponse({ ok: true }, 200, cors);
     }
 
-    if (!env.GITHUB_ISSUE_TOKEN || !env.GITHUB_ISSUE_REPO) {
-      // TODO(oma-deferred): set GITHUB_ISSUE_TOKEN and GITHUB_ISSUE_REPO via `wrangler secret put`.
-      console.info(
-        "[contact] GitHub credentials missing. Payload acknowledged:",
-        {
-          email: parsed.data.email,
-          messageLength: parsed.data.message.length,
-        },
-      );
+    if (!env.RESEND_API_KEY || !env.RESEND_FROM || !env.CONTACT_TO_EMAIL) {
+      // TODO(oma-deferred): set RESEND_API_KEY, RESEND_FROM, CONTACT_TO_EMAIL via `wrangler secret put` / `[vars]`.
+      console.info("[contact] Resend config missing. Payload acknowledged:", {
+        email: parsed.data.email,
+        messageLength: parsed.data.message.length,
+      });
       return jsonResponse({ ok: true }, 200, cors);
     }
 
-    const result = await createGithubIssue(env, {
-      title: buildIssueTitle(parsed.data.message, parsed.data.email),
-      body: buildIssueBody(parsed.data),
-      labels: ["contact"],
+    const result = await sendResendEmail(env.RESEND_API_KEY, {
+      from: env.RESEND_FROM,
+      to: [env.CONTACT_TO_EMAIL],
+      subject: buildEmailSubject(parsed.data.message, parsed.data.email),
+      reply_to: parsed.data.email,
+      text: buildEmailText(parsed.data),
     });
 
     if (!result.ok) {
       console.error(
-        "[contact] github issue create failed:",
+        "[contact] resend send failed:",
         result.status,
         result.error,
       );

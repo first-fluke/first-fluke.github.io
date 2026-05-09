@@ -1,16 +1,12 @@
-# Cloudflare Worker — firstfluke contact → GitHub Issues
+# Cloudflare Worker — firstfluke contact → Resend email
 #
-# Setup steps (run inside this directory):
-#   1) pnpm install --ignore-workspace
-#   2) ./node_modules/.bin/wrangler login
-#   3) ./node_modules/.bin/wrangler secret put GITHUB_ISSUE_TOKEN
-#      (Fine-grained PAT, Issues: read+write on the target private repo)
-#   4) ./node_modules/.bin/wrangler secret put GITHUB_ISSUE_REPO
-#      (e.g. "first-fluke/contact-inbox")
-#   5) ./node_modules/.bin/wrangler deploy
+# Required secrets (set via wrangler secret put):
+#   RESEND_API_KEY  — Resend API key (re_...)
 #
-# After deploy, copy the printed URL (e.g. firstfluke-contact.<account>.workers.dev)
-# and set it as a GitHub Actions Repository Variable named NEXT_PUBLIC_CONTACT_API_URL.
+# Required vars (set in [vars] below or override per environment):
+#   RESEND_FROM         — verified sender, e.g. "FIRST FLUKE <contact@mail.firstfluke.com>"
+#   CONTACT_TO_EMAIL    — destination inbox, e.g. "our.first.fluke@gmail.com"
+#   ALLOWED_ORIGINS     — comma-separated origins for CORS
 
 name = "firstfluke-contact"
 main = "src/index.ts"
@@ -18,4 +14,6 @@ compatibility_date = "2025-05-01"
 workers_dev = true
 
 [vars]
+RESEND_FROM = "FIRST FLUKE <contact@mail.firstfluke.com>"
+CONTACT_TO_EMAIL = "our.first.fluke@gmail.com"
 ALLOWED_ORIGINS = "https://firstfluke.com,https://www.firstfluke.com,http://localhost:3000"
