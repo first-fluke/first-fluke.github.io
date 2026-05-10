@@ -30,8 +30,12 @@ import type { ProductId } from "../../lib/contact/products";
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 
 function corsHeaders(origin: string | null, allowList: string[]): HeadersInit {
+  // ALLOWED_ORIGINS 미설정 시 wildcard로 떨어지지 않게 — Origin 헤더 미설정으로 브라우저가 차단
+  if (allowList.length === 0) {
+    return { Vary: "Origin" };
+  }
   const allowed =
-    origin && allowList.includes(origin) ? origin : (allowList[0] ?? "*");
+    origin && allowList.includes(origin) ? origin : allowList[0];
   return {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -68,7 +72,7 @@ async function sha256Hex(input: string): Promise<string> {
  * Escape sequences of 3+ backticks in user input by inserting a ZWSP between
  * every consecutive backtick so they cannot break out of the code fence.
  */
-function escapeBackticks(s: string): string {
+export function escapeBackticks(s: string): string {
   // Replace runs of ≥3 backticks: insert ZWSP between each pair
   return s.replace(/`{3,}/g, (match) => match.split("").join("\u200B"));
 }
@@ -422,10 +426,21 @@ export default {
       return json({ ok: false, error: "rate_limit" }, 429, cors);
     }
 
+    // ── 7.5. GitHub App env guard (fail-fast on operator misconfig) ────────
+    if (!env.GH_APP_ID || !env.GH_APP_PRIVATE_KEY || !env.PRODUCT_ROUTES) {
+      console.error("[contact] required GitHub App env missing", {
+        requestId,
+        hasAppId: Boolean(env.GH_APP_ID),
+        hasPrivateKey: Boolean(env.GH_APP_PRIVATE_KEY),
+        hasRoutes: Boolean(env.PRODUCT_ROUTES),
+      });
+      return json({ ok: false, error: "queue_unavailable" }, 502, cors);
+    }
+
     // ── 8. Parse PRODUCT_ROUTES ─────────────────────────────────────────────
     let routes: ReturnType<typeof parseProductRoutes>;
     try {
-      routes = parseProductRoutes(env.PRODUCT_ROUTES ?? "");
+      routes = parseProductRoutes(env.PRODUCT_ROUTES);
     } catch (err) {
       console.error("[contact] PRODUCT_ROUTES malformed", {
         requestId,
