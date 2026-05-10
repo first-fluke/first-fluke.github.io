@@ -1,0 +1,24 @@
+# Cloudflare Worker — local dev only (`wrangler dev`)
+#
+# Wrangler reads `.dev.vars` (gitignored) for local dev secrets/vars,
+# OVERRIDING values in wrangler.toml. Production uses `wrangler secret put`
+# and `[vars]` in wrangler.toml — NOT this file.
+#
+# Usage:
+#   1. cp .dev.vars.example .dev.vars
+#   2. Fill in real values
+#   3. wrangler dev
+#
+# DO NOT commit .dev.vars (it's in .gitignore).
+
+# ── secrets (production: wrangler secret put) ────────────────────────────────
+GH_APP_PRIVATE_KEY="<paste PKCS#8 PEM here as a single line, escape newlines as \n>"
+RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+TURNSTILE_SECRET_KEY=""
+
+# ── vars (production: wrangler.toml [vars]) ──────────────────────────────────
+GH_APP_ID="3664188"
+PRODUCT_ROUTES='{"shopzy":{"repo":"first-fluke/shopzy","installationId":"131094718"}}'
+ALLOWED_ORIGINS="http://localhost:3000"
+RESEND_FROM="FIRST FLUKE <contact@mail.firstfluke.com>"
+OPS_ALERT_TO="ops@example.com"
