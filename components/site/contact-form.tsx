@@ -82,8 +82,10 @@ export function ContactForm() {
     setStatus("submitting");
 
     try {
-      const endpoint =
-        process.env.NEXT_PUBLIC_CONTACT_API_URL || "/api/contact";
+      const endpoint = process.env.NEXT_PUBLIC_CONTACT_API_URL;
+      if (!endpoint) {
+        throw new Error("NEXT_PUBLIC_CONTACT_API_URL is required");
+      }
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
