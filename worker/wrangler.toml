@@ -15,9 +15,10 @@ workers_dev = true
 [vars]
 ALLOWED_ORIGINS = "https://firstfluke.com,https://www.firstfluke.com,http://localhost:3000"
 RESEND_FROM = "FIRST FLUKE <contact@mail.firstfluke.com>"
-OPS_ALERT_TO = "our.first.fluke@gmail.com"
 GH_APP_ID = ""               # set by operator: GitHub App ID (numeric string)
-PRODUCT_ROUTES = ""          # set by operator: JSON map { productId: { repo, installationId } }
+# Set via `wrangler secret put` (PII / not committed):
+#   OPS_ALERT_TO     — operator inbox for 24h dead-letter alerts
+#   PRODUCT_ROUTES   — JSON map { productId: { repo, installationId } }
 
 [[kv_namespaces]]
 binding = "TOKEN_CACHE"
