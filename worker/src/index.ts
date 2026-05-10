@@ -106,6 +106,230 @@ function buildIssueBody(
   ].join("\n");
 }
 
+// ─── Dead-letter entry type ──────────────────────────────────────────────────
+
+interface DlqEntry {
+  id: string;
+  payload: {
+    email: string;
+    message: string;
+    agree: boolean;
+    product: string;
+  };
+  route: {
+    repo: string;
+    installationId: string;
+  };
+  attempts: number;
+  firstFailedAt: string;
+  lastError: string;
+  lastTriedAt?: string;
+  alertedAt?: string;
+}
+
+// ─── Ops alert via Resend ─────────────────────────────────────────────────────
+
+async function sendOpsAlert(env: Env, entry: DlqEntry): Promise<boolean> {
+  if (!env.RESEND_API_KEY) {
+    console.error("[cron] ops-alert wanted but RESEND_API_KEY missing", {
+      entryId: entry.id,
+    });
+    return false;
+  }
+
+  const productLabel = PRODUCT_LABELS[entry.payload.product as ProductId] ?? entry.payload.product;
+  const subject = `[firstfluke contact] dead-letter ${entry.id} — ${productLabel} stuck for 24h+`;
+
+  // D9: email → hash only, message → length only
+  const emailHash = await sha256Hex(entry.payload.email).then((h) => h.slice(0, 12));
+  const text = [
+    `Dead-letter alert — entry has been stuck for 24h+`,
+    ``,
+    `ID:           ${entry.id}`,
+    `Product:      ${entry.payload.product} (${productLabel})`,
+    `Repo:         ${entry.route.repo}`,
+    `Attempts:     ${entry.attempts}`,
+    `First failed: ${entry.firstFailedAt}`,
+    `Last error:   ${entry.lastError}`,
+    ``,
+    `PII (D9): email hash = ${emailHash}, message length = ${entry.payload.message.length}`,
+  ].join("\n");
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: env.RESEND_FROM,
+        to: [env.OPS_ALERT_TO],
+        subject,
+        text,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error("[cron] ops-alert Resend API error", {
+        entryId: entry.id,
+        status: res.status,
+        body: body.slice(0, 200),
+      });
+      return false;
+    }
+
+    console.info("[cron] ops-alert sent", { entryId: entry.id });
+    return true;
+  } catch (err) {
+    console.error("[cron] ops-alert fetch threw", {
+      entryId: entry.id,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return false;
+  }
+}
+
+// ─── Scheduled handler (T-13): dead-letter polling + 24h ops alert ───────────
+
+const DLQ_PROCESS_CAP = 50; // 틱당 최대 처리 건수 (CPU/시간 예산 초과 방지)
+const ALERT_INTERVAL_MS = 86_400_000; // 24h (ms)
+
+async function processDeadLetters(
+  env: Env,
+): Promise<void> {
+  // dead-letter 키 목록 조회 (prefix = "dlq:")
+  const listResult = await env.DEAD_LETTER.list({
+    prefix: "dlq:",
+    limit: DLQ_PROCESS_CAP,
+  });
+
+  if (listResult.keys.length === 0) {
+    console.info("[cron] dead-letter queue empty, nothing to process");
+    return;
+  }
+
+  console.info("[cron] processing dead-letter entries", {
+    count: listResult.keys.length,
+    truncated: listResult.list_complete === false,
+  });
+
+  for (const kvKey of listResult.keys) {
+    const key = kvKey.name;
+    let raw: string | null;
+    try {
+      raw = await env.DEAD_LETTER.get(key);
+    } catch (err) {
+      console.error("[cron] KV get failed", {
+        key,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      continue;
+    }
+
+    if (!raw) {
+      // 이미 다른 틱에서 처리됐거나 만료된 엔트리 — 건너뜀
+      continue;
+    }
+
+    let entry: DlqEntry;
+    try {
+      entry = JSON.parse(raw) as DlqEntry;
+    } catch (err) {
+      console.error("[cron] DLQ entry JSON parse failed", {
+        key,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      continue;
+    }
+
+    const now = new Date().toISOString();
+
+    // ── 재시도: createIssue 호출 ──────────────────────────────────────────────
+    // fetch 핸들러와 동일한 빌더 헬퍼 재사용 (DRY)
+    const productId = entry.payload.product as ProductId;
+    const issueTitle = buildIssueTitle(productId, entry.payload.message);
+    const issueBody = buildIssueBody(
+      productId,
+      entry.payload.email,
+      entry.payload.message,
+      "dlq-retry", // 원본 IP 없음 — 고정 레이블 사용
+    );
+    const issueLabels = ["contact", entry.payload.product];
+
+    let retrySucceeded = false;
+    let retryError = "";
+
+    try {
+      const result = await createIssue(env, {
+        installationId: entry.route.installationId,
+        repo: entry.route.repo,
+        title: issueTitle,
+        body: issueBody,
+        labels: issueLabels,
+      });
+
+      if (result.ok) {
+        // 성공 → KV에서 삭제
+        await env.DEAD_LETTER.delete(key);
+        console.info("[cron] dead-letter retry succeeded, entry deleted", {
+          entryId: entry.id,
+          url: result.url,
+        });
+        retrySucceeded = true;
+      } else {
+        retryError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
+      }
+    } catch (err) {
+      retryError = err instanceof Error ? err.message : String(err);
+    }
+
+    if (retrySucceeded) {
+      continue; // 다음 엔트리로
+    }
+
+    // ── 재시도 실패 → 엔트리 업데이트 ──────────────────────────────────────
+    entry.attempts += 1;
+    entry.lastTriedAt = now;
+    entry.lastError = retryError || entry.lastError;
+
+    console.warn("[cron] dead-letter retry failed", {
+      entryId: entry.id,
+      attempts: entry.attempts,
+      lastError: entry.lastError,
+    });
+
+    // ── 24h 운영 알람 평가 ────────────────────────────────────────────────────
+    const nowMs = Date.parse(now);
+    const firstFailedMs = Date.parse(entry.firstFailedAt);
+    const stuckDurationMs = nowMs - firstFailedMs;
+    const lastAlertedMs = entry.alertedAt ? Date.parse(entry.alertedAt) : 0;
+    const timeSinceLastAlertMs = nowMs - lastAlertedMs;
+
+    const shouldAlert =
+      stuckDurationMs >= ALERT_INTERVAL_MS &&
+      (entry.alertedAt === undefined || timeSinceLastAlertMs >= ALERT_INTERVAL_MS);
+
+    if (shouldAlert) {
+      const alertSent = await sendOpsAlert(env, entry);
+      if (alertSent) {
+        entry.alertedAt = now;
+      }
+    }
+
+    // 업데이트된 엔트리를 KV에 저장
+    try {
+      await env.DEAD_LETTER.put(key, JSON.stringify(entry));
+    } catch (putErr) {
+      console.error("[cron] KV put (entry update) failed", {
+        entryId: entry.id,
+        error: putErr instanceof Error ? putErr.message : String(putErr),
+      });
+    }
+  }
+}
+
 // ─── Retry + exponential backoff (D6) ────────────────────────────────────────
 
 const RETRY_DELAYS_MS = [200, 1000, 5000] as const;
@@ -294,6 +518,22 @@ export default {
         },
       );
       return json({ ok: false, error: "queue_unavailable" }, 502, cors);
+    }
+  },
+
+  // ─── Cron: 5분마다 dead-letter 폴링 + 재시도 + 24h 운영 알람 (T-13) ──────
+  async scheduled(
+    _controller: ScheduledController,
+    env: Env,
+    _ctx: ExecutionContext,
+  ): Promise<void> {
+    try {
+      await processDeadLetters(env);
+    } catch (err) {
+      // scheduled 핸들러는 절대 상위로 throw 하지 않음
+      console.error("[cron] unhandled error in processDeadLetters", {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   },
 } satisfies ExportedHandler<Env>;
