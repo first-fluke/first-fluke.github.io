@@ -6,12 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ContactFormSchema } from "@/lib/contact/schema";
+import { PRODUCT_IDS, PRODUCT_LABELS, type ProductId } from "@/lib/contact/products";
 
 type Status = "idle" | "submitting" | "success" | "error";
-type FieldErrors = Partial<Record<"email" | "message" | "agree", string>>;
+type FieldErrors = Partial<Record<"email" | "message" | "agree" | "product", string>>;
 
 export function ContactForm() {
+  const [product, setProduct] = React.useState<ProductId | "">("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [agree, setAgree] = React.useState(false);
@@ -21,11 +30,11 @@ export function ContactForm() {
   const [serverError, setServerError] = React.useState<string | null>(null);
 
   const isSubmitting = status === "submitting";
-  const isDisabled = !agree || isSubmitting;
+  const isDisabled = !agree || !product || isSubmitting;
   const reduceMotion = useReducedMotion();
   const isFormValid = React.useMemo(
-    () => ContactFormSchema.safeParse({ email, message, agree, _hp: hp }).success,
-    [email, message, agree, hp],
+    () => ContactFormSchema.safeParse({ email, message, agree, product, _hp: hp }).success,
+    [email, message, agree, product, hp],
   );
   const shouldPulse = isFormValid && !isSubmitting && !reduceMotion;
 
@@ -54,6 +63,7 @@ export function ContactForm() {
       email,
       message,
       agree,
+      product,
       _hp: hp,
     });
 
@@ -63,6 +73,7 @@ export function ContactForm() {
         email: fieldErrors.email?.[0],
         message: fieldErrors.message?.[0],
         agree: fieldErrors.agree?.[0],
+        product: fieldErrors.product?.[0],
       });
       return;
     }
@@ -128,6 +139,46 @@ export function ContactForm() {
           {serverError}
         </div>
       )}
+
+      <motion.div variants={fieldItem} className="flex flex-col gap-2">
+        <label
+          htmlFor="contact-product"
+          className="text-sm font-medium text-[var(--color-fg)]"
+        >
+          문의 종류
+        </label>
+        <Select
+          value={product}
+          onValueChange={(v) => setProduct(v as ProductId)}
+        >
+          <SelectTrigger
+            id="contact-product"
+            className="w-full"
+            aria-invalid={Boolean(errors.product)}
+            aria-describedby={
+              errors.product ? "contact-product-error" : undefined
+            }
+          >
+            <SelectValue placeholder="어떤 솔루션 관련인가요?" />
+          </SelectTrigger>
+          <SelectContent>
+            {PRODUCT_IDS.map((id) => (
+              <SelectItem key={id} value={id}>
+                {PRODUCT_LABELS[id]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.product && (
+          <p
+            id="contact-product-error"
+            className="text-sm text-red-600"
+            role="alert"
+          >
+            {errors.product}
+          </p>
+        )}
+      </motion.div>
 
       <motion.div variants={fieldItem} className="flex flex-col gap-2">
         <label
