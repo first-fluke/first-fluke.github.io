@@ -1,7 +1,6 @@
 export const SITE = {
   name: "FIRST FLUKE",
   legalName: "퍼스트플루크 (FIRST FLUKE)",
-  email: "our.first.fluke@gmail.com",
   url: "https://firstfluke.com",
   threadsHandle: "mega_fluke",
   selectionPageUrl: "https://www.modoo.or.kr/ai-solution",

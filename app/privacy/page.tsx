@@ -45,13 +45,14 @@ const SECTIONS = [
     title: "6. 이용자의 권리",
     body: [
       "이용자는 언제든지 본인의 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다.",
-      "요청은 our.first.fluke@gmail.com 으로 보내주세요.",
+      "요청은 홈 화면 하단의 'Contact' 섹션에 마련된 문의 양식을 통해 접수해주세요.",
     ],
   },
   {
     title: "7. 개인정보 보호 책임자",
     body: [
-      "이메일: our.first.fluke@gmail.com",
+      "직책: 대표",
+      "연락 채널: 홈 화면 하단의 'Contact' 섹션 문의 양식",
     ],
   },
   {

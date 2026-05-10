@@ -50,7 +50,6 @@ const ORGANIZATION_JSONLD = {
   legalName: "퍼스트플루크 (FIRST FLUKE)",
   url: "https://firstfluke.com",
   logo: "https://firstfluke.com/logo.png",
-  email: "our.first.fluke@gmail.com",
 };
 
 const WEBSITE_JSONLD = {
