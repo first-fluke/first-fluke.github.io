@@ -14,6 +14,7 @@ worker/.wrangler
 
 # testing
 /coverage
+worker/coverage
 
 # next.js
 /.next/

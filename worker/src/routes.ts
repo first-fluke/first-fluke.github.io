@@ -24,7 +24,11 @@ const RouteSchema = z.object({
     .regex(/^\d+$/, "must be numeric string"),
 });
 
-const ProductRoutesSchema = z.record(z.enum(PRODUCT_IDS), RouteSchema);
+// Build a partial-record schema where every PRODUCT_ID key is optional.
+// (zod v4's `z.record(z.enum(...), V)` requires all keys; we want partial.)
+const ProductRoutesSchema = z.object(
+  Object.fromEntries(PRODUCT_IDS.map((id) => [id, RouteSchema.optional()])),
+).strict();
 
 // ---------------------------------------------------------------------------
 // parseProductRoutes
