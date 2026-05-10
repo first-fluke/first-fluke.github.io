@@ -1,19 +1,44 @@
-# Cloudflare Worker — firstfluke contact → Resend email
+# Cloudflare Worker — firstfluke contact → product-routed GitHub Issue + dead-letter queue
+# Full env reference: ./SECRETS.md
 #
-# Required secrets (set via wrangler secret put):
-#   RESEND_API_KEY  — Resend API key (re_...)
-#
-# Required vars (set in [vars] below or override per environment):
-#   RESEND_FROM         — verified sender, e.g. "FIRST FLUKE <contact@mail.firstfluke.com>"
-#   CONTACT_TO_EMAIL    — destination inbox, e.g. "our.first.fluke@gmail.com"
-#   ALLOWED_ORIGINS     — comma-separated origins for CORS
+# NOTE (wrangler >= 4.36): [[ratelimits]] uses "name" (not "binding"), and
+# simple.period must be 10 or 60. The 86400s daily cap (D6/D7) is enforced
+# in Worker code via KV counter; RATE_LIMIT_DAILY below provides a secondary
+# per-minute guard. See T-12 for the KV-based daily enforcement logic.
 
 name = "firstfluke-contact"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [vars]
-RESEND_FROM = "FIRST FLUKE <contact@mail.firstfluke.com>"
-CONTACT_TO_EMAIL = "our.first.fluke@gmail.com"
 ALLOWED_ORIGINS = "https://firstfluke.com,https://www.firstfluke.com,http://localhost:3000"
+RESEND_FROM = "FIRST FLUKE <contact@mail.firstfluke.com>"
+OPS_ALERT_TO = "our.first.fluke@gmail.com"
+GH_APP_ID = ""               # set by operator: GitHub App ID (numeric string)
+PRODUCT_ROUTES = ""          # set by operator: JSON map { productId: { repo, installationId } }
+
+[[kv_namespaces]]
+binding = "TOKEN_CACHE"
+id = "<TOKEN_CACHE_KV_ID>"
+
+[[kv_namespaces]]
+binding = "DEAD_LETTER"
+id = "<DEAD_LETTER_KV_ID>"
+
+# Burst guard: 5 requests per 60s per ip:product key
+[[ratelimits]]
+name = "RATE_LIMIT_BURST"
+namespace_id = "<RATE_LIMIT_NAMESPACE_ID>"
+simple = { limit = 5, period = 60 }
+
+# Secondary per-minute guard (wrangler simple.period supports 10 or 60 only).
+# True 30-req/day cap is enforced in Worker code via KV counter (T-12).
+[[ratelimits]]
+name = "RATE_LIMIT_DAILY"
+namespace_id = "<RATE_LIMIT_NAMESPACE_ID>"
+simple = { limit = 30, period = 60 }
+
+[triggers]
+crons = ["*/5 * * * *"]
