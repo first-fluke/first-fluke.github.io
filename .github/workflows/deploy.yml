@@ -37,6 +37,8 @@ jobs:
           NEXT_PUBLIC_CONTACT_API_URL: ${{ vars.NEXT_PUBLIC_CONTACT_API_URL }}
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - run: touch out/.nojekyll
 
