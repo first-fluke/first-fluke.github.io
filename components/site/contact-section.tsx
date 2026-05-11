@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { ContactForm } from "@/components/site/contact-form";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
+import { SITE } from "@/lib/site";
 
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
@@ -58,9 +59,44 @@ export function ContactSection() {
           variants={item}
           className="mt-4 text-base text-[var(--color-fg-muted)] md:text-lg"
         >
-          확인 후 최대한 빨리 연락드리겠습니다.
+          확인 후 영업일 기준 24시간 내 회신드리겠습니다.
         </motion.p>
-        <motion.div variants={item} className="mt-10">
+        <motion.div
+          variants={item}
+          className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm"
+        >
+          <a
+            href={`mailto:${SITE.contactEmail}`}
+            className="inline-flex items-center gap-1.5 text-[var(--color-fg)] transition-colors hover:text-[var(--color-primary)]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="h-4 w-4"
+            >
+              <rect x="3" y="5" width="18" height="14" rx="2.5" />
+              <path d="m4 7 8 6 8-6" />
+            </svg>
+            <span className="font-medium">{SITE.contactEmail}</span>
+          </a>
+          <span aria-hidden className="text-[var(--color-border)]">·</span>
+          <a
+            href={`https://www.threads.com/@${SITE.threadsHandle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--color-fg-muted)] transition-colors hover:text-[var(--color-primary)]"
+          >
+            Threads{" "}
+            <span className="font-medium">@{SITE.threadsHandle}</span>
+          </a>
+        </motion.div>
+        <motion.div variants={item} className="mt-8">
           <ContactForm />
         </motion.div>
       </motion.div>
