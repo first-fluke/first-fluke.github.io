@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { ClarityAnalytics } from "@/components/site/clarity";
 import { SITE } from "@/lib/site";
 import { SOLUTIONS } from "@/lib/solutions";
 import "./globals.css";
+
+const CLARITY_PROJECT_ID = "wpd0eau95q";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://firstfluke.com"),
@@ -105,6 +108,7 @@ export default function RootLayout({
         />
         {children}
         <Analytics />
+        <ClarityAnalytics projectId={CLARITY_PROJECT_ID} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
