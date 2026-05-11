@@ -63,14 +63,6 @@ export function Footer() {
             >
               개인정보처리방침
             </Link>
-            <span aria-hidden className="text-[var(--color-border)]">·</span>
-            <span
-              aria-disabled
-              className="cursor-not-allowed opacity-70"
-              title="준비 중"
-            >
-              이용약관
-            </span>
           </nav>
         </div>
       </motion.div>
