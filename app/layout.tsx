@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ClarityAnalytics } from "@/components/site/clarity";
 import { SITE } from "@/lib/site";
@@ -24,21 +24,12 @@ export const metadata: Metadata = {
     title: "FIRST FLUKE — Make Your First Win",
     description:
       "AI와 기술로 더 나은 일상을 만드는 팀, FIRST FLUKE.",
-    images: [
-      {
-        url: "/og.png",
-        width: 1200,
-        height: 630,
-        alt: "FIRST FLUKE — Make Your First Win",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "FIRST FLUKE — Make Your First Win",
     description:
       "AI와 기술로 더 나은 일상을 만드는 팀.",
-    images: ["/og.png"],
   },
   icons: {
     icon: "/favicon.png",
@@ -51,6 +42,10 @@ export const metadata: Metadata = {
       "msvalidate.01": "AB465FAFD5463302675999E4C50844FA",
     },
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f4c3a",
 };
 
 const ORGANIZATION_JSONLD = {
