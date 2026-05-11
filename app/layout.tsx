@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { SITE } from "@/lib/site";
+import { SOLUTIONS } from "@/lib/solutions";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -46,18 +48,45 @@ export const metadata: Metadata = {
 const ORGANIZATION_JSONLD = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "FIRST FLUKE",
-  legalName: "퍼스트플루크 (FIRST FLUKE)",
-  url: "https://firstfluke.com",
-  logo: "https://firstfluke.com/logo.png",
+  "@id": `${SITE.url}/#organization`,
+  name: SITE.name,
+  legalName: SITE.legalName,
+  url: SITE.url,
+  logo: `${SITE.url}/logo.png`,
+  image: `${SITE.url}/og.png`,
+  sameAs: [`https://www.threads.net/@${SITE.threadsHandle}`],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      url: `${SITE.url}/#contact`,
+      availableLanguage: ["Korean", "English"],
+    },
+  ],
+  award: SITE.selectionLabel,
+  makesOffer: SOLUTIONS.map((solution) => ({
+    "@type": "Offer",
+    name: solution.name,
+    category: solution.category,
+    url: solution.href,
+    itemOffered: {
+      "@type": "SoftwareApplication",
+      name: solution.name,
+      description: solution.tagline,
+      applicationCategory: "BusinessApplication",
+      url: solution.href,
+    },
+  })),
 };
 
 const WEBSITE_JSONLD = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "FIRST FLUKE",
-  url: "https://firstfluke.com",
+  "@id": `${SITE.url}/#website`,
+  name: SITE.name,
+  url: SITE.url,
   inLanguage: "ko-KR",
+  publisher: { "@id": `${SITE.url}/#organization` },
 };
 
 export default function RootLayout({

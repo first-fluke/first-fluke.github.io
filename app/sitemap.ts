@@ -1,21 +1,16 @@
 import type { MetadataRoute } from "next";
+import { SITE } from "@/lib/site";
 
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://firstfluke.com";
+  const lastModified = new Date();
   return [
     {
-      url: `${base}/`,
-      lastModified: new Date(),
+      url: `${SITE.url}/`,
+      lastModified,
       changeFrequency: "monthly",
       priority: 1,
-    },
-    {
-      url: `${base}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
     },
   ];
 }
