@@ -57,6 +57,10 @@ html {
   scroll-behavior: smooth;
 }
 
+section[id] {
+  scroll-margin-top: 80px;
+}
+
 @media (prefers-reduced-motion: no-preference) and (min-width: 1024px) {
   html {
     scroll-snap-type: y proximity;
