@@ -46,6 +46,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://firstfluke.com",
   },
+  verification: {
+    other: {
+      "msvalidate.01": "AB465FAFD5463302675999E4C50844FA",
+    },
+  },
 };
 
 const ORGANIZATION_JSONLD = {
