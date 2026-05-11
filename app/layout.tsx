@@ -56,12 +56,14 @@ const ORGANIZATION_JSONLD = {
   legalName: SITE.legalName,
   url: SITE.url,
   logo: `${SITE.url}/logo.png`,
-  image: `${SITE.url}/og.png`,
-  sameAs: [`https://www.threads.net/@${SITE.threadsHandle}`],
+  image: `${SITE.url}/opengraph-image`,
+  email: SITE.contactEmail,
+  sameAs: [`https://www.threads.com/@${SITE.threadsHandle}`],
   contactPoint: [
     {
       "@type": "ContactPoint",
       contactType: "customer support",
+      email: SITE.contactEmail,
       url: `${SITE.url}/#contact`,
       availableLanguage: ["Korean", "English"],
     },
