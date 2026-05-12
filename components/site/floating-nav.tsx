@@ -25,14 +25,7 @@ export function FloatingNav() {
   const [visible, setVisible] = useState(false);
 
   useMotionValueEvent(scrollY, "change", (current) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    if (current < 80) {
-      setVisible(false);
-    } else if (current < previous) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
+    setVisible(current >= 80);
   });
 
   return (
