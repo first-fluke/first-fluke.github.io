@@ -27,6 +27,7 @@
 html {
   background: var(--color-bg);
   color: var(--color-fg);
+  position: relative;
 }
 
 body {
