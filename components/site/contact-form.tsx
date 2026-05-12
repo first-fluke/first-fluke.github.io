@@ -22,12 +22,20 @@ type FieldErrors = Partial<Record<"email" | "message" | "agree" | "product", str
 export function ContactForm() {
   const [product, setProduct] = React.useState<ProductId | "">("");
   const [email, setEmail] = React.useState("");
+  const [emailTouched, setEmailTouched] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [agree, setAgree] = React.useState(false);
   const [hp, setHp] = React.useState("");
   const [status, setStatus] = React.useState<Status>("idle");
   const [errors, setErrors] = React.useState<FieldErrors>({});
   const [serverError, setServerError] = React.useState<string | null>(null);
+
+  const validateEmail = React.useCallback((value: string): string | undefined => {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    const result = ContactFormSchema.shape.email.safeParse(trimmed);
+    return result.success ? undefined : result.error.issues[0]?.message;
+  }, []);
 
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || !product || isSubmitting;
@@ -196,7 +204,19 @@ export function ContactForm() {
           autoComplete="email"
           placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const next = e.target.value;
+            setEmail(next);
+            if (emailTouched) {
+              setErrors((prev) => ({ ...prev, email: validateEmail(next) }));
+            } else if (errors.email) {
+              setErrors((prev) => ({ ...prev, email: undefined }));
+            }
+          }}
+          onBlur={() => {
+            setEmailTouched(true);
+            setErrors((prev) => ({ ...prev, email: validateEmail(email) }));
+          }}
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? "contact-email-error" : undefined}
           required
