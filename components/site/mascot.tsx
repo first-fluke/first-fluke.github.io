@@ -3,11 +3,11 @@
 import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 interface MascotProps {
   className?: string;
   size?: number;
-  priority?: boolean;
 }
 
 interface Sparkle {
@@ -16,14 +16,17 @@ interface Sparkle {
   startDistance: number;
   endDistance: number;
   scale: number;
+  rotate: number;
 }
 
 const SPARKLE_COUNT = 6;
 const SPARKLE_LIFE = 900;
 
-export function Mascot({ className, size = 360, priority: _priority = false }: MascotProps) {
+export function Mascot({ className, size = 360 }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const idleLoops = isDesktop && !reduceMotion;
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const idCounter = useRef(0);
 
@@ -47,6 +50,7 @@ export function Mascot({ className, size = 360, priority: _priority = false }: M
         startDistance: startRadius,
         endDistance: startRadius + size * 0.18 + Math.random() * (size * 0.1),
         scale: 0.9 + Math.random() * 0.6,
+        rotate: (Math.random() - 0.5) * 60,
       };
     });
     setSparkles((prev) => [...prev, ...newOnes]);
@@ -59,29 +63,27 @@ export function Mascot({ className, size = 360, priority: _priority = false }: M
     <motion.div
       className={cn("group relative shrink-0", className)}
       style={{ width: size, height: size }}
-      animate={
-        reduceMotion ? { scale: 1 } : { scale: [1, 1.06, 1] }
-      }
+      animate={idleLoops ? { scale: [1, 1.06, 1] } : { scale: 1 }}
       transition={
-        reduceMotion
-          ? { duration: 0 }
-          : { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
+        idleLoops
+          ? { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
+          : { duration: 0 }
       }
     >
-      {/* Idle halo — always pulses softly */}
+      {/* Idle halo — pulses softly on desktop, static on mobile */}
       <motion.span
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-full bg-[var(--color-primary)] blur-3xl"
         initial={{ opacity: 0.06, scale: 1 }}
         animate={
-          reduceMotion
-            ? { opacity: 0.06, scale: 1 }
-            : { opacity: [0.04, 0.14, 0.04], scale: [1, 1.32, 1] }
+          idleLoops
+            ? { opacity: [0.04, 0.14, 0.04], scale: [1, 1.32, 1] }
+            : { opacity: 0.06, scale: 1 }
         }
         transition={
-          reduceMotion
-            ? { duration: 0 }
-            : { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
+          idleLoops
+            ? { duration: 3.8, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0 }
         }
       />
       {/* Hover halo — gentle bloom on top */}
@@ -143,7 +145,7 @@ export function Mascot({ className, size = 360, priority: _priority = false }: M
                 y: endY,
                 scale: [0, sparkle.scale, 0],
                 opacity: [0, 1, 0],
-                rotate: (Math.random() - 0.5) * 60,
+                rotate: sparkle.rotate,
               }}
               transition={{ duration: SPARKLE_LIFE / 1000, ease: "easeOut" }}
             >

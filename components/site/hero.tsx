@@ -71,7 +71,7 @@ export function Hero() {
         >
           <motion.div
             className="flex flex-col gap-6 text-center lg:text-left"
-            style={reduceMotion ? undefined : { y: textParallaxY }}
+            style={reduceMotion || !isDesktop ? undefined : { y: textParallaxY }}
           >
             <motion.div
               variants={itemFromLeft}
@@ -100,7 +100,7 @@ export function Hero() {
               variants={itemFromRight}
               className="flex justify-center lg:hidden"
             >
-              <Mascot size={220} priority />
+              <Mascot size={220} />
             </motion.div>
 
             <motion.p
@@ -128,8 +128,8 @@ export function Hero() {
             variants={itemFromRight}
             className="hidden justify-end lg:flex"
           >
-            <motion.div style={reduceMotion ? undefined : { y: mascotParallaxY }}>
-              <Mascot size={420} priority />
+            <motion.div style={reduceMotion || !isDesktop ? undefined : { y: mascotParallaxY }}>
+              <Mascot size={420} />
             </motion.div>
           </motion.div>
         </motion.div>

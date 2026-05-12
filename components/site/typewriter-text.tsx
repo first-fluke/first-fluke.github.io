@@ -32,11 +32,7 @@ export function TypewriterText({
   const [mode, setMode] = useState<Mode>("typing");
 
   useEffect(() => {
-    if (!inView) return;
-    if (reduceMotion) {
-      setDisplayed(texts[0] ?? "");
-      return;
-    }
+    if (!inView || reduceMotion) return;
     const currentText = texts[textIdx];
     if (!currentText) return;
 
@@ -81,9 +77,11 @@ export function TypewriterText({
     pauseAfterErase,
   ]);
 
+  const visibleText = reduceMotion ? (texts[0] ?? "") : displayed;
+
   return (
     <span ref={ref} className={className} aria-label={texts[0]}>
-      <span aria-hidden>{displayed}</span>
+      <span aria-hidden>{visibleText}</span>
       {cursor && (
         <span
           aria-hidden
