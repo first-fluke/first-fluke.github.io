@@ -13,6 +13,7 @@ import { LinkButton } from "@/components/ui/button";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { TypewriterText } from "@/components/site/typewriter-text";
 import { OMA_DOCS_URL, OMA_REPO_URL } from "@/lib/oma-content";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 const AGENTS = [
   { tag: "기획자", desc: "어떤 화면이 필요한지 정리" },
@@ -30,21 +31,26 @@ const HIGHLIGHTS = [
 
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
+const STATIC_BORDER_BG =
+  "conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)";
+
 export function OmaSection() {
   const reduceMotion = useReducedMotion();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const animateBorder = isDesktop && !reduceMotion;
   const angle = useMotionValue(0);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (!animateBorder) return;
     const ctrl = animate(angle, 360, {
       duration: 7,
       repeat: Infinity,
       ease: "linear",
     });
     return () => ctrl.stop();
-  }, [angle, reduceMotion]);
+  }, [angle, animateBorder]);
 
-  const borderBackground = useMotionTemplate`conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)`;
+  const animatedBorderBackground = useMotionTemplate`conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)`;
 
   const fadeUpInitial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 };
   const fadeUpAnimate = reduceMotion
@@ -154,11 +160,11 @@ export function OmaSection() {
             viewport={{ once: true, amount: 0.25 }}
             className="relative"
           >
-            {/* Animated conic gradient border */}
+            {/* Animated conic gradient border (desktop) / static fallback (mobile) */}
             <motion.div
               aria-hidden
               className="pointer-events-none absolute -inset-[1.5px] rounded-2xl opacity-90 blur-[0.5px]"
-              style={{ background: borderBackground }}
+              style={{ background: animateBorder ? animatedBorderBackground : STATIC_BORDER_BG }}
             />
             {/* Soft outer glow */}
             <div

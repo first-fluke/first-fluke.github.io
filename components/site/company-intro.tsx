@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 const PARAGRAPHS = [
   {
@@ -26,12 +27,14 @@ const PARAGRAPHS = [
 
 export function CompanyIntro() {
   const reduceMotion = useReducedMotion();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
   const cloverY = useTransform(scrollYProgress, [0, 1], [40, -80]);
+  const heavyEffects = isDesktop && !reduceMotion;
 
   const container = {
     hidden: {},
@@ -60,7 +63,7 @@ export function CompanyIntro() {
       <motion.div
         aria-hidden
         className="pointer-events-none absolute -right-20 -bottom-24 select-none md:-right-24 md:-bottom-32"
-        style={reduceMotion ? undefined : { y: cloverY }}
+        style={heavyEffects ? { y: cloverY } : undefined}
       >
         <Image
           src="/logo.png"
@@ -68,7 +71,7 @@ export function CompanyIntro() {
           width={720}
           height={720}
           unoptimized
-          className="h-[360px] w-[360px] opacity-[0.09] motion-safe:animate-[spin_120s_linear_infinite] md:h-[640px] md:w-[640px]"
+          className="h-[360px] w-[360px] opacity-[0.09] lg:motion-safe:animate-[spin_120s_linear_infinite] md:h-[640px] md:w-[640px]"
         />
       </motion.div>
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-12">
