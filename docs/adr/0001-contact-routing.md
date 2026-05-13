@@ -12,7 +12,7 @@ Accepted (2026-05-10)
 
 사이트는 Next.js 정적 export(`out/`) 방식으로 배포되므로 `app/api/` 라우트는 런타임에 호출되지 않는다. 따라서 Cloudflare Worker를 단일 백엔드 진입점으로 채택하는 것이 기술적으로 필수이며, 이 의사결정은 다른 모든 결정의 전제가 된다.
 
-보안 측면에서는 두 가지 취약점이 식별되었다. 첫째, 기존 `layout.tsx`의 Organization JSON-LD에 `our.first.fluke@gmail.com` 주소가 평문으로 박혀 있어 봇 스크래핑 표적이 되고 있었다. 둘째, 클라이언트 측에 라우팅 테이블(repo slug 등)이 노출되면 issue spam 공격 표적이 될 수 있어 서버(Worker)에만 보관해야 한다.
+보안 측면에서는 두 가지 취약점이 식별되었다. 첫째, 기존 `layout.tsx`의 Organization JSON-LD에 운영자 이메일 주소가 평문으로 박혀 있어 봇 스크래핑 표적이 되고 있었다. 둘째, 클라이언트 측에 라우팅 테이블(repo slug 등)이 노출되면 issue spam 공격 표적이 될 수 있어 서버(Worker)에만 보관해야 한다.
 
 신뢰성 목표는 "issue가 날아오지 않는" 케이스를 0.01% 수준으로 억제하는 것이다. GitHub API 일시 장애, 네트워크 글리치, PKCS#8 변환 실수 등 운영 실패 시나리오를 고려하여 즉시 재시도 + KV dead-letter + Cron 폴링 + 24h 임계 운영자 알람 4단계 안전망을 설계하였다.
 
@@ -142,7 +142,7 @@ Accepted (2026-05-10)
 
 **Choice:** `layout.tsx`의 Organization JSON-LD에서 `email` 필드를 제거한다. `lib/site.ts`의 dead 이메일 필드도 정리한다. `/privacy` 페이지는 법규상 연락처 정보를 유지한다.
 
-**Rationale:** 기존 코드는 모든 페이지 `<head>`의 JSON-LD에 `our.first.fluke@gmail.com`을 평문으로 박아두어 봇 스크래핑 표적이 되었다. `schema.org` Organization 스키마에서 `email`은 선택 필드이므로 제거해도 SEO 손해가 없다.
+**Rationale:** 기존 코드는 모든 페이지 `<head>`의 JSON-LD에 운영자 이메일을 평문으로 박아두어 봇 스크래핑 표적이 되었다. `schema.org` Organization 스키마에서 `email`은 선택 필드이므로 제거해도 SEO 손해가 없다.
 
 **Tradeoff:** 검색엔진 Knowledge Graph에서 Organization의 이메일 정보가 사라진다. Contact 폼 URL(`/#contact`)을 `contactPoint`로 대신 제공하여 이 손실을 부분 보완한다.
 
