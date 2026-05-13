@@ -1,0 +1,16 @@
+{
+  "_comment": "Cloudflare Worker env PRODUCT_ROUTES 값. wrangler.toml [vars]에 한 줄로 minify해서 등록하거나 wrangler secret put PRODUCT_ROUTES <<< '<minified>' 로 등록.",
+  "_lastUpdated": "2026-05-10",
+  "_owners": {
+    "first-fluke (org)": "first-fluke admin (install id 131094718, 5 repos: shopzy, place-haejo, contents-haejo, legalize-haejo, oh-my-agent + bonus first-fluke.github.io)",
+    "jhchoi91066 (새싹님)": "install id 131093618, 2 repos: promptsops, CurateAI"
+  },
+
+  "shopzy":         { "repo": "first-fluke/shopzy",          "installationId": "131094718" },
+  "place-haejo":    { "repo": "first-fluke/place-haejo",     "installationId": "131094718" },
+  "contents-haejo": { "repo": "first-fluke/contents-haejo",  "installationId": "131094718" },
+  "legalize-kr":    { "repo": "first-fluke/legalize-haejo",  "installationId": "131094718" },
+  "oma":            { "repo": "first-fluke/oh-my-agent",     "installationId": "131094718" },
+  "prompt-ops":     { "repo": "jhchoi91066/promptsops",      "installationId": "131093618" },
+  "curate-ai":      { "repo": "jhchoi91066/CurateAI",        "installationId": "131093618" }
+}
