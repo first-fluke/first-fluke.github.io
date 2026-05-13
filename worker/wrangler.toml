@@ -22,23 +22,24 @@ GH_APP_ID = "3664188"               # set by operator: GitHub App ID (numeric st
 
 [[kv_namespaces]]
 binding = "TOKEN_CACHE"
-id = "<TOKEN_CACHE_KV_ID>"
+id = "e67ca7a88f4a4c9ba39bf8221e106cb7"
 
 [[kv_namespaces]]
 binding = "DEAD_LETTER"
-id = "<DEAD_LETTER_KV_ID>"
+id = "9c8965e7f46d4b74a2f4b620e132019a"
 
-# Burst guard: 5 requests per 60s per ip:product key
+# Burst guard: 5 requests per 60s per ip:product key.
+# namespace_id is an arbitrary unique integer per binding (account-scoped, not a secret).
 [[ratelimits]]
 name = "RATE_LIMIT_BURST"
-namespace_id = "<RATE_LIMIT_NAMESPACE_ID>"
+namespace_id = "1001"
 simple = { limit = 5, period = 60 }
 
 # Secondary per-minute guard (wrangler simple.period supports 10 or 60 only).
 # True 30-req/day cap is enforced in Worker code via KV counter (T-12).
 [[ratelimits]]
 name = "RATE_LIMIT_DAILY"
-namespace_id = "<RATE_LIMIT_NAMESPACE_ID>"
+namespace_id = "1002"
 simple = { limit = 30, period = 60 }
 
 [triggers]
