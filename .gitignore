@@ -55,3 +55,8 @@ worker/.dev.vars
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Operator-only routing config — NEVER commit (ADR-0001 D1)
+docs/ops/product-routes.json
+product-routes.json
