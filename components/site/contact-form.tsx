@@ -63,6 +63,18 @@ export function ContactForm() {
         },
   };
 
+  function resetForm() {
+    setProduct("");
+    setEmail("");
+    setEmailTouched(false);
+    setMessage("");
+    setAgree(false);
+    setHp("");
+    setErrors({});
+    setServerError(null);
+    setStatus("idle");
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setServerError(null);
@@ -127,6 +139,16 @@ export function ContactForm() {
         <p className="mt-2 text-[var(--color-fg-muted)]">
           확인 후 회신 드릴게요.
         </p>
+        <div className="mt-6 flex justify-center">
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            onClick={resetForm}
+          >
+            새 문의 작성
+          </Button>
+        </div>
       </div>
     );
   }
