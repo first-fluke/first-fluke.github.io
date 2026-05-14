@@ -10,10 +10,33 @@ interface SolutionCardProps {
   solution: Solution;
 }
 
+interface IconFrame {
+  containerClass: string;
+  imageClass: string;
+}
+
+const ICON_FRAMES: Record<string, IconFrame> = {
+  shopzy: {
+    containerClass:
+      "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
+    imageClass: "h-11 w-11",
+  },
+  "place-haejo": {
+    containerClass:
+      "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
+    imageClass: "h-12 w-12",
+  },
+  "contents-haejo": {
+    containerClass:
+      "bg-[#1373f4] shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
+    imageClass: "h-12 w-12",
+  },
+};
+
 export function SolutionCard({ solution }: SolutionCardProps) {
   const initial = solution.name.charAt(0);
   const iconSrc = solution.iconSrc;
-  const isShopzy = solution.id === "shopzy";
+  const iconFrame = ICON_FRAMES[solution.id];
   const anchorRef = useRef<HTMLAnchorElement>(null);
 
   const handleMouseMove = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -55,9 +78,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
               aria-hidden
               className={cn(
                 "relative grid h-14 w-14 place-items-center overflow-hidden rounded-full",
-                isShopzy
-                  ? "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5"
-                  : "bg-[var(--color-bg-soft)]",
+                iconFrame ? iconFrame.containerClass : "bg-[var(--color-bg-soft)]",
               )}
             >
               <Image
@@ -68,7 +89,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
                 unoptimized
                 className={cn(
                   "object-cover",
-                  isShopzy ? "h-11 w-11" : "h-full w-full",
+                  iconFrame ? iconFrame.imageClass : "h-full w-full",
                 )}
               />
             </span>
