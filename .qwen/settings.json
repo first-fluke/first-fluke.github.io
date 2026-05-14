@@ -61,5 +61,8 @@
         "SERENA_LOG_LEVEL": "info"
       }
     }
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
   }
 }

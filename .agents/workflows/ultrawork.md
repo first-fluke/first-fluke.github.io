@@ -208,6 +208,8 @@ If baseline was measured at Step 5.2:
 >
 > If neither condition is met, return to Step 5 and continue.
 
+**Root-cause-first fix mandate:** when re-spawning implementation agents to address QA findings, the fix prompt MUST require root-cause remediation. Forbid tactical patches (try/catch swallowing the error, validation bypass, hardcoded values, feature flags hiding the bug, silencing the failing test) unless the agent explicitly justifies why a structural fix is out of scope (upstream library bug, deprecated path, hotfix window).
+
 **Gate failure (2nd time on same issue, and termination conditions not yet met)** → Activate **Exploration Loop**:
 1. Load `exploration-loop.md` (conditional, per `context-loading.md`)
 2. Generate 2-3 alternative hypotheses using Exploration Decision template (`reasoning-templates.md` #6)
@@ -375,7 +377,7 @@ If `oma-config.yaml` has `docs.auto_verify: true`:
 
 1. Run `oma docs verify --json` from the repo root.
 2. Capture the JSON output.
-3. If `broken.length === 0`: print `✓ docs verified clean (N docs)` summary to stdout and continue with workflow completion.
+3. If `broken.length === 0`: print `docs verified clean (N docs)` summary to stdout and continue with workflow completion.
 4. If `broken.length > 0`: print a 1-3 line summary identifying which docs have drift, and a hint `Run /oma-docs verify for the full report.` Continue with workflow completion (warn-only, never block).
 5. If `oma-docs` is not available (CLI command missing): skip silently.
 

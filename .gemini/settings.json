@@ -56,5 +56,8 @@
     "serena": {
       "url": "http://localhost:12341/mcp"
     }
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
   }
 }

@@ -10,3 +10,9 @@ args = [ "--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-
 [mcp_servers.serena.env]
 SERENA_LOG_LEVEL = "info"
 
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false
+
