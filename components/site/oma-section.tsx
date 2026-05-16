@@ -121,17 +121,18 @@ export function OmaSection() {
               Engineering
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-primary)] md:text-[40px] md:leading-[1.15]">
-              기술의 깊이로 만듭니다
+              자체 멀티에이전트 하네스,
+              <br />
+              oh-my-agent
             </h2>
             <SectionHeadingUnderline />
             <p className="mt-12 text-[16px] leading-[1.9] text-[var(--color-fg)] md:mt-16 md:text-[17px] md:leading-[1.95]">
-              퍼스트플루크의 모든 솔루션은 우리가 직접 설계한{" "}
+              AI 어시스턴트 하나가 모든 걸 떠안기는 대신, 역할이 다른 전문
+              에이전트가 한 팀처럼 일하도록{" "}
               <strong className="font-semibold text-[var(--color-primary)]">
-                멀티 에이전트 하네스
-              </strong>{" "}
-              위에서 돌아갑니다. AI 어시스턴트 하나가 모든 걸 떠안는 대신,
-              역할이 다른 전문 에이전트가 한 팀처럼 일하도록 만든 기반을 다졌습니다.  그
-              깊이가 솔루션의 일관된 품질을 만듭니다.
+                우리가 직접 설계
+              </strong>
+              했습니다. 그 깊이가 솔루션의 일관된 품질을 만듭니다.
             </p>
             <div className="mt-8 flex flex-wrap gap-3 md:mt-10">
               <LinkButton
