@@ -91,9 +91,9 @@ export function Hero() {
               variants={itemFromLeft}
               className="text-4xl font-bold leading-[1.28] text-[var(--color-primary)] md:text-5xl lg:text-[64px] lg:leading-[1.22]"
             >
-              당신을 첫 번째
+              당신의 첫 번째
               <br />
-              행운으로 이끕니다
+              행운을 함께 만듭니다
             </motion.h1>
 
             <motion.div
