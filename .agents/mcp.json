@@ -11,19 +11,21 @@
     },
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ]
     },
     "serena": {
-      "command": "uvx",
+      "command": "serena",
       "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
         "start-mcp-server",
         "--context",
-        "antigravity",
+        "claude-code",
         "--project",
-        "."
+        ".",
+        "--open-web-dashboard",
+        "false"
       ],
       "env": {
         "SERENA_LOG_LEVEL": "info"
@@ -76,8 +78,14 @@
       "performance_stop_trace",
       "performance_analyze_insight"
     ],
-    "docs-search": ["resolve-library-id", "query-docs"],
-    "file-ops": ["list_dir", "find_file"],
+    "docs-search": [
+      "resolve-library-id",
+      "query-docs"
+    ],
+    "file-ops": [
+      "list_dir",
+      "find_file"
+    ],
     "project": [
       "activate_project",
       "get_current_config",

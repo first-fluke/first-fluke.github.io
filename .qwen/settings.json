@@ -10,9 +10,21 @@
             "timeout": 5
           },
           {
+            "name": "state-boundary",
+            "type": "command",
+            "command": "bun \"$QWEN_PROJECT_DIR/.qwen/hooks/state-boundary.ts\"",
+            "timeout": 5
+          },
+          {
             "name": "skill-injector",
             "type": "command",
             "command": "bun \"$QWEN_PROJECT_DIR/.qwen/hooks/skill-injector.ts\"",
+            "timeout": 3
+          },
+          {
+            "name": "serena-primer",
+            "type": "command",
+            "command": "bun \"$QWEN_PROJECT_DIR/.qwen/hooks/serena-primer.ts\"",
             "timeout": 3
           }
         ]
@@ -46,20 +58,37 @@
   },
   "mcpServers": {
     "serena": {
-      "command": "uvx",
+      "command": "serena",
       "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
         "start-mcp-server",
         "--context",
-        "agent",
+        "ide",
         "--project",
-        "."
+        ".",
+        "--open-web-dashboard",
+        "false"
       ],
       "env": {
         "SERENA_LOG_LEVEL": "info"
       }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--no-usage-statistics",
+        "--isolated"
+      ]
+    }
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "ui": {
+    "statusLine": {
+      "type": "command",
+      "command": "bun \"$QWEN_PROJECT_DIR/.qwen/hooks/hud.ts\""
     }
   },
   "privacy": {

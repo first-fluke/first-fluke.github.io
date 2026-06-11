@@ -10,9 +10,21 @@
             "timeout": 5
           },
           {
+            "name": "state-boundary",
+            "type": "command",
+            "command": "bun \"$CLAUDE_PROJECT_DIR/.claude/hooks/state-boundary.ts\"",
+            "timeout": 5
+          },
+          {
             "name": "skill-injector",
             "type": "command",
             "command": "bun \"$CLAUDE_PROJECT_DIR/.claude/hooks/skill-injector.ts\"",
+            "timeout": 3
+          },
+          {
+            "name": "serena-primer",
+            "type": "command",
+            "command": "bun \"$CLAUDE_PROJECT_DIR/.claude/hooks/serena-primer.ts\"",
             "timeout": 3
           }
         ]
@@ -69,7 +81,7 @@
     "ENABLE_PROMPT_CACHING_1H": "1"
   },
   "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "skillListingBudgetFraction": 0.02,
   "attribution": {
     "commit": "Generated with oh-my-agent\n\nCo-Authored-By: First Fluke <our.first.fluke@gmail.com>",

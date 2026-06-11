@@ -1,0 +1,106 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FirstFluke//Azure Credit Reminders//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Azure 크레딧 알람
+X-WR-TIMEZONE:Asia/Seoul
+
+BEGIN:VEVENT
+UID:azure-credit-d60-20260614@firstfluke.com
+DTSTAMP:20260516T000000Z
+DTSTART;VALUE=DATE:20260614
+DTEND;VALUE=DATE:20260615
+SUMMARY:📊 Azure 크레딧 사용량 점검 (D-60)
+DESCRIPTION:Azure $1000 크레딧 만료까지 60일 남음.\n\n할 일:\n- portal.azure.com → 비용 관리 → 비용 분석\n- 지금까지 사용량 확인\n- 예상 소진 속도 점검\n- 사업자 인증 신청 상태 확인 (Founders Hub)\n\n크레딧 만료일: 2026-08-14
+LOCATION:portal.azure.com
+CATEGORIES:Azure,Reminder
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT9H
+ACTION:DISPLAY
+DESCRIPTION:Azure 크레딧 사용량 점검 (D-60)
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT15H
+ACTION:DISPLAY
+DESCRIPTION:내일 Azure 크레딧 점검 예정
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:azure-credit-d30-20260715@firstfluke.com
+DTSTAMP:20260516T000000Z
+DTSTART;VALUE=DATE:20260715
+DTEND;VALUE=DATE:20260716
+SUMMARY:🔍 Azure 사업자 인증 결과 확인 + 다음 단계 (D-30)
+DESCRIPTION:Azure $1000 크레딧 만료까지 30일 남음.\n\n할 일:\n- Founders Hub 사업자 인증 결과 확인\n- 통과 시 → $5000 추가 (180일) 활성화 확인\n- 미통과 시 → 다른 무료 대안 검토 (Google AI Studio, OpenRouter 등)\n- 남은 크레딧 vs 남은 일수 계산\n- 비싼 리소스 정리 검토\n\n크레딧 만료일: 2026-08-14
+LOCATION:foundershub.startups.microsoft.com
+CATEGORIES:Azure,Reminder
+PRIORITY:5
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT9H
+ACTION:DISPLAY
+DESCRIPTION:Azure 사업자 인증 확인 + 남은 30일 계획
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT15H
+ACTION:DISPLAY
+DESCRIPTION:내일 Azure 30일 점검 예정
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:azure-credit-d7-20260807@firstfluke.com
+DTSTAMP:20260516T000000Z
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+SUMMARY:⚠️ Azure 크레딧 만료 임박 - 데이터 백업 + 비싼 리소스 정리 (D-7)
+DESCRIPTION:Azure $1000 크레딧 만료까지 7일 남음. 만료 시 자동 종량제 전환!\n\n할 일:\n- 중요 데이터/모델/배포 백업\n- Storage Account 데이터 다운로드 (필요 시)\n- Azure OpenAI 모델 deployment 사용 패턴 정리\n- 안 쓰는 리소스 그룹 삭제\n- VM/Cosmos DB 등 비싼 리소스 중지\n- 신용카드 한도 다시 한 번 확인 (낮게 유지)\n\n크레딧 만료일: 2026-08-14\n자동 종량제 전환 = 카드 자동 결제 시작
+LOCATION:portal.azure.com
+CATEGORIES:Azure,Urgent
+PRIORITY:1
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT9H
+ACTION:DISPLAY
+DESCRIPTION:⚠️ Azure 크레딧 만료 7일 전 - 백업 + 정리
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT15H
+ACTION:DISPLAY
+DESCRIPTION:내일 Azure 크레딧 7일 전 점검
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:azure-credit-d1-20260813@firstfluke.com
+DTSTAMP:20260516T000000Z
+DTSTART;VALUE=DATE:20260813
+DTEND;VALUE=DATE:20260814
+SUMMARY:🚨 Azure 크레딧 만료 직전 - 모든 리소스 끄기 (D-1)
+DESCRIPTION:Azure $1000 크레딧 내일 만료!\n\n반드시 할 일:\n- 모든 활성 리소스 중지 또는 삭제\n- Azure OpenAI deployment 삭제\n- Storage Account 삭제 또는 데이터 백업 확인\n- 모든 VM 중지\n- Budget 확인 - 한도 초과 안 했는지\n- 사업자 인증으로 $5000 받았으면 안심, 아니면 → 모든 활동 중단\n\n내일 (2026-08-14) 크레딧 자동 종료\n→ 결제 등록 카드로 자동 결제 시작 가능성\n→ Spending Limit이 없어서 Budget만이 안전망
+LOCATION:portal.azure.com
+CATEGORIES:Azure,Critical
+PRIORITY:1
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:PT8H
+ACTION:DISPLAY
+DESCRIPTION:🚨 오늘 Azure 크레딧 만료 직전 - 모든 리소스 끄기
+END:VALARM
+BEGIN:VALARM
+TRIGGER:PT14H
+ACTION:DISPLAY
+DESCRIPTION:🚨 Azure 리소스 정리 다시 확인
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT15H
+ACTION:DISPLAY
+DESCRIPTION:🚨 내일 Azure 크레딧 만료 - 정리 준비
+END:VALARM
+END:VEVENT
+
+END:VCALENDAR

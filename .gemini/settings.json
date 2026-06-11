@@ -10,9 +10,21 @@
             "timeout": 5000
           },
           {
+            "name": "state-boundary",
+            "type": "command",
+            "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/state-boundary.ts\"",
+            "timeout": 5000
+          },
+          {
             "name": "skill-injector",
             "type": "command",
             "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/skill-injector.ts\"",
+            "timeout": 3000
+          },
+          {
+            "name": "serena-primer",
+            "type": "command",
+            "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/serena-primer.ts\"",
             "timeout": 3000
           }
         ],
@@ -40,6 +52,38 @@
             "type": "command",
             "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/persistent-mode.ts\"",
             "timeout": 5000
+          },
+          {
+            "name": "hud",
+            "type": "command",
+            "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/hud.ts\"",
+            "timeout": 3000
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "AfterTool": [
+      {
+        "hooks": [
+          {
+            "name": "hud",
+            "type": "command",
+            "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/hud.ts\"",
+            "timeout": 3000
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "hud",
+            "type": "command",
+            "command": "bun \"$GEMINI_PROJECT_DIR/.gemini/hooks/hud.ts\"",
+            "timeout": 3000
           }
         ],
         "matcher": "*"
@@ -54,7 +98,28 @@
   },
   "mcpServers": {
     "serena": {
-      "url": "http://localhost:12341/mcp"
+      "command": "serena",
+      "args": [
+        "start-mcp-server",
+        "--context",
+        "ide",
+        "--project",
+        ".",
+        "--open-web-dashboard",
+        "false"
+      ],
+      "env": {
+        "SERENA_LOG_LEVEL": "info"
+      }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--no-usage-statistics",
+        "--isolated"
+      ]
     }
   },
   "privacy": {

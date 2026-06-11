@@ -28,9 +28,21 @@
             "timeout": 5
           },
           {
+            "name": "state-boundary",
+            "type": "command",
+            "command": "bun .cursor/hooks/state-boundary.ts",
+            "timeout": 5
+          },
+          {
             "name": "skill-injector",
             "type": "command",
             "command": "bun .cursor/hooks/skill-injector.ts",
+            "timeout": 3
+          },
+          {
+            "name": "serena-primer",
+            "type": "command",
+            "command": "bun .cursor/hooks/serena-primer.ts",
             "timeout": 3
           }
         ]
