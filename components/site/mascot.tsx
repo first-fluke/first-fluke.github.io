@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 interface MascotProps {
   className?: string;
@@ -24,6 +25,7 @@ const SPARKLE_LIFE = 900;
 
 export function Mascot({ className, size = 360 }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { t } = useI18n();
   const reduceMotion = useReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const idleLoops = isDesktop && !reduceMotion;
@@ -99,7 +101,7 @@ export function Mascot({ className, size = 360 }: MascotProps) {
       <button
         type="button"
         onClick={handleClick}
-        aria-label="마스코트에게 인사하기"
+        aria-label={t.hero.mascotButtonAria}
         className={cn(
           "relative block h-full w-full cursor-pointer overflow-hidden rounded-full bg-white",
           "shadow-[0_24px_60px_-20px_rgba(15,76,58,0.25)]",
@@ -118,7 +120,7 @@ export function Mascot({ className, size = 360 }: MascotProps) {
           muted
           playsInline
           preload="auto"
-          aria-label="FIRST FLUKE 마스코트 (수달)"
+          aria-label={t.hero.mascotVideoAria}
           className="h-full w-full object-cover"
         >
           <source src="/firstfluke-mascot-wink.webm" type="video/webm" />

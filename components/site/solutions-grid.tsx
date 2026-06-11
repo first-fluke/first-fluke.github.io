@@ -5,6 +5,7 @@ import { SolutionCard } from "@/components/site/solution-card";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { SOLUTIONS } from "@/lib/solutions";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 const BRAKE_SPRING = {
   type: "spring" as const,
@@ -15,6 +16,7 @@ const BRAKE_SPRING = {
 
 export function SolutionsGrid() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const container = {
@@ -60,7 +62,7 @@ export function SolutionsGrid() {
               Solution
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-primary)] md:text-4xl">
-              솔루션
+              {t.solutions.heading}
             </h2>
             <SectionHeadingUnderline />
           </motion.div>

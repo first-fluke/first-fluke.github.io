@@ -9,6 +9,8 @@ import {
   useReducedMotion,
   useScroll,
 } from "motion/react";
+import { LanguageSwitcher } from "@/components/site/language-switcher";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 const NAV_ITEMS = [
   { href: "#about", label: "About" },
@@ -21,6 +23,7 @@ const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 
 export function FloatingNav() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const { scrollY } = useScroll();
   const [visible, setVisible] = useState(false);
 
@@ -32,7 +35,7 @@ export function FloatingNav() {
     <AnimatePresence>
       {visible && (
         <motion.nav
-          aria-label="섹션 네비게이션"
+          aria-label={t.nav.sectionsAria}
           initial={reduceMotion ? { opacity: 0 } : { y: -80, opacity: 0 }}
           animate={reduceMotion ? { opacity: 1 } : { y: 0, opacity: 1 }}
           exit={reduceMotion ? { opacity: 0 } : { y: -80, opacity: 0 }}
@@ -41,7 +44,7 @@ export function FloatingNav() {
         >
           <a
             href="#top"
-            aria-label="맨 위로"
+            aria-label={t.nav.backToTopAria}
             className="mr-1 inline-flex shrink-0 items-center gap-1.5 rounded-full px-1.5 py-0.5 text-[var(--color-primary)] md:mr-2"
           >
             <Image
@@ -69,6 +72,11 @@ export function FloatingNav() {
               {item.label}
             </a>
           ))}
+          <span
+            aria-hidden
+            className="hidden h-4 w-px bg-[var(--color-border)] sm:inline-block"
+          />
+          <LanguageSwitcher size="sm" className="hidden ring-0 sm:inline-flex" />
         </motion.nav>
       )}
     </AnimatePresence>

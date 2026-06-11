@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SITE } from "@/lib/site";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 function ThreadsIcon({ className }: { className?: string }) {
   return (
@@ -18,8 +20,79 @@ function ThreadsIcon({ className }: { className?: string }) {
   );
 }
 
+function BusinessInfoDisclosure() {
+  const { t } = useI18n();
+  const reduceMotion = useReducedMotion();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <span
+      className="relative inline-flex"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        aria-label={t.footer.business.triggerAria}
+        aria-expanded={open}
+        aria-controls="footer-business-info"
+        onClick={() => setOpen(true)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setOpen(false);
+        }}
+        className="cursor-help underline decoration-[var(--color-fg-muted)]/50 decoration-dotted underline-offset-4 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)]"
+      >
+        © 2026 FIRST FLUKE
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="footer-business-info"
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.18, ease: "easeOut" },
+            }}
+            exit={
+              reduceMotion
+                ? { opacity: 0, transition: { duration: 0.12 } }
+                : { opacity: 0, y: 4, transition: { duration: 0.12 } }
+            }
+            className="absolute bottom-full left-0 z-50 mb-3 w-[19rem] rounded-xl border border-[var(--color-border)] bg-white p-4 text-left shadow-[var(--shadow-card-hover)]"
+          >
+            <p className="text-[13px] font-semibold text-[var(--color-primary)]">
+              {t.footer.business.title}
+            </p>
+            <dl className="mt-2.5 space-y-1.5">
+              {t.footer.business.rows.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex gap-2 text-[12.5px] leading-relaxed"
+                >
+                  <dt className="w-28 shrink-0 text-[var(--color-fg-muted)]">
+                    {row.label}
+                  </dt>
+                  <dd className="text-[var(--color-fg)]">{row.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <span
+              aria-hidden
+              className="absolute -bottom-[5px] left-8 h-2.5 w-2.5 rotate-45 border-r border-b border-[var(--color-border)] bg-white"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export function Footer() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const initial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 };
   const inView = reduceMotion
     ? { opacity: 1, transition: { duration: 0.3 } }
@@ -40,7 +113,7 @@ export function Footer() {
         <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
           <p>
             <span className="font-mono italic">fluke (n.)</span>{" "}
-            우연한 행운.
+            {t.footer.flukeDefinition}
           </p>
           <a
             href={`https://www.threads.com/@${SITE.threadsHandle}`}
@@ -55,13 +128,13 @@ export function Footer() {
           </a>
         </div>
         <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
-          <p>© 2026 FIRST FLUKE</p>
-          <nav aria-label="법적 고지" className="flex items-center gap-4">
+          <BusinessInfoDisclosure />
+          <nav aria-label={t.footer.legalAria} className="flex items-center gap-4">
             <Link
               href="/privacy"
               className="transition-colors hover:text-[var(--color-primary)]"
             >
-              개인정보처리방침
+              {t.footer.privacyLabel}
             </Link>
           </nav>
         </div>

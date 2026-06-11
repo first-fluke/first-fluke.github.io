@@ -5,28 +5,18 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
-const PARAGRAPHS = [
-  {
-    className: "font-medium",
-    text: "AI와 기술로 더 나은 일상을 만드는 팀입니다.",
-  },
-  {
-    className: "",
-    text: "퍼스트플루크는 기능을 많이 담는 서비스보다, 사람들이 오래 쓰는 경험을 고민합니다. 복잡한 기술을 전면에 드러내는 대신, 사용자가 편하게 이해하고 쓸 수 있도록 구조와 흐름을 설계합니다.",
-  },
-  {
-    className: "",
-    text: "AI, 콘텐츠, 자동화를 기반으로 다양한 디지털 제품과 서비스를 기획하고 개발합니다. 아이디어 단계부터 실제 사용까지 이어지는, 실행 중심의 프로덕트를 만듭니다.",
-  },
-  {
-    className: "pt-2 font-medium text-[var(--color-primary)]",
-    text: "기술 자체보다 ‘왜 필요한가’와 ‘어떤 경험을 남기는가’를 먼저 생각합니다.",
-  },
+const PARAGRAPH_CLASSES = [
+  "font-medium",
+  "",
+  "",
+  "pt-2 font-medium text-[var(--color-primary)]",
 ];
 
 export function CompanyIntro() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -93,9 +83,9 @@ export function CompanyIntro() {
           </motion.div>
 
           <div className="space-y-7 break-keep text-[17px] leading-[1.75] text-[var(--color-fg)] md:space-y-9 md:text-lg md:leading-[1.75] lg:space-y-10 lg:text-xl lg:leading-[1.8]">
-            {PARAGRAPHS.map((p, i) => (
-              <motion.p key={i} variants={item} className={p.className}>
-                {p.text}
+            {t.about.paragraphs.map((text, i) => (
+              <motion.p key={i} variants={item} className={PARAGRAPH_CLASSES[i]}>
+                {text}
               </motion.p>
             ))}
           </div>

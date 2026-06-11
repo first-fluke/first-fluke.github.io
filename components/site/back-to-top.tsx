@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
 
   useEffect(() => {
     const handler = () => setVisible(window.scrollY > 600);
@@ -27,7 +29,7 @@ export function BackToTop() {
         <motion.button
           type="button"
           onClick={handleClick}
-          aria-label="맨 위로"
+          aria-label={t.nav.backToTopAria}
           className="fixed right-6 bottom-6 z-40 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[var(--color-primary)] text-white shadow-[0_8px_24px_-4px_rgba(15,76,58,0.4)] transition-[background-color,transform] duration-200 ease-out hover:scale-105 hover:bg-[var(--color-primary)]/90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/50 focus-visible:ring-offset-2 md:right-8 md:bottom-8 md:h-12 md:w-12"
           initial={{ opacity: 0, scale: 0.8, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

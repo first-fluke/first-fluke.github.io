@@ -5,6 +5,7 @@ import { LinkButton } from "@/components/ui/button";
 import { Mascot } from "@/components/site/mascot";
 import { SelectionBadge } from "@/components/site/selection-badge";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 const BRAKE_SPRING = {
   type: "spring" as const,
@@ -15,6 +16,7 @@ const BRAKE_SPRING = {
 
 export function Hero() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { scrollY } = useScroll();
   const mascotParallaxY = useTransform(scrollY, [0, 800], [0, 60]);
@@ -91,9 +93,9 @@ export function Hero() {
               variants={itemFromLeft}
               className="text-4xl font-bold leading-[1.28] text-[var(--color-primary)] md:text-5xl lg:text-[64px] lg:leading-[1.22]"
             >
-              당신의 첫 번째
+              {t.hero.titleLine1}
               <br />
-              행운을 함께 만듭니다
+              {t.hero.titleLine2}
             </motion.h1>
 
             <motion.div
@@ -107,7 +109,7 @@ export function Hero() {
               variants={itemFromLeft}
               className="text-base text-[var(--color-fg-muted)] md:text-lg"
             >
-              AI와 기술로 더 나은 일상을 만드는 팀,{" "}
+              {t.hero.subtitleLead}{" "}
               <span className="whitespace-nowrap">FIRST FLUKE.</span>
             </motion.p>
 
@@ -116,10 +118,10 @@ export function Hero() {
               className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start"
             >
               <LinkButton href="#solutions" size="lg">
-                솔루션 보기
+                {t.hero.ctaSolutions}
               </LinkButton>
               <LinkButton href="#contact" size="lg" variant="secondary">
-                문의하기
+                {t.hero.ctaContact}
               </LinkButton>
             </motion.div>
           </motion.div>

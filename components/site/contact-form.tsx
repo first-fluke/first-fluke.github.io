@@ -13,13 +13,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ContactFormSchema } from "@/lib/contact/schema";
-import { PRODUCT_IDS, PRODUCT_LABELS, type ProductId } from "@/lib/contact/products";
+import { createContactFormSchema } from "@/lib/contact/schema";
+import { PRODUCT_IDS, type ProductId } from "@/lib/contact/products";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type FieldErrors = Partial<Record<"email" | "message" | "agree" | "product", string>>;
+type ServerErrorKind = "rate_limit" | "send_failed";
 
 export function ContactForm() {
+  const { t } = useI18n();
+  const schema = React.useMemo(
+    () => createContactFormSchema(t.contact.validation),
+    [t],
+  );
   const [product, setProduct] = React.useState<ProductId | "">("");
   const [email, setEmail] = React.useState("");
   const [emailTouched, setEmailTouched] = React.useState(false);
@@ -28,21 +35,24 @@ export function ContactForm() {
   const [hp, setHp] = React.useState("");
   const [status, setStatus] = React.useState<Status>("idle");
   const [errors, setErrors] = React.useState<FieldErrors>({});
-  const [serverError, setServerError] = React.useState<string | null>(null);
+  const [serverError, setServerError] = React.useState<ServerErrorKind | null>(null);
 
-  const validateEmail = React.useCallback((value: string): string | undefined => {
-    const trimmed = value.trim();
-    if (!trimmed) return undefined;
-    const result = ContactFormSchema.shape.email.safeParse(trimmed);
-    return result.success ? undefined : result.error.issues[0]?.message;
-  }, []);
+  const validateEmail = React.useCallback(
+    (value: string): string | undefined => {
+      const trimmed = value.trim();
+      if (!trimmed) return undefined;
+      const result = schema.shape.email.safeParse(trimmed);
+      return result.success ? undefined : result.error.issues[0]?.message;
+    },
+    [schema],
+  );
 
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || !product || isSubmitting;
   const reduceMotion = useReducedMotion();
   const isFormValid = React.useMemo(
-    () => ContactFormSchema.safeParse({ email, message, agree, product, _hp: hp }).success,
-    [email, message, agree, product, hp],
+    () => schema.safeParse({ email, message, agree, product, _hp: hp }).success,
+    [schema, email, message, agree, product, hp],
   );
   const shouldPulse = isFormValid && !isSubmitting && !reduceMotion;
 
@@ -79,7 +89,7 @@ export function ContactForm() {
     event.preventDefault();
     setServerError(null);
 
-    const parsed = ContactFormSchema.safeParse({
+    const parsed = schema.safeParse({
       email,
       message,
       agree,
@@ -120,8 +130,8 @@ export function ContactForm() {
       setStatus("error");
       setServerError(
         err instanceof Error && err.message === "rate_limit"
-          ? "너무 빠르게 시도하셨어요. 잠시 후 다시 시도해주세요."
-          : "전송에 실패했어요. 잠시 후 다시 시도해주세요.",
+          ? "rate_limit"
+          : "send_failed",
       );
     }
   }
@@ -134,10 +144,10 @@ export function ContactForm() {
         className="rounded-2xl border border-[var(--color-border)] bg-white p-8 text-center shadow-[var(--shadow-card)]"
       >
         <p className="text-lg font-semibold text-[var(--color-primary)]">
-          문의가 접수되었습니다.
+          {t.contact.successTitle}
         </p>
         <p className="mt-2 text-[var(--color-fg-muted)]">
-          확인 후 회신 드릴게요.
+          {t.contact.successBody}
         </p>
         <div className="mt-6 flex justify-center">
           <Button
@@ -146,7 +156,7 @@ export function ContactForm() {
             size="lg"
             onClick={resetForm}
           >
-            새 문의 작성
+            {t.contact.successReset}
           </Button>
         </div>
       </div>
@@ -168,7 +178,9 @@ export function ContactForm() {
           role="alert"
           className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
-          {serverError}
+          {serverError === "rate_limit"
+            ? t.contact.errorRateLimited
+            : t.contact.errorSendFailed}
         </div>
       )}
 
@@ -177,7 +189,7 @@ export function ContactForm() {
           htmlFor="contact-product"
           className="text-sm font-medium text-[var(--color-fg)]"
         >
-          문의 종류
+          {t.contact.productLabel}
         </label>
         <Select
           value={product}
@@ -191,12 +203,12 @@ export function ContactForm() {
               errors.product ? "contact-product-error" : undefined
             }
           >
-            <SelectValue placeholder="어떤 솔루션 관련인가요?" />
+            <SelectValue placeholder={t.contact.productPlaceholder} />
           </SelectTrigger>
           <SelectContent>
             {PRODUCT_IDS.map((id) => (
               <SelectItem key={id} value={id}>
-                {PRODUCT_LABELS[id]}
+                {t.contact.productOptions[id]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -217,7 +229,7 @@ export function ContactForm() {
           htmlFor="contact-email"
           className="text-sm font-medium text-[var(--color-fg)]"
         >
-          이메일
+          {t.contact.emailLabel}
         </label>
         <Input
           id="contact-email"
@@ -259,11 +271,11 @@ export function ContactForm() {
           htmlFor="contact-message"
           className="text-sm font-medium text-[var(--color-fg)]"
         >
-          메시지
+          {t.contact.messageLabel}
         </label>
         <Textarea
           id="contact-message"
-          placeholder="문의 내용을 알려주세요."
+          placeholder={t.contact.messagePlaceholder}
           rows={4}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -303,14 +315,14 @@ export function ContactForm() {
           aria-invalid={Boolean(errors.agree)}
           label={
             <span className="text-sm text-[var(--color-fg-muted)]">
-              개인정보 수집·이용에 동의합니다.{" "}
+              {t.contact.agreePrefix}{" "}
               <a
                 href="/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-[var(--color-primary)] underline-offset-2 hover:underline"
               >
-                상세 보기
+                {t.contact.agreeLink}
               </a>
             </span>
           }
@@ -348,7 +360,7 @@ export function ContactForm() {
             disabled={isDisabled}
             aria-disabled={isDisabled}
           >
-            {isSubmitting ? "보내는 중…" : "보내기"}
+            {isSubmitting ? t.contact.submitBusy : t.contact.submitIdle}
           </Button>
         </motion.div>
       </motion.div>

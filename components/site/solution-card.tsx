@@ -5,6 +5,7 @@ import { useRef, type CSSProperties, type MouseEvent } from "react";
 import type { Solution } from "@/lib/solutions";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 interface SolutionCardProps {
   solution: Solution;
@@ -34,7 +35,9 @@ const ICON_FRAMES: Record<string, IconFrame> = {
 };
 
 export function SolutionCard({ solution }: SolutionCardProps) {
-  const initial = solution.name.charAt(0);
+  const { t } = useI18n();
+  const copy = t.solutions.items[solution.id] ?? solution;
+  const initial = copy.name.charAt(0);
   const iconSrc = solution.iconSrc;
   const iconFrame = ICON_FRAMES[solution.id];
   const anchorRef = useRef<HTMLAnchorElement>(null);
@@ -53,7 +56,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
       href={solution.href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${solution.name} 외부 사이트로 이동`}
+      aria-label={t.solutions.openAria.replace("{name}", copy.name)}
       onMouseMove={handleMouseMove}
       className="group relative block h-full rounded-2xl focus:outline-none"
       style={
@@ -103,7 +106,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
           )}
           <div className="flex items-center gap-2">
             <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-1 text-[11px] font-medium text-[var(--color-fg-muted)]">
-              {solution.category}
+              {copy.category}
             </span>
             <span
               aria-hidden
@@ -116,10 +119,10 @@ export function SolutionCard({ solution }: SolutionCardProps) {
 
         <div className="flex flex-1 flex-col gap-2">
           <h3 className="text-xl font-semibold text-[var(--color-primary)]">
-            {solution.name}
+            {copy.name}
           </h3>
           <p className="text-[15px] leading-relaxed text-[var(--color-fg-muted)]">
-            {solution.tagline}
+            {copy.tagline}
           </p>
         </div>
       </Card>

@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 interface SelectionBadgeProps {
   variant: "full" | "chip";
@@ -8,13 +11,15 @@ interface SelectionBadgeProps {
 }
 
 export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
+  const { t } = useI18n();
+
   if (variant === "chip") {
     return (
       <a
         href={SITE.selectionPageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${SITE.selectionLabel} 선정 페이지로 이동`}
+        aria-label={t.badge.linkAria}
         className={cn(
           "inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[var(--color-fg)] ring-1 ring-[var(--color-border)] transition-colors hover:ring-[var(--color-primary)]/30",
           className,
@@ -30,7 +35,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
         <span aria-hidden className="text-[var(--color-border)]">
           ·
         </span>
-        <span>2026 선정</span>
+        <span>{t.badge.chipLabel}</span>
       </a>
     );
   }
@@ -40,7 +45,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
       href={SITE.selectionPageUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${SITE.selectionLabel} 선정 페이지로 이동`}
+      aria-label={t.badge.linkAria}
       className={cn(
         "inline-flex items-center gap-2.5 rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 transition-colors hover:border-[var(--color-primary)]/30",
         className,
@@ -60,7 +65,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
           Selected · 2026
         </span>
         <span className="text-[11px] font-semibold text-[var(--color-primary)]">
-          AI 솔루션 공급기업
+          {t.badge.providerLabel}
         </span>
       </span>
     </a>

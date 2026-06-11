@@ -3,11 +3,13 @@
 import { motion, useReducedMotion } from "motion/react";
 import { ContactForm } from "@/components/site/contact-form";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
 export function ContactSection() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
 
   const container = {
     hidden: {},
@@ -49,7 +51,7 @@ export function ContactSection() {
           variants={item}
           className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-primary)] md:text-4xl"
         >
-          문의
+          {t.contact.heading}
         </motion.h2>
         <motion.div variants={item}>
           <SectionHeadingUnderline />
@@ -58,7 +60,7 @@ export function ContactSection() {
           variants={item}
           className="mt-4 text-base text-[var(--color-fg-muted)] md:text-lg"
         >
-          확인 후 영업일 기준 24시간 내 회신드리겠습니다.
+          {t.contact.subtitle}
         </motion.p>
         <motion.div variants={item} className="mt-8">
           <ContactForm />

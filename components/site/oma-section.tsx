@@ -14,20 +14,7 @@ import { SectionHeadingUnderline } from "@/components/site/section-heading-under
 import { TypewriterText } from "@/components/site/typewriter-text";
 import { OMA_DOCS_URL, OMA_REPO_URL } from "@/lib/oma-content";
 import { useMediaQuery } from "@/lib/use-media-query";
-
-const AGENTS = [
-  { tag: "기획자", desc: "어떤 화면이 필요한지 정리" },
-  { tag: "프론트엔드", desc: "UI · 컴포넌트 설계" },
-  { tag: "백엔드", desc: "데이터 · API 연결" },
-  { tag: "QA 리뷰어", desc: "테스트 · 검수" },
-];
-
-const HIGHLIGHTS = [
-  { label: "Portable", desc: "IDE에 묶이지 않음" },
-  { label: "Role-based", desc: "프롬프트 묶음이 아닌 팀 구조" },
-  { label: "Multi-vendor", desc: "Claude · Codex · Gemini · Qwen 혼합" },
-  { label: "Token-efficient", desc: "2계층 구조로 토큰 약 75% 절감" },
-];
+import { useI18n } from "@/lib/i18n/use-i18n";
 
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
@@ -36,6 +23,7 @@ const STATIC_BORDER_BG =
 
 export function OmaSection() {
   const reduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const animateBorder = isDesktop && !reduceMotion;
   const angle = useMotionValue(0);
@@ -121,18 +109,17 @@ export function OmaSection() {
               Engineering
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-primary)] md:text-[40px] md:leading-[1.15]">
-              자체 멀티에이전트 하네스,
+              {t.oma.heading}
               <br />
               oh-my-agent
             </h2>
             <SectionHeadingUnderline />
             <p className="mt-12 text-[16px] leading-[1.9] text-[var(--color-fg)] md:mt-16 md:text-[17px] md:leading-[1.95]">
-              AI 어시스턴트 하나가 모든 걸 떠안기는 대신, 역할이 다른 전문
-              에이전트가 한 팀처럼 일하도록{" "}
+              {t.oma.descriptionLead}
               <strong className="font-semibold text-[var(--color-primary)]">
-                우리가 직접 설계
+                {t.oma.descriptionStrong}
               </strong>
-              했습니다. 그 깊이가 솔루션의 일관된 품질을 만듭니다.
+              {t.oma.descriptionTail}
             </p>
             <div className="mt-8 flex flex-wrap gap-3 md:mt-10">
               <LinkButton
@@ -141,7 +128,7 @@ export function OmaSection() {
                 rel="noopener noreferrer"
                 size="md"
               >
-                GitHub에서 보기
+                {t.oma.ctaRepo}
               </LinkButton>
               <LinkButton
                 href={OMA_DOCS_URL}
@@ -150,7 +137,7 @@ export function OmaSection() {
                 size="md"
                 variant="secondary"
               >
-                자세히 알아보기
+                {t.oma.ctaDocs}
               </LinkButton>
             </div>
           </motion.div>
@@ -208,23 +195,16 @@ export function OmaSection() {
               >
                 <motion.div variants={itemVariant}>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-                    요청
+                    {t.oma.requestLabel}
                   </p>
                   <p className="mt-1.5 text-lg font-semibold text-[var(--color-fg)] md:text-xl">
                     &ldquo;
-                    <TypewriterText
-                      texts={[
-                        "사이트 하나 만들어줘",
-                        "회원가입 기능 만들어줘",
-                        "예약 시스템 만들어줘",
-                        "고객 문의 폼 만들어줘",
-                      ]}
-                    />
+                    <TypewriterText texts={t.oma.typewriterTexts} />
                     &rdquo;
                   </p>
                 </motion.div>
                 <ul className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  {AGENTS.map((agent) => (
+                  {t.oma.agents.map((agent) => (
                     <motion.li
                       key={agent.tag}
                       variants={itemVariant}
@@ -249,7 +229,7 @@ export function OmaSection() {
                 viewport={{ once: true, amount: 0.2 }}
               >
                 <ul className="grid grid-cols-2 gap-x-5 gap-y-3">
-                  {HIGHLIGHTS.map((h) => (
+                  {t.oma.highlights.map((h) => (
                     <motion.li
                       key={h.label}
                       variants={itemVariant}
