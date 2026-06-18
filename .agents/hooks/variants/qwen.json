@@ -12,7 +12,15 @@
         "timeout": 5
       },
       {
+        "hook": "state-boundary.ts",
+        "timeout": 5
+      },
+      {
         "hook": "skill-injector.ts",
+        "timeout": 3
+      },
+      {
+        "hook": "serena-primer.ts",
         "timeout": 3
       }
     ],
@@ -25,5 +33,9 @@
       "hook": "persistent-mode.ts",
       "timeout": 5
     }
-  }
+  },
+  "statusLine": {
+    "hook": "hud.ts"
+  },
+  "statusLineKey": "ui"
 }
