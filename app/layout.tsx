@@ -14,8 +14,16 @@ export const metadata: Metadata = {
     template: "%s · FIRST FLUKE",
   },
   description:
-    "AI와 기술로 더 나은 일상을 만드는 팀, FIRST FLUKE. 모두의 창업 2026 AI 솔루션 공급기업 선정.",
-  keywords: ["FIRST FLUKE", "Firstfluke", "퍼스트플루크", "AI 솔루션", "모두의 창업"],
+    "퍼스트플루크(FIRST FLUKE)는 자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니입니다. 플레이스 해줘 · 콘텐츠 해줘 · 법률 검토해줘 · Shopzy. 모두의 창업 2026 AI 솔루션 공급기업 선정.",
+  keywords: [
+    "FIRST FLUKE",
+    "Firstfluke",
+    "퍼스트플루크",
+    "AI SaaS",
+    "AI 프로덕트 컴퍼니",
+    "AI 솔루션",
+    "모두의 창업",
+  ],
   openGraph: {
     type: "website",
     locale: "ko_KR",
@@ -23,13 +31,13 @@ export const metadata: Metadata = {
     siteName: "FIRST FLUKE",
     title: "FIRST FLUKE — Make Your First Win",
     description:
-      "AI와 기술로 더 나은 일상을 만드는 팀, FIRST FLUKE.",
+      "자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니, FIRST FLUKE.",
   },
   twitter: {
     card: "summary_large_image",
     title: "FIRST FLUKE — Make Your First Win",
     description:
-      "AI와 기술로 더 나은 일상을 만드는 팀.",
+      "자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니.",
   },
   icons: {
     icon: "/favicon.png",
@@ -58,7 +66,22 @@ const ORGANIZATION_JSONLD = {
   logo: `${SITE.url}/logo.png`,
   image: `${SITE.url}/opengraph-image`,
   email: SITE.contactEmail,
+  foundingDate: "2026-03",
   sameAs: [`https://www.threads.com/@${SITE.threadsHandle}`],
+  founder: [
+    {
+      "@type": "Person",
+      name: "Kim Gahyun",
+      jobTitle: "CEO & Developer",
+      sameAs: ["https://www.linkedin.com/in/otti-nuna/"],
+    },
+    {
+      "@type": "Person",
+      name: "Shin Eunkwang",
+      jobTitle: "Co-founder & Developer",
+      sameAs: ["https://www.linkedin.com/in/gracefullight/"],
+    },
+  ],
   contactPoint: [
     {
       "@type": "ContactPoint",

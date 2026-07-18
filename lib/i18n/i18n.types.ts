@@ -27,6 +27,13 @@ export interface SolutionCopy {
   name: string;
   tagline: string;
   category: string;
+  features: string[];
+}
+
+export interface TeamMemberCopy {
+  name: string;
+  role: string;
+  bio: string;
 }
 
 export interface BusinessInfoRow {
@@ -90,9 +97,21 @@ export interface Dictionary {
   };
   solutions: {
     heading: string;
+    subtitle: string;
     /** aria-label template; `{name}` is replaced with the solution name. */
     openAria: string;
+    /** CTA label linking to the product's public landing page. */
+    viewCta: string;
+    /** Badge label marking a shipped, live product. */
+    liveBadge: string;
     items: Record<string, SolutionCopy>;
+  };
+  team: {
+    heading: string;
+    subtitle: string;
+    /** aria-label template; `{name}` is replaced with the member name. */
+    linkedinAria: string;
+    members: Record<string, TeamMemberCopy>;
   };
   contact: {
     heading: string;

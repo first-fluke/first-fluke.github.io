@@ -19,7 +19,7 @@ export const DICTIONARY_EN: Dictionary = {
   hero: {
     titleLine1: "Crafting your first",
     titleLine2: "stroke of luck, together",
-    subtitleLead: "A team building a better everyday with AI and technology —",
+    subtitleLead: "An AI product company that builds and runs its own AI SaaS —",
     ctaSolutions: "Explore solutions",
     ctaContact: "Contact us",
     mascotButtonAria: "Say hi to the mascot",
@@ -27,9 +27,9 @@ export const DICTIONARY_EN: Dictionary = {
   },
   about: {
     paragraphs: [
-      "We are a team that makes everyday life better with AI and technology.",
-      "Rather than packing in features, FIRST FLUKE focuses on experiences people keep coming back to. Instead of putting complex technology front and center, we design structures and flows anyone can understand and use with ease.",
-      "We plan and build digital products and services powered by AI, content, and automation — execution-driven products that carry an idea all the way to everyday use.",
+      "FIRST FLUKE is an AI product company founded in March 2026. Rather than building software for other companies, we design, build, and operate our own AI SaaS products under our own name.",
+      "From local-business marketing to creator content and online-store operations, we ship a family of subscription SaaS products that hand everyday repetitive work to AI. Each product runs on a monthly subscription and can be tried right away with a free trial.",
+      "Instead of putting complex technology front and center, we design experiences anyone can understand and use immediately — execution-driven products that carry an idea all the way to daily use.",
       "Before the technology itself, we ask why it is needed — and what kind of experience it leaves behind.",
     ],
   },
@@ -64,37 +64,67 @@ export const DICTIONARY_EN: Dictionary = {
   },
   solutions: {
     heading: "Solutions",
+    subtitle: "A family of subscription AI SaaS products we build and operate ourselves.",
     openAria: "Visit the {name} website (external link)",
+    viewCta: "Visit site",
+    liveBadge: "Live",
     items: {
       "place-haejo": {
         name: "Place Haejo",
-        tagline: "Automate multi-channel marketing for local businesses, all at once",
+        tagline: "A storefront marketing consultant that starts from a single URL",
         category: "Local Business · Marketing",
+        features: [
+          "Paste your store URL for a health score benchmarked against nearby rivals",
+          "Aggregates reviews across channels and drafts AI replies for you",
+          "A weekly report that prioritizes this week's to-dos",
+        ],
       },
       "contents-haejo": {
         name: "Contents Haejo",
-        tagline: "From content planning to monetization, in one place",
+        tagline: "End the daily “what do I post?” for your social channels",
         category: "Creator · Content",
+        features: [
+          "Learns your channel voice and suggests daily post ideas",
+          "Turns plain text into ready-to-post card-news slides",
+          "Publish, schedule, and reply — all in one place",
+        ],
       },
       "legalize-kr": {
         name: "Legalize KR",
-        tagline: "AI that analyzes and compares legislation data",
+        tagline: "An AI research tool that analyzes and compares legislation",
         category: "Regulation · Legal",
-      },
-      "curate-ai": {
-        name: "CurateAI",
-        tagline: "AI SaaS that auto-generates customer assessments and recommendations",
-        category: "Recommendation · Conversion",
-      },
-      "prompt-ops": {
-        name: "PromptOps",
-        tagline: "A prompt operations platform PMs can run themselves",
-        category: "AI Ops · Infra",
+        features: [
+          "AI analyzes large volumes of statutes and clauses",
+          "Clause-by-clause comparison to spot regulatory risk fast",
+          "Delivers research results in an organized form",
+        ],
       },
       shopzy: {
         name: "Shopzy",
-        tagline: "Run your online store with a single conversation",
+        tagline: "Run your Cafe24 store through a single conversation",
         category: "E-commerce · Operations",
+        features: [
+          "Edit store design and skins instantly by chat (RAG-based)",
+          "Query and update products, orders, and stock via chat",
+          "Every change is auto-backed-up and rollback-ready",
+        ],
+      },
+    },
+  },
+  team: {
+    heading: "Team",
+    subtitle: "The people behind FIRST FLUKE",
+    linkedinAria: "Open {name}'s LinkedIn profile",
+    members: {
+      gahyun: {
+        name: "Kim Gahyun",
+        role: "CEO · System Architect",
+        bio: "Leads FIRST FLUKE while owning the system architecture and infrastructure — the foundation that keeps our AI SaaS products running reliably at scale.",
+      },
+      eunkwang: {
+        name: "Shin Eunkwang",
+        role: "Co-founder & CTO",
+        bio: "Heads technology across the company — setting the technical direction and driving engineering from the frontend to AI modeling, grounded in deep AI expertise.",
       },
     },
   },
@@ -107,8 +137,6 @@ export const DICTIONARY_EN: Dictionary = {
       "place-haejo": "Place Haejo",
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize KR",
-      "curate-ai": "CurateAI",
-      "prompt-ops": "PromptOps",
       shopzy: "Shopzy",
       oma: "OMA (oh-my-agent)",
       etc: "Other",

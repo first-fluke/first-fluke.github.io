@@ -65,9 +65,12 @@ export function SolutionsGrid() {
               {t.solutions.heading}
             </h2>
             <SectionHeadingUnderline />
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-fg-muted)] md:text-base">
+              {t.solutions.subtitle}
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
             {SOLUTIONS.map((solution) => (
               <motion.div key={solution.id} variants={card}>
                 <SolutionCard solution={solution} />

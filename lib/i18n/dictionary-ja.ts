@@ -19,7 +19,7 @@ export const DICTIONARY_JA: Dictionary = {
   hero: {
     titleLine1: "最初の幸運を、",
     titleLine2: "ともにつくります",
-    subtitleLead: "AIとテクノロジーで、より良い日常をつくるチーム、",
+    subtitleLead: "自社のAI SaaSプロダクトを開発・運営する会社、",
     ctaSolutions: "ソリューションを見る",
     ctaContact: "お問い合わせ",
     mascotButtonAria: "マスコットに挨拶する",
@@ -27,9 +27,9 @@ export const DICTIONARY_JA: Dictionary = {
   },
   about: {
     paragraphs: [
-      "AIとテクノロジーで、より良い日常をつくるチームです。",
-      "FIRST FLUKEは、機能を詰め込んだサービスよりも、長く使い続けてもらえる体験を大切にしています。複雑な技術を前面に出すのではなく、誰もが気軽に理解して使えるよう、構造と流れを設計します。",
-      "AI・コンテンツ・自動化を軸に、さまざまなデジタルプロダクトやサービスを企画・開発しています。アイデアの段階から実際の利用まで、実行を重視したプロダクトづくりを行います。",
+      "FIRST FLUKEは、2026年3月に設立されたAIプロダクトカンパニーです。他社の製品を代わりに開発するのではなく、自分たちの名前を掲げたAI SaaSプロダクトを自ら開発・運営しています。",
+      "小規模事業者のマーケティングから、クリエイターのコンテンツ、オンラインショップの運営まで — 日々の繰り返し業務をAIに任せるサブスクリプション型SaaSプロダクト群を提供しています。各プロダクトは月額サブスクリプションで運営され、無料トライアルですぐにお試しいただけます。",
+      "複雑な技術を前面に出すのではなく、誰もが理解してすぐに使える体験を設計します。アイデアの段階から実際の利用まで、実行を重視したプロダクトづくりを行います。",
       "技術そのものよりも、「なぜ必要か」「どんな体験を残すか」を先に考えます。",
     ],
   },
@@ -64,37 +64,67 @@ export const DICTIONARY_JA: Dictionary = {
   },
   solutions: {
     heading: "ソリューション",
+    subtitle: "FIRST FLUKEが自ら開発・運営するサブスクリプション型AI SaaSプロダクト群です。",
     openAria: "{name}のサイトを開く（外部リンク）",
+    viewCta: "サイトを見る",
+    liveBadge: "運営中",
     items: {
       "place-haejo": {
         name: "Place Haejo",
-        tagline: "小規模事業者のマルチチャネルマーケティングを一括自動化",
+        tagline: "URL一つで始まる店舗マーケティングコンサルタント",
         category: "小規模事業者・マーケティング",
+        features: [
+          "店舗URLを入力するだけで、近隣競合と比較したヘルススコアを診断",
+          "チャネル別のレビューを集約し、AIが返信文まで自動生成",
+          "週次レポートで今週やるべきことを優先度順に整理",
+        ],
       },
       "contents-haejo": {
         name: "Contents Haejo",
-        tagline: "コンテンツの企画から収益化までワンストップで",
+        tagline: "SNS運用の「今日は何を投稿する？」を解決",
         category: "クリエイター・コンテンツ",
+        features: [
+          "チャネルのボイスを学習し、毎日の投稿ネタを提案",
+          "本文を入れるだけでカードニュースのスライドまで自動生成",
+          "投稿・予約・返信をひとつの場所で管理",
+        ],
       },
       "legalize-kr": {
         name: "Legalize KR",
-        tagline: "法令データを分析・比較するAI",
+        tagline: "法令データを分析・比較するAIリサーチツール",
         category: "規制・法令",
-      },
-      "curate-ai": {
-        name: "CurateAI",
-        tagline: "顧客診断・レコメンドを自動生成するAI SaaS",
-        category: "レコメンド・コンバージョン",
-      },
-      "prompt-ops": {
-        name: "PromptOps",
-        tagline: "PMが自ら扱えるプロンプト運用プラットフォーム",
-        category: "AI Ops・インフラ",
+        features: [
+          "膨大な法令・条文データをAIが分析",
+          "条文間の比較で規制リスクを素早く把握",
+          "リサーチ結果を整理された形で提供",
+        ],
       },
       shopzy: {
         name: "Shopzy",
-        tagline: "ひと言の会話で運営できるオンラインショップ",
+        tagline: "会話ひとつで運営するCafe24ショップAIエージェント",
         category: "Eコマース・運営",
+        features: [
+          "会話だけでショップのデザイン・スキンを即時修正（RAGベース）",
+          "商品・注文・在庫をチャットで照会し、その場で修正",
+          "すべての修正は自動バックアップされ、いつでもロールバック可能",
+        ],
+      },
+    },
+  },
+  team: {
+    heading: "チーム",
+    subtitle: "FIRST FLUKEをつくる人たち",
+    linkedinAria: "{name}のLinkedInプロフィールを開く",
+    members: {
+      gahyun: {
+        name: "キム・ガヒョン",
+        role: "代表 · システムアーキテクト",
+        bio: "FIRST FLUKEを率い、プロダクトのシステムアーキテクチャとインフラを担います。複数のAI SaaSが安定して稼働する基盤を自ら設計・運用します。",
+      },
+      eunkwang: {
+        name: "シン・ウングァン",
+        role: "共同創業者 · CTO",
+        bio: "プロダクト全体の技術を統括。AIへの深い専門性をもとに、フロントエンドからAIモデリングまで技術の方向性を描き、エンジニアリングをリードします。",
       },
     },
   },
@@ -107,8 +137,6 @@ export const DICTIONARY_JA: Dictionary = {
       "place-haejo": "Place Haejo",
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize KR",
-      "curate-ai": "CurateAI",
-      "prompt-ops": "PromptOps",
       shopzy: "Shopzy",
       oma: "OMA (oh-my-agent)",
       etc: "その他",

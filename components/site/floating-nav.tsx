@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "#about", label: "About" },
   { href: "#oma", label: "Engineering" },
   { href: "#solutions", label: "Solution" },
+  { href: "#team", label: "Team" },
   { href: "#contact", label: "Contact" },
 ];
 

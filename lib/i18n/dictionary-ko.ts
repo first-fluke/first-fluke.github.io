@@ -19,7 +19,7 @@ export const DICTIONARY_KO: Dictionary = {
   hero: {
     titleLine1: "당신의 첫 번째",
     titleLine2: "행운을 함께 만듭니다",
-    subtitleLead: "AI와 기술로 더 나은 일상을 만드는 팀,",
+    subtitleLead: "AI SaaS 제품을 직접 만들고 운영하는 회사,",
     ctaSolutions: "솔루션 보기",
     ctaContact: "문의하기",
     mascotButtonAria: "마스코트에게 인사하기",
@@ -27,9 +27,9 @@ export const DICTIONARY_KO: Dictionary = {
   },
   about: {
     paragraphs: [
-      "AI와 기술로 더 나은 일상을 만드는 팀입니다.",
-      "퍼스트플루크는 기능을 많이 담는 서비스보다, 사람들이 오래 쓰는 경험을 고민합니다. 복잡한 기술을 전면에 드러내는 대신, 사용자가 편하게 이해하고 쓸 수 있도록 구조와 흐름을 설계합니다.",
-      "AI, 콘텐츠, 자동화를 기반으로 다양한 디지털 제품과 서비스를 기획하고 개발합니다. 아이디어 단계부터 실제 사용까지 이어지는, 실행 중심의 프로덕트를 만듭니다.",
+      "퍼스트플루크는 2026년 3월 설립된 AI 프로덕트 컴퍼니입니다. 다른 회사의 제품을 대신 만들어주는 대신, 우리 이름을 건 AI SaaS 제품을 직접 만들고 운영합니다.",
+      "소상공인 마케팅, 크리에이터 콘텐츠, 쇼핑몰 운영까지 — 매일 반복되는 일을 AI가 대신 처리하는 구독형 SaaS 제품군을 서비스합니다. 각 제품은 월 구독으로 운영되며, 무료 체험으로 바로 사용해볼 수 있습니다.",
+      "복잡한 기술을 전면에 내세우기보다, 누구나 이해하고 곧바로 쓸 수 있는 경험을 설계합니다. 아이디어 단계부터 실제 사용까지 이어지는, 실행 중심의 프로덕트를 만듭니다.",
       "기술 자체보다 ‘왜 필요한가’와 ‘어떤 경험을 남기는가’를 먼저 생각합니다.",
     ],
   },
@@ -63,37 +63,67 @@ export const DICTIONARY_KO: Dictionary = {
   },
   solutions: {
     heading: "솔루션",
-    openAria: "{name} 외부 사이트로 이동",
+    subtitle: "퍼스트플루크가 직접 만들고 운영하는 구독형 AI SaaS 제품군입니다.",
+    openAria: "{name} 사이트로 이동 (외부 링크)",
+    viewCta: "사이트 보기",
+    liveBadge: "운영 중",
     items: {
       "place-haejo": {
         name: "플레이스 해줘",
-        tagline: "소상공인의 멀티 채널 마케팅을 한 번에 자동화",
+        tagline: "URL 한 줄로 시작하는 우리 가게 마케팅 컨설턴트",
         category: "소상공인 · 마케팅",
+        features: [
+          "매장 URL만 넣으면 경쟁 매장과 비교한 헬스 스코어 진단",
+          "채널별 리뷰를 모아 AI가 답글까지 자동 생성",
+          "주간 리포트로 이번 주 할 일을 우선순위로 정리",
+        ],
       },
       "contents-haejo": {
         name: "콘텐츠 해줘",
-        tagline: "콘텐츠 기획부터 수익화까지 한 번에",
+        tagline: "SNS 콘텐츠 운영, 매일 뭘 올릴지 고민 끝",
         category: "크리에이터 · 콘텐츠",
+        features: [
+          "채널 보이스를 학습해 매일 올릴 글감을 제안",
+          "본문만 넣으면 카드뉴스 슬라이드까지 자동 생성",
+          "발행·예약·답글을 한 곳에서 관리",
+        ],
       },
       "legalize-kr": {
         name: "법률 검토해줘",
-        tagline: "법령 데이터를 분석·비교하는 AI",
+        tagline: "법령 데이터를 분석·비교하는 AI 리서치 도구",
         category: "규제 · 법령",
-      },
-      "curate-ai": {
-        name: "CurateAI",
-        tagline: "고객 진단·추천을 자동 생성하는 AI SaaS",
-        category: "추천 · 전환",
-      },
-      "prompt-ops": {
-        name: "PromptOps",
-        tagline: "PM이 직접 다루는 프롬프트 운영 플랫폼",
-        category: "AI Ops · 인프라",
+        features: [
+          "방대한 법령·조문 데이터를 AI가 분석",
+          "조문 간 비교로 규제 리스크를 빠르게 파악",
+          "리서치 결과를 정리된 형태로 제공",
+        ],
       },
       shopzy: {
         name: "Shopzy",
-        tagline: "대화 한 마디로 운영하는 쇼핑몰",
+        tagline: "대화 한 마디로 운영하는 카페24 쇼핑몰 AI 에이전트",
         category: "이커머스 · 운영",
+        features: [
+          "대화만으로 쇼핑몰 디자인·스킨을 즉시 수정 (RAG 기반)",
+          "상품·주문·재고를 채팅으로 조회하고 바로 수정",
+          "모든 수정은 자동 백업되어 언제든 롤백",
+        ],
+      },
+    },
+  },
+  team: {
+    heading: "팀",
+    subtitle: "퍼스트플루크를 만드는 사람들",
+    linkedinAria: "{name}의 LinkedIn 프로필 열기",
+    members: {
+      gahyun: {
+        name: "김가현",
+        role: "대표 · 시스템 아키텍트",
+        bio: "퍼스트플루크를 이끌며 제품의 시스템 아키텍처와 인프라를 책임집니다. 여러 AI SaaS가 안정적으로 돌아가는 기반을 직접 설계하고 운영합니다.",
+      },
+      eunkwang: {
+        name: "신은광",
+        role: "공동창업자 · CTO",
+        bio: "제품 전반의 기술을 총괄합니다. AI에 대한 깊은 전문성을 바탕으로 프론트엔드부터 AI 모델링까지 기술 방향을 설계하고 구현을 이끕니다.",
       },
     },
   },
@@ -106,8 +136,6 @@ export const DICTIONARY_KO: Dictionary = {
       "place-haejo": "플레이스 해줘",
       "contents-haejo": "콘텐츠 해줘",
       "legalize-kr": "법률 검토해줘",
-      "curate-ai": "CurateAI",
-      "prompt-ops": "PromptOps",
       shopzy: "Shopzy",
       oma: "OMA (oh-my-agent)",
       etc: "기타",
