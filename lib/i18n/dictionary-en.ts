@@ -90,7 +90,7 @@ export const DICTIONARY_EN: Dictionary = {
         ],
       },
       "legalize-kr": {
-        name: "Legalize KR",
+        name: "Legalize Haejo",
         tagline: "An AI research tool that analyzes and compares legislation",
         category: "Regulation · Legal",
         features: [
@@ -136,7 +136,7 @@ export const DICTIONARY_EN: Dictionary = {
     productOptions: {
       "place-haejo": "Place Haejo",
       "contents-haejo": "Contents Haejo",
-      "legalize-kr": "Legalize KR",
+      "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
       oma: "OMA (oh-my-agent)",
       etc: "Other",
