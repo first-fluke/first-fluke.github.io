@@ -51,7 +51,7 @@ describe('ContactFormSchema', () => {
   });
 
   it('accepts all valid product IDs', () => {
-    const products = ['place-haejo', 'contents-haejo', 'shopzy', 'curate-ai', 'prompt-ops', 'legalize-kr', 'oma'];
+    const products = ['place-haejo', 'contents-haejo', 'legalize-kr', 'shopzy', 'oma', 'etc'];
     for (const product of products) {
       const result = ContactFormSchema.safeParse({ ...valid, product });
       expect(result.success, `product '${product}' should be valid`).toBe(true);

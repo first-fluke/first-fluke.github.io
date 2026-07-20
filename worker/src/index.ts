@@ -9,13 +9,12 @@
  *   5. Honeypot drop
  *   6. Turnstile verification
  *   7. Rate-limit check
- *   8. PRODUCT_ROUTES parse
- *   9. Route resolution
- *  10. GitHub Issue creation (3 attempts, exp backoff) + KV dead-letter fallback
+ *   8. POST to the dahaejo ingest API (3 attempts, exp backoff) + KV
+ *      dead-letter fallback (design 013 Phase 4 — the API owns the
+ *      authoritative row + best-effort GitHub issue; this Worker only does
+ *      edge defense + the retry net).
  *
  * PII policy (D9): logs contain ONLY sha256-12 of email and message length.
- * Issue body sanitisation (D8): user message wrapped in ```text fence;
- *   backtick sequences escaped with ZWSP.
  */
 
 import type { Env } from "./env";
