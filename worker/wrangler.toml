@@ -15,10 +15,13 @@ workers_dev = true
 [vars]
 ALLOWED_ORIGINS = "https://firstfluke.com,https://www.firstfluke.com,http://localhost:3000"
 RESEND_FROM = "FIRST FLUKE <contact@mail.firstfluke.com>"
-GH_APP_ID = "3664188"               # set by operator: GitHub App ID (numeric string)
+# design 013 Phase 4 — dahaejo platform ingest sink (authoritative row + issue).
+INGEST_API_URL = "https://haejo-api.firstfluke.com/v1/support/inquiries"
+GH_APP_ID = "3664188"               # legacy (ops-alert context only)
 # Set via `wrangler secret put` (PII / not committed):
-#   OPS_ALERT_TO     — operator inbox for 24h dead-letter alerts
-#   PRODUCT_ROUTES   — JSON map { productId: { repo, installationId } }
+#   OPS_ALERT_TO           — operator inbox for 24h dead-letter alerts
+#   SUPPORT_INGEST_SECRET  — X-Internal-Secret for the ingest API (Phase 4)
+#   PRODUCT_ROUTES         — legacy GitHub App routing (unused on the hot path)
 
 [[kv_namespaces]]
 binding = "TOKEN_CACHE"

@@ -5,10 +5,17 @@ export interface Env {
   ALLOWED_ORIGINS: string;
   RESEND_FROM: string;
   OPS_ALERT_TO: string;
+  // dahaejo platform ingest endpoint (design 013 Phase 4). Sink for contact
+  // inquiries — the API owns the authoritative row + best-effort GitHub issue.
+  INGEST_API_URL: string;
+  // GitHub App vars retained only for the dead-letter ops-alert email context
+  // and legacy typing; the hot path no longer creates issues here.
   GH_APP_ID: string;
   PRODUCT_ROUTES: string;
 
   // secrets
+  // Dedicated secret for the API's X-Internal-Secret gate (design 013 Phase 4).
+  SUPPORT_INGEST_SECRET: string;
   GH_APP_PRIVATE_KEY: string;
   RESEND_API_KEY: string;
   TURNSTILE_SECRET_KEY?: string;

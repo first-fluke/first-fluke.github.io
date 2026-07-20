@@ -1,23 +1,15 @@
 /**
  * Integration tests for the Worker entry (`src/index.ts`).
  * Exercises the full fetch + scheduled pipeline with stub env bindings.
+ *
+ * Design 013 Phase 4: the sink is now the dahaejo ingest API
+ * (`INGEST_API_URL`), not GitHub-App issue creation. Tests mock that endpoint.
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-vi.mock("jose", () => {
-  class FakeSignJWT {
-    setProtectedHeader() { return this; }
-    setIssuedAt() { return this; }
-    setExpirationTime() { return this; }
-    async sign() { return "fake.jwt.token"; }
-  }
-  return {
-    importPKCS8: vi.fn(async () => ({ fakeKey: true })),
-    SignJWT: FakeSignJWT,
-  };
-});
-
 import worker from "../src/index";
+
+const INGEST_URL = "https://haejo-api.firstfluke.com/v1/support/inquiries";
 
 function makeKV() {
   const store = new Map<string, string>();
@@ -41,11 +33,11 @@ function makeEnv(overrides: Record<string, unknown> = {}) {
       ALLOWED_ORIGINS: "https://firstfluke.com,http://localhost:3000",
       RESEND_FROM: "FIRST FLUKE <contact@mail.firstfluke.com>",
       OPS_ALERT_TO: "ops@example.com",
+      INGEST_API_URL: INGEST_URL,
+      SUPPORT_INGEST_SECRET: "test-ingest-secret",
       GH_APP_ID: "12345",
-      PRODUCT_ROUTES: JSON.stringify({
-        shopzy: { repo: "first-fluke/shopzy", installationId: "111" },
-      }),
-      GH_APP_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nfake\n-----END PRIVATE KEY-----",
+      PRODUCT_ROUTES: "{}",
+      GH_APP_PRIVATE_KEY: "unused",
       RESEND_API_KEY: "re_fake",
       TURNSTILE_SECRET_KEY: undefined, // grace skip
       TOKEN_CACHE,
@@ -82,14 +74,11 @@ describe("Worker integration — fetch handler", () => {
     vi.restoreAllMocks();
   });
 
-  it("happy path: POST valid body → 200 + creates GitHub issue", async () => {
+  it("happy path: POST valid body → 200 + POSTs to ingest API", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
       const url = typeof input === "string" ? input : (input as Request).url;
-      if (url.includes("/access_tokens")) {
-        return new Response(JSON.stringify({ token: "tok", expires_at: "2099-01-01" }), { status: 201 });
-      }
-      if (url.includes("/issues")) {
-        return new Response(JSON.stringify({ html_url: "https://github.com/x/y/issues/1" }), { status: 201 });
+      if (url === INGEST_URL) {
+        return new Response(JSON.stringify({ id: "row-1", github_issue_number: 7 }), { status: 201 });
       }
       throw new Error(`unmocked fetch: ${url}`);
     });
@@ -100,22 +89,19 @@ describe("Worker integration — fetch handler", () => {
     expect(res.status).toBe(200);
     const json = (await res.json()) as { ok: boolean };
     expect(json.ok).toBe(true);
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining("/repos/first-fluke/shopzy/issues"),
-      expect.any(Object),
-    );
+    expect(fetchMock).toHaveBeenCalledWith(INGEST_URL, expect.any(Object));
+    // secret + product forwarded
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect((init.headers as Record<string, string>)["X-Internal-Secret"]).toBe("test-ingest-secret");
+    expect(JSON.parse(init.body as string).product_slug).toBe("shopzy");
     const dlqCalls = DEAD_LETTER.put.mock.calls.filter(([k]) => String(k).startsWith("dlq:"));
     expect(dlqCalls).toHaveLength(0);
   });
 
-  it("GitHub 5xx 3x → DEAD_LETTER push + 200 to user", async () => {
-    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
-      const url = typeof input === "string" ? input : (input as Request).url;
-      if (url.includes("/access_tokens")) {
-        return new Response(JSON.stringify({ token: "tok", expires_at: "2099" }), { status: 201 });
-      }
-      return new Response("server error", { status: 503 });
-    });
+  it("ingest 5xx 3x → DEAD_LETTER push + 200 to user", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
+      new Response("server error", { status: 503 }),
+    );
 
     const { env, DEAD_LETTER } = makeEnv();
     const res = await worker.fetch(makeRequest(validBody), env, mockCtx);
@@ -147,8 +133,11 @@ describe("Worker integration — fetch handler", () => {
     expect(res.status).toBe(429);
   });
 
-  it("unknown product (not in PRODUCT_ROUTES) → 422", async () => {
-    const { env } = makeEnv();
+  it("ingest 422 (unknown product) → 422, no dead-letter", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
+      new Response(JSON.stringify({ detail: "unknown or inactive product_slug" }), { status: 422 }),
+    );
+    const { env, DEAD_LETTER } = makeEnv();
     const res = await worker.fetch(
       makeRequest({ ...validBody, product: "oma" }),
       env,
@@ -157,6 +146,8 @@ describe("Worker integration — fetch handler", () => {
     expect(res.status).toBe(422);
     const json = (await res.json()) as { error: string };
     expect(json.error).toBe("unknown_product");
+    const dlqCalls = DEAD_LETTER.put.mock.calls.filter(([k]) => String(k).startsWith("dlq:"));
+    expect(dlqCalls).toHaveLength(0);
   });
 
   it("validation fail (empty message) → 400", async () => {
@@ -186,12 +177,13 @@ describe("Worker integration — scheduled handler", () => {
     vi.restoreAllMocks();
   });
 
-  it("processes a stale dead-letter entry: success → KV.delete", async () => {
+  it("processes a stale dead-letter entry: ingest success → KV.delete", async () => {
     const { env, DEAD_LETTER } = makeEnv();
     DEAD_LETTER.store.set("dlq:abc", JSON.stringify({
       id: "abc",
       payload: validBody,
-      route: { repo: "first-fluke/shopzy", installationId: "111" },
+      ipHash: "abc123",
+      receivedAt: new Date().toISOString(),
       attempts: 3,
       firstFailedAt: new Date().toISOString(),
       lastError: "503",
@@ -199,11 +191,8 @@ describe("Worker integration — scheduled handler", () => {
 
     vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
       const url = typeof input === "string" ? input : (input as Request).url;
-      if (url.includes("/access_tokens")) {
-        return new Response(JSON.stringify({ token: "tok", expires_at: "2099" }), { status: 201 });
-      }
-      if (url.includes("/issues")) {
-        return new Response(JSON.stringify({ html_url: "https://x/y/1" }), { status: 201 });
+      if (url === INGEST_URL) {
+        return new Response(JSON.stringify({ id: "row-2", github_issue_number: 8 }), { status: 201 });
       }
       throw new Error(`unmocked: ${url}`);
     });
@@ -219,7 +208,8 @@ describe("Worker integration — scheduled handler", () => {
     DEAD_LETTER.store.set("dlq:old", JSON.stringify({
       id: "old",
       payload: validBody,
-      route: { repo: "first-fluke/shopzy", installationId: "111" },
+      ipHash: "abc123",
+      receivedAt: yesterday,
       attempts: 3,
       firstFailedAt: yesterday,
       lastError: "503",
@@ -232,10 +222,7 @@ describe("Worker integration — scheduled handler", () => {
         resendCalls++;
         return new Response("{}", { status: 200 });
       }
-      if (url.includes("/access_tokens")) {
-        return new Response(JSON.stringify({ token: "tok", expires_at: "2099" }), { status: 201 });
-      }
-      // Issue creation still failing
+      // ingest still failing (5xx keeps the entry queued)
       return new Response("server error", { status: 503 });
     });
 

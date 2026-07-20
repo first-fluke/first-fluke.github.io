@@ -20,10 +20,9 @@
 
 import type { Env } from "./env";
 import { ContactFormSchema } from "./schema";
-import { parseProductRoutes, resolveRoute } from "./routes";
 import { verifyTurnstile } from "./turnstile";
 import { checkRateLimit } from "./ratelimit";
-import { createIssue } from "./github-app";
+import { postInquiry } from "./api-sink";
 import { PRODUCT_LABELS } from "../../lib/contact/products";
 import type { ProductId } from "../../lib/contact/products";
 
@@ -77,38 +76,9 @@ export function escapeBackticks(s: string): string {
   return s.replace(/`{3,}/g, (match) => match.split("").join("\u200B"));
 }
 
-function buildIssueTitle(productId: ProductId, message: string): string {
-  const label = PRODUCT_LABELS[productId];
-  const oneLine = message.replace(/\s+/g, " ").trim();
-  const snippet = oneLine.length > 60 ? `${oneLine.slice(0, 60)}…` : oneLine;
-  return `[${label}] ${snippet}`;
-}
-
-function buildIssueBody(
-  productId: ProductId,
-  email: string,
-  message: string,
-  ipHash: string,
-): string {
-  const label = PRODUCT_LABELS[productId];
-  const receivedAt = new Date().toISOString();
-  const sanitised = escapeBackticks(message);
-
-  return [
-    "## 문의 정보",
-    "",
-    `- **Product:** \`${productId}\` (\`${label}\`)`,
-    `- **Email:** \`${email}\``,
-    `- **Received:** \`${receivedAt}\``,
-    `- **IP hash:** \`${ipHash}\``,
-    "",
-    "## 메시지",
-    "",
-    "```text",
-    sanitised,
-    "```",
-  ].join("\n");
-}
+// ``escapeBackticks`` (above) stays: still exported + unit-tested, and the
+// API-side body builder mirrors the same fence-escaping. The issue-body /
+// title builders moved to the API (design 013 Phase 4).
 
 // ─── Dead-letter entry type ──────────────────────────────────────────────────
 
@@ -120,7 +90,13 @@ interface DlqEntry {
     agree: boolean;
     product: string;
   };
-  route: {
+  // Added in design 013 Phase 4 for the API retry; optional so pre-Phase-4
+  // entries still parse.
+  ipHash?: string;
+  receivedAt?: string;
+  // Retained (optional) for backward-compat with pre-Phase-4 entries; the
+  // API resolves routing itself now, so new entries omit it.
+  route?: {
     repo: string;
     installationId: string;
   };
@@ -151,7 +127,7 @@ async function sendOpsAlert(env: Env, entry: DlqEntry): Promise<boolean> {
     ``,
     `ID:           ${entry.id}`,
     `Product:      ${entry.payload.product} (${productLabel})`,
-    `Repo:         ${entry.route.repo}`,
+    `Sink:         ${entry.route?.repo ?? "dahaejo ingest API"}`,
     `Attempts:     ${entry.attempts}`,
     `First failed: ${entry.firstFailedAt}`,
     `Last error:   ${entry.lastError}`,
@@ -250,48 +226,44 @@ async function processDeadLetters(
 
     const now = new Date().toISOString();
 
-    // ── 재시도: createIssue 호출 ──────────────────────────────────────────────
-    // fetch 핸들러와 동일한 빌더 헬퍼 재사용 (DRY)
-    const productId = entry.payload.product as ProductId;
-    const issueTitle = buildIssueTitle(productId, entry.payload.message);
-    const issueBody = buildIssueBody(
-      productId,
-      entry.payload.email,
-      entry.payload.message,
-      "dlq-retry", // 원본 IP 없음 — 고정 레이블 사용
-    );
-    const issueLabels = ["contact", entry.payload.product];
-
+    // ── 재시도: dahaejo ingest API POST (design 013 Phase 4) ──────────────────
+    // entry.id 를 source_ref 로 재사용 → API 가 멱등 처리(중복 삽입 없음).
+    // 제품 라우팅은 API 가 support_products 로 해결하므로 PRODUCT_ROUTES 불요.
     let retrySucceeded = false;
     let retryError = "";
 
-    try {
-      const result = await createIssue(env, {
-        installationId: entry.route.installationId,
-        repo: entry.route.repo,
-        title: issueTitle,
-        body: issueBody,
-        labels: issueLabels,
+    const result = await postInquiry(env, {
+      productSlug: entry.payload.product,
+      email: entry.payload.email,
+      message: entry.payload.message,
+      // Older DLQ entries (pre-Phase-4) lack these — fall back gracefully.
+      receivedAt: entry.receivedAt ?? entry.firstFailedAt,
+      ipHash: entry.ipHash ?? "dlq-retry",
+      sourceRef: entry.id,
+    });
+
+    if (result.ok) {
+      await env.DEAD_LETTER.delete(key);
+      console.info("[cron] dead-letter retry succeeded, entry deleted", {
+        entryId: entry.id,
+        issueNumber: result.issueNumber,
       });
-
-      if (result.ok) {
-        // 성공 → KV에서 삭제
-        await env.DEAD_LETTER.delete(key);
-        console.info("[cron] dead-letter retry succeeded, entry deleted", {
-          entryId: entry.id,
-          url: result.url,
-        });
-        retrySucceeded = true;
-      } else {
-        retryError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
-      }
-    } catch (err) {
-      retryError = err instanceof Error ? err.message : String(err);
-    }
-
-    if (retrySucceeded) {
       continue; // 다음 엔트리로
     }
+
+    // Permanent client error (e.g. 422 unknown product) — drop instead of
+    // retrying forever; transient/5xx/429/network keep re-queueing.
+    if (result.status >= 400 && result.status < 500 && result.status !== 429) {
+      await env.DEAD_LETTER.delete(key);
+      console.error("[cron] dead-letter entry dropped (permanent error)", {
+        entryId: entry.id,
+        status: result.status,
+        error: result.error,
+      });
+      continue;
+    }
+
+    retryError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
 
     // ── 재시도 실패 → 엔트리 업데이트 ──────────────────────────────────────
     entry.attempts += 1;
@@ -426,81 +398,73 @@ export default {
       return json({ ok: false, error: "rate_limit" }, 429, cors);
     }
 
-    // ── 7.5. GitHub App env guard (fail-fast on operator misconfig) ────────
-    if (!env.GH_APP_ID || !env.GH_APP_PRIVATE_KEY || !env.PRODUCT_ROUTES) {
-      console.error("[contact] required GitHub App env missing", {
+    // ── 7.5. Ingest env guard (fail-fast on operator misconfig) ────────────
+    if (!env.INGEST_API_URL || !env.SUPPORT_INGEST_SECRET) {
+      console.error("[contact] required ingest env missing", {
         requestId,
-        hasAppId: Boolean(env.GH_APP_ID),
-        hasPrivateKey: Boolean(env.GH_APP_PRIVATE_KEY),
-        hasRoutes: Boolean(env.PRODUCT_ROUTES),
+        hasUrl: Boolean(env.INGEST_API_URL),
+        hasSecret: Boolean(env.SUPPORT_INGEST_SECRET),
       });
       return json({ ok: false, error: "queue_unavailable" }, 502, cors);
     }
 
-    // ── 8. Parse PRODUCT_ROUTES ─────────────────────────────────────────────
-    let routes: ReturnType<typeof parseProductRoutes>;
-    try {
-      routes = parseProductRoutes(env.PRODUCT_ROUTES);
-    } catch (err) {
-      console.error("[contact] PRODUCT_ROUTES malformed", {
-        requestId,
-        error: err instanceof Error ? err.message : String(err),
-      });
-      return json({ ok: false, error: "queue_unavailable" }, 502, cors);
-    }
-
-    // ── 9. Resolve route ────────────────────────────────────────────────────
-    const route = resolveRoute(routes, product as ProductId);
-    if (route === null) {
-      console.warn("[contact] no route for product", { requestId, product });
-      return json({ ok: false, error: "unknown_product" }, 422, cors);
-    }
-
-    // ── 10. Create GitHub Issue with retry (exp backoff) ────────────────────
-    const issueTitle = buildIssueTitle(product as ProductId, message);
-    const issueBody = buildIssueBody(
-      product as ProductId,
-      email,
-      message,
-      ipHash,
-    );
-    const issueLabels = ["contact", product];
-
+    // ── 8-10. POST to the dahaejo ingest API with retry (exp backoff) ───────
+    // The API owns the authoritative row + best-effort GitHub issue; product
+    // validity (422) is enforced there. requestId is the idempotency key, so a
+    // retry after a transient failure never double-inserts.
+    const receivedAt = new Date().toISOString();
     let lastError = "unknown";
-    let issueCreated = false;
+    let accepted = false;
 
     for (let attempt = 0; attempt < RETRY_DELAYS_MS.length; attempt++) {
       if (attempt > 0) {
         await sleep(RETRY_DELAYS_MS[attempt - 1]); // 200ms / 1s / 5s
       }
 
-      const result = await createIssue(env, {
-        installationId: route.installationId,
-        repo: route.repo,
-        title: issueTitle,
-        body: issueBody,
-        labels: issueLabels,
+      const result = await postInquiry(env, {
+        productSlug: product,
+        email,
+        message,
+        receivedAt,
+        ipHash,
+        sourceRef: requestId,
       });
 
       if (result.ok) {
-        console.info("[contact] issue created", {
+        console.info("[contact] inquiry accepted", {
           requestId,
           product,
-          url: result.url,
+          issueNumber: result.issueNumber,
         });
-        issueCreated = true;
+        accepted = true;
+        break;
+      }
+
+      // 4xx (except 429) is a permanent client error — retrying won't help.
+      if (result.status >= 400 && result.status < 500 && result.status !== 429) {
+        console.error("[contact] ingest rejected (permanent)", {
+          requestId,
+          product,
+          status: result.status,
+          error: result.error,
+        });
+        // A malformed/unknown product is the caller's fault, not ours.
+        if (result.status === 422) {
+          return json({ ok: false, error: "unknown_product" }, 422, cors);
+        }
+        lastError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
         break;
       }
 
       lastError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
-      console.warn("[contact] createIssue attempt failed", {
+      console.warn("[contact] ingest attempt failed", {
         requestId,
         attempt: attempt + 1,
         status: result.status,
       });
     }
 
-    if (issueCreated) {
+    if (accepted) {
       return json({ ok: true }, 200, cors);
     }
 
@@ -509,8 +473,9 @@ export default {
     const dlqValue = JSON.stringify({
       id: requestId,
       payload: { email, message, agree: parsed.data.agree, product },
-      route: { repo: route.repo, installationId: route.installationId },
-      attempts: 3,
+      ipHash,
+      receivedAt,
+      attempts: RETRY_DELAYS_MS.length,
       firstFailedAt: new Date().toISOString(),
       lastError,
     });
