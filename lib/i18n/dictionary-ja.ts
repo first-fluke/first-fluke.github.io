@@ -118,7 +118,7 @@ export const DICTIONARY_JA: Dictionary = {
     members: {
       gahyun: {
         name: "キム・ガヒョン",
-        role: "代表 · システムアーキテクト",
+        role: "共同創業者 · CEO",
         bio: "FIRST FLUKEを率い、プロダクトのシステムアーキテクチャとインフラを担います。複数のAI SaaSが安定して稼働する基盤を自ら設計・運用します。",
       },
       eunkwang: {

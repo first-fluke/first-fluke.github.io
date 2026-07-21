@@ -118,12 +118,12 @@ export const DICTIONARY_EN: Dictionary = {
     members: {
       gahyun: {
         name: "Kim Gahyun",
-        role: "CEO · System Architect",
+        role: "Co-Founder · CEO",
         bio: "Leads FIRST FLUKE while owning the system architecture and infrastructure — the foundation that keeps our AI SaaS products running reliably at scale.",
       },
       eunkwang: {
         name: "Shin Eunkwang",
-        role: "Co-founder & CTO",
+        role: "Co-Founder · CTO",
         bio: "Heads technology across the company — setting the technical direction and driving engineering from the frontend to AI modeling, grounded in deep AI expertise.",
       },
     },

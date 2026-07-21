@@ -72,13 +72,13 @@ const ORGANIZATION_JSONLD = {
     {
       "@type": "Person",
       name: "Kim Gahyun",
-      jobTitle: "CEO & Developer",
+      jobTitle: "Co-Founder & CEO",
       sameAs: ["https://www.linkedin.com/in/otti-nuna/"],
     },
     {
       "@type": "Person",
       name: "Shin Eunkwang",
-      jobTitle: "Co-founder & Developer",
+      jobTitle: "Co-Founder & CTO",
       sameAs: ["https://www.linkedin.com/in/gracefullight/"],
     },
   ],

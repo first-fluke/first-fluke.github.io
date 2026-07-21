@@ -117,7 +117,7 @@ export const DICTIONARY_KO: Dictionary = {
     members: {
       gahyun: {
         name: "김가현",
-        role: "대표 · 시스템 아키텍트",
+        role: "공동창업자 · CEO",
         bio: "퍼스트플루크를 이끌며 제품의 시스템 아키텍처와 인프라를 책임집니다. 여러 AI SaaS가 안정적으로 돌아가는 기반을 직접 설계하고 운영합니다.",
       },
       eunkwang: {
