@@ -18,7 +18,7 @@ TURNSTILE_SECRET_KEY=""
 
 # ── vars (production: wrangler.toml [vars]) ──────────────────────────────────
 GH_APP_ID="3664188"
-PRODUCT_ROUTES='{"shopzy":{"repo":"first-fluke/shopzy","installationId":"131094718"},"etc":{"repo":"first-fluke/first-fluke.github.io","installationId":"<installationId>"}}'
+PRODUCT_ROUTES='{"place-haejo":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"contents-haejo":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"legalize-kr":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"shopzy":{"repo":"first-fluke/shopzy","installationId":"131094718"},"etc":{"repo":"first-fluke/first-fluke.github.io","installationId":"131094718"}}'
 ALLOWED_ORIGINS="http://localhost:3000"
 RESEND_FROM="FIRST FLUKE <contact@mail.firstfluke.com>"
 OPS_ALERT_TO="ops@example.com"

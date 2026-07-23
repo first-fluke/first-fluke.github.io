@@ -128,42 +128,43 @@ wrangler deploy
 
 ## 8. `PRODUCT_ROUTES` JSON 예시
 
-`wrangler.toml` `[vars]` 섹션에 아래 JSON을 **한 줄 문자열**로 기입한다.
+`PRODUCT_ROUTES` 는 **secret** (`wrangler secret put PRODUCT_ROUTES`).
+`installationId` `131094718` = org install of **firstfluke-contact-bot**
+(selected repos — `dahaejo` must be on that install after the 2026-07
+`*-haejo` archive cutover).
 
 ```json
 {
-  "oma": {
-    "repo": "owner/<oma-repo>",
-    "installationId": "TODO"
-  },
   "place-haejo": {
-    "repo": "owner/<place-haejo-repo>",
-    "installationId": "TODO"
+    "repo": "first-fluke/dahaejo",
+    "installationId": "131094718"
   },
   "contents-haejo": {
-    "repo": "owner/<contents-haejo-repo>",
-    "installationId": "TODO"
-  },
-  "shopzy": {
-    "repo": "owner/<shopzy-repo>",
-    "installationId": "TODO"
-  },
-  "curate-ai": {
-    "repo": "owner/<curate-ai-repo>",
-    "installationId": "TODO"
-  },
-  "prompt-ops": {
-    "repo": "owner/<prompt-ops-repo>",
-    "installationId": "TODO"
+    "repo": "first-fluke/dahaejo",
+    "installationId": "131094718"
   },
   "legalize-kr": {
-    "repo": "owner/<legalize-kr-repo>",
-    "installationId": "TODO"
+    "repo": "first-fluke/dahaejo",
+    "installationId": "131094718"
+  },
+  "shopzy": {
+    "repo": "first-fluke/shopzy",
+    "installationId": "131094718"
+  },
+  "etc": {
+    "repo": "first-fluke/first-fluke.github.io",
+    "installationId": "131094718"
   }
 }
 ```
 
-`installationId`는 GitHub App을 각 repo의 org/owner가 설치한 후 `https://github.com/settings/apps/<app-name>/installations` 에서 확인한다. owner 미동의 product는 `"TODO"` 상태로 두면 Worker가 422를 반환하고 dead-letter에 자동 적재된다.
+Labels written by the Worker: `contact` + `<productId>` (e.g. `place-haejo`).
+Admin federation in `dahaejo/apps/admin-api` filters the same repo by those
+labels. Required labels on `first-fluke/dahaejo`:
+`contact`, `place-haejo`, `contents-haejo`, `legalize-kr`, `answered`.
+
+`installationId` 확인: `https://github.com/organizations/first-fluke/settings/installations`.
+App이 repo에 없으면 Issue create 가 404/403 이 나고 dead-letter 에 쌓인다.
 
 ---
 

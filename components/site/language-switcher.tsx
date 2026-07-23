@@ -1,7 +1,7 @@
 "use client";
 
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
-import { Check, Globe } from "lucide-react";
+import { Check, Globe } from "@phosphor-icons/react";
 import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/i18n.types";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { cn } from "@/lib/cn";
