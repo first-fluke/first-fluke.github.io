@@ -12,7 +12,7 @@ export interface Solution {
 export const SOLUTIONS: Solution[] = [
   {
     id: "place-haejo",
-    name: "플레이스 해줘",
+    name: "플레이스해줘",
     tagline: "URL 한 줄로 시작하는 우리 가게 마케팅 컨설턴트",
     category: "소상공인 · 마케팅",
     href: "https://place-haejo.firstfluke.com",
@@ -21,7 +21,7 @@ export const SOLUTIONS: Solution[] = [
   },
   {
     id: "contents-haejo",
-    name: "콘텐츠 해줘",
+    name: "콘텐츠해줘",
     tagline: "SNS 콘텐츠 운영, 매일 뭘 올릴지 고민 끝",
     category: "크리에이터 · 콘텐츠",
     href: "https://contents-haejo.firstfluke.com",
@@ -30,7 +30,7 @@ export const SOLUTIONS: Solution[] = [
   },
   {
     id: "legalize-kr",
-    name: "법률 검토해줘",
+    name: "법률검토해줘",
     tagline: "법령 데이터를 분석·비교하는 AI 리서치 도구",
     category: "규제 · 법령",
     href: "https://legalize-haejo.firstfluke.com",

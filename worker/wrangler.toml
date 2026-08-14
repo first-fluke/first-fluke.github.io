@@ -1,4 +1,4 @@
-# Cloudflare Worker — firstfluke contact → product-routed GitHub Issue + dead-letter queue
+# Cloudflare Worker — firstfluke contact → dahaejo ingest API + dead-letter queue
 # Full env reference: ./SECRETS.md
 #
 # NOTE (wrangler >= 4.36): [[ratelimits]] uses "name" (not "binding"), and
@@ -20,10 +20,6 @@ INGEST_API_URL = "https://haejo-api.firstfluke.com/v1/support/inquiries"
 # Set via `wrangler secret put` (PII / not committed):
 #   OPS_ALERT_TO           — operator inbox for 24h dead-letter alerts
 #   SUPPORT_INGEST_SECRET  — X-Internal-Secret for the ingest API (Phase 4)
-
-[[kv_namespaces]]
-binding = "TOKEN_CACHE"
-id = "e67ca7a88f4a4c9ba39bf8221e106cb7"
 
 [[kv_namespaces]]
 binding = "DEAD_LETTER"

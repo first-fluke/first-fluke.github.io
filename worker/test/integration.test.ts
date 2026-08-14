@@ -26,7 +26,6 @@ function makeKV() {
 }
 
 function makeEnv(overrides: Record<string, unknown> = {}) {
-  const TOKEN_CACHE = makeKV();
   const DEAD_LETTER = makeKV();
   return {
     env: {
@@ -35,18 +34,13 @@ function makeEnv(overrides: Record<string, unknown> = {}) {
       OPS_ALERT_TO: "ops@example.com",
       INGEST_API_URL: INGEST_URL,
       SUPPORT_INGEST_SECRET: "test-ingest-secret",
-      GH_APP_ID: "12345",
-      PRODUCT_ROUTES: "{}",
-      GH_APP_PRIVATE_KEY: "unused",
       RESEND_API_KEY: "re_fake",
       TURNSTILE_SECRET_KEY: undefined, // grace skip
-      TOKEN_CACHE,
       DEAD_LETTER,
       RATE_LIMIT_BURST: { limit: vi.fn(async () => ({ success: true })) } as unknown as RateLimit,
       RATE_LIMIT_DAILY: { limit: vi.fn(async () => ({ success: true })) } as unknown as RateLimit,
       ...overrides,
     } as unknown as Parameters<typeof worker.fetch>[1],
-    TOKEN_CACHE,
     DEAD_LETTER,
   };
 }
@@ -133,16 +127,15 @@ describe("Worker integration — fetch handler", () => {
     expect(res.status).toBe(429);
   });
 
+  // A slug the form still offers but `support_products` no longer accepts
+  // (row removed or is_active=false) — the schema passes it through and the
+  // API is the one that rejects it.
   it("ingest 422 (unknown product) → 422, no dead-letter", async () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
       new Response(JSON.stringify({ detail: "unknown or inactive product_slug" }), { status: 422 }),
     );
     const { env, DEAD_LETTER } = makeEnv();
-    const res = await worker.fetch(
-      makeRequest({ ...validBody, product: "oma" }),
-      env,
-      mockCtx,
-    );
+    const res = await worker.fetch(makeRequest(validBody), env, mockCtx);
     expect(res.status).toBe(422);
     const json = (await res.json()) as { error: string };
     expect(json.error).toBe("unknown_product");

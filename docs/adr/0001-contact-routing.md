@@ -2,7 +2,22 @@
 
 ## Status
 
-Accepted (2026-05-10)
+Accepted (2026-05-10) — **부분 폐기 (2026-07, dahaejo design 013 Phase 4)**
+
+이 ADR은 Worker가 GitHub Issue를 **직접** 생성하던 시절의 설계다. design 013 Phase 4에서 Worker의 sink가 dahaejo 플랫폼 ingest API(`POST /v1/support/inquiries`)로 교체되면서 다음 결정이 폐기되었다. 아래 본문은 당시 판단 기록으로 보존하며, 각 결정에 폐기 사유를 인라인으로 표기한다.
+
+| 결정 | 상태 | 대체 |
+|---|---|---|
+| D1 — `PRODUCT_ROUTES` 라우팅 테이블 | **폐기** | API의 `support_products` 테이블 |
+| D2 — product별 repo 라우팅 | **폐기** | 전 product가 `first-fluke/dahaejo` 단일 repo, 라벨로만 구분 |
+| D3 — GitHub App 인증 | **폐기** | API가 fine-grained PAT로 생성 (Worker는 GitHub를 호출하지 않음) |
+| D5 — Issue가 1차 채널 | **변경** | DB row(`public.support_inquiries`)가 SSOT, Issue는 best-effort 알림 |
+| D8 — Issue body sanitization | **이관** | API의 body builder가 동일 fence-escaping 수행 |
+| D12 — `jose` / `nodejs_compat` | **부분 폐기** | JWT 서명 제거로 `jose` 의존성 삭제 |
+
+유효하게 남은 결정: **D4**(Worker 단일 진입점), **D6**(retry + KV dead-letter + Cron — 대상만 GitHub API에서 ingest API로 변경), **D7**(anti-spam), **D9**(PII 로깅), **D10**(이메일 차폐), **D11**(Resend ops-alert only).
+
+현재 상태의 운영 문서는 `worker/SECRETS.md`.
 
 ---
 
@@ -30,6 +45,8 @@ Accepted (2026-05-10)
 
 **Tradeoff:** 매핑 변경 시 Worker 재배포 또는 vars 업데이트가 필요하며, 코드 변경 없이 런타임 수정이 불가능하다. 단, 7개 product는 고정이므로 이 비용은 수용 가능하다.
 
+> **Superseded (design 013 Phase 4):** `PRODUCT_ROUTES` 시크릿은 제거되었다. product 카탈로그의 SSOT는 DB 테이블 `public.support_products`이며, 배포 없이 row 추가만으로 product를 확장할 수 있다. 이 테이블은 Worker 시크릿·admin-api `sources.py`·admin-web 상수에 흩어져 있던 세 벌의 하드코딩을 하나로 합친 것이다.
+
 ---
 
 ### D2 — Default behavior when no product selected
@@ -44,6 +61,8 @@ Accepted (2026-05-10)
 
 **Revision:** rev3에서는 "기타 없음"을 채택했으나, 2026-05-13 운영 피드백 반영하여 본 결정으로 갱신.
 
+> **Superseded (design 013 Phase 4):** product별 repo 분기 자체가 사라졌다. `etc`를 포함한 **전 product**의 문의가 `first-fluke/dahaejo` 한 repo에 쌓이고, 구분은 GitHub 라벨 `contact` + `<slug>`로만 한다. `etc`는 `support_products`에 `service='platform'` row로 등재된 정식 product이며, 어드민 콘솔에서 전용 답변 envelope(`[FIRST FLUKE] …`)로 응대된다. product 선택을 필수로 강제한다는 원 결정은 그대로 유효하다.
+
 ---
 
 ### D3 — GitHub authentication
@@ -55,6 +74,8 @@ Accepted (2026-05-10)
 **Rationale:** 개인 액세스 토큰(PAT)은 만료·탈취 시 수동 교체가 필요하며, 권한 범위를 좁히기 어렵다. GitHub App은 installation token을 1시간마다 자동 회전하고, 권한을 Issues:Write + Metadata:Read로만 좁힐 수 있다. `jose`는 Cloudflare Workers 공식 호환 JWT 라이브러리(메인테이너 `panva`)이며, `gr2m/cloudflare-worker-github-app-example`에서 실증된 패턴이다.
 
 **Tradeoff:** Worker의 `WebCrypto` API는 PKCS#8 형식만 받는다. GitHub이 발급하는 private key는 기본적으로 PKCS#1 형식이므로 `openssl pkcs8 -topk8` 변환 단계가 운영 SOP에 필수로 포함되어야 한다. 이 단계를 누락하면 인증이 100% 실패한다(R2).
+
+> **Superseded (design 013 Phase 4):** Worker는 더 이상 GitHub을 호출하지 않는다. GitHub App, `jose`, `TOKEN_CACHE` KV, PKCS#8 변환 SOP가 모두 제거되었고 R2 리스크도 함께 소멸했다. Issue 생성은 API가 fine-grained PAT(`first-fluke/dahaejo` 범위)로 수행한다. Worker가 API에 인증할 때는 전용 시크릿 `SUPPORT_INGEST_SECRET`을 `X-Internal-Secret` 헤더로 보낸다.
 
 ---
 
@@ -81,6 +102,8 @@ Accepted (2026-05-10)
 **Rationale:** GitHub Issue가 이미 팀별 협업·트래킹의 SSOT 역할을 한다. 이메일을 Issue와 병렬 채널로 운영하면 중복 알림, 부분 실패 처리 정책, 2개 채널 유지 비용이 발생한다. 이메일은 Issue 생성이 24h 연속으로 실패하는 극단 케이스에만 운영자 1명에게 단발 알람으로 제한한다.
 
 **Tradeoff:** GitHub이 장기 서비스 중단 상태일 경우 일반 수신 채널이 없다. KV dead-letter는 이 기간 동안 계속 쌓이며, 24h 임계 운영자 알람으로 수동 대응 트리거를 제공한다.
+
+> **Changed (design 013 Phase 4):** 1차 채널은 DB row(`public.support_inquiries`)로 승격되었고 GitHub Issue는 best-effort 알림으로 강등되었다. Issue 생성이 실패해도 문의는 유실되지 않으며, 어드민 콘솔이 DB를 직접 읽는다. 따라서 "GitHub 장기 중단 시 수신 채널 없음" 트레이드오프는 해소되었다.
 
 ---
 
@@ -121,6 +144,8 @@ Accepted (2026-05-10)
 **Rationale:** 사용자 입력에 마크다운 또는 HTML이 포함되면 GitHub Issue에서 외부 픽셀 로드, 서식 깨짐, XSS 유사 렌더링 등이 발생할 수 있다. 코드펜스 wrap은 전체 메시지를 리터럴 텍스트로 강제 렌더링한다.
 
 **Tradeoff:** GitHub Issue 본문에서 메시지가 코드 블록 형식으로만 보이므로 시각적 가독성이 다소 떨어진다. 보안 우선 결정으로 이 트레이드오프를 수용한다.
+
+> **Moved (design 013 Phase 4):** issue body/title 빌더는 API로 이관되어 동일한 fence-escaping을 수행한다. Worker에는 `escapeBackticks`만 export + 유닛 테스트 대상으로 남아 있다.
 
 ---
 
@@ -170,6 +195,8 @@ Accepted (2026-05-10)
 
 **Tradeoff:** 팀 전원이 Wrangler 버전을 `>= 4.36.0`으로 맞춰야 하며, CI 파이프라인에서도 버전 고정이 필요하다. 구버전 Wrangler 사용 시 Rate Limiting binding이 인식되지 않아 배포가 실패한다.
 
+> **Partially superseded (design 013 Phase 4):** JWT 서명이 사라지면서 `jose` 의존성은 제거되었다. Wrangler `>= 4.36.0` 요건은 `[[ratelimits]]` 때문에 그대로 유효하고, `nodejs_compat` 플래그도 유지한다(제거는 런타임 거동 변경이라 별건으로 다룬다).
+
 ---
 
 ## Revision History
@@ -179,6 +206,8 @@ Accepted (2026-05-10)
 ---
 
 ## Consequences
+
+> 아래는 2026-05 채택 시점의 예상 결과다. product별 전담 repo 분류와 GitHub App 토큰 회전 항목은 design 013 Phase 4에서 폐기되었다 — 상단 Status 표 참조.
 
 ### 긍정적 결과
 

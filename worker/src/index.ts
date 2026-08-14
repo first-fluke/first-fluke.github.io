@@ -228,9 +228,6 @@ async function processDeadLetters(
     // ── 재시도: dahaejo ingest API POST (design 013 Phase 4) ──────────────────
     // entry.id 를 source_ref 로 재사용 → API 가 멱등 처리(중복 삽입 없음).
     // 제품 라우팅은 API 가 support_products 로 해결하므로 PRODUCT_ROUTES 불요.
-    let retrySucceeded = false;
-    let retryError = "";
-
     const result = await postInquiry(env, {
       productSlug: entry.payload.product,
       email: entry.payload.email,
@@ -262,7 +259,7 @@ async function processDeadLetters(
       continue;
     }
 
-    retryError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
+    const retryError = `HTTP ${result.status}: ${result.error.slice(0, 120)}`;
 
     // ── 재시도 실패 → 엔트리 업데이트 ──────────────────────────────────────
     entry.attempts += 1;

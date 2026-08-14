@@ -12,13 +12,16 @@
 # DO NOT commit .dev.vars (it's in .gitignore).
 
 # ── secrets (production: wrangler secret put) ────────────────────────────────
-GH_APP_PRIVATE_KEY="<paste PKCS#8 PEM here as a single line, escape newlines as \n>"
+# Must match the dahaejo API's SUPPORT_INGEST_SECRET exactly, else the API
+# returns 403 and every submission lands in the dead-letter queue.
+SUPPORT_INGEST_SECRET=""
+OPS_ALERT_TO="ops@example.com"
 RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
 TURNSTILE_SECRET_KEY=""
 
 # ── vars (production: wrangler.toml [vars]) ──────────────────────────────────
-GH_APP_ID="3664188"
-PRODUCT_ROUTES='{"place-haejo":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"contents-haejo":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"legalize-kr":{"repo":"first-fluke/dahaejo","installationId":"131094718"},"shopzy":{"repo":"first-fluke/shopzy","installationId":"131094718"},"etc":{"repo":"first-fluke/first-fluke.github.io","installationId":"131094718"}}'
 ALLOWED_ORIGINS="http://localhost:3000"
 RESEND_FROM="FIRST FLUKE <contact@mail.firstfluke.com>"
-OPS_ALERT_TO="ops@example.com"
+# Point at a local API (http://localhost:8000/v1/support/inquiries) to avoid
+# writing real rows into production support_inquiries.
+INGEST_API_URL="https://haejo-api.firstfluke.com/v1/support/inquiries"

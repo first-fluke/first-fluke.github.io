@@ -4,6 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { ContactFormSchema } from '../src/schema';
+import { PRODUCT_IDS } from '../../lib/contact/products';
 
 describe('ContactFormSchema', () => {
   const valid = {
@@ -51,10 +52,20 @@ describe('ContactFormSchema', () => {
   });
 
   it('accepts all valid product IDs', () => {
-    const products = ['place-haejo', 'contents-haejo', 'legalize-kr', 'shopzy', 'oma', 'etc'];
-    for (const product of products) {
+    for (const product of PRODUCT_IDS) {
       const result = ContactFormSchema.safeParse({ ...valid, product });
       expect(result.success, `product '${product}' should be valid`).toBe(true);
+    }
+  });
+
+  // Regression: `oma` was offered by the form but had no `support_products`
+  // row, so the ingest API 422'd it and the Worker dropped the submission
+  // without a retry or a dead-letter entry. Every slug here must exist in
+  // that table — reject anything that was removed from the catalog.
+  it('rejects retired product IDs', () => {
+    for (const product of ['oma', 'curate-ai']) {
+      const result = ContactFormSchema.safeParse({ ...valid, product });
+      expect(result.success, `retired product '${product}' must be rejected`).toBe(false);
     }
   });
 

@@ -16,7 +16,6 @@ export interface Env {
   TURNSTILE_SECRET_KEY?: string;
 
   // KV namespaces
-  TOKEN_CACHE: KVNamespace;
   DEAD_LETTER: KVNamespace;
 
   // Rate limit bindings

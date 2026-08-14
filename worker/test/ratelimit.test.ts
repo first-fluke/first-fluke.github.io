@@ -27,12 +27,10 @@ function makeEnv(burstResult: typeof rateLimitOk, kv: ReturnType<typeof makeKV>)
     ALLOWED_ORIGINS: '',
     RESEND_FROM: '',
     OPS_ALERT_TO: '',
-    GH_APP_ID: '',
-    PRODUCT_ROUTES: '{}',
-    GH_APP_PRIVATE_KEY: '',
+    INGEST_API_URL: 'https://api.test/v1/support/inquiries',
+    SUPPORT_INGEST_SECRET: 'test-ingest-secret',
     RESEND_API_KEY: '',
     TURNSTILE_SECRET_KEY: undefined,
-    TOKEN_CACHE: {} as KVNamespace,
     DEAD_LETTER: kv as unknown as KVNamespace,
     RATE_LIMIT_BURST: burstResult as unknown as RateLimit,
     RATE_LIMIT_DAILY: {} as RateLimit,
@@ -77,9 +75,9 @@ describe('checkRateLimit', () => {
   it('starts counter at 1 for a brand new IP+product combination', async () => {
     const kv = makeKV();
     const env = makeEnv(rateLimitOk, kv);
-    await checkRateLimit(env, { ip: '5.6.7.8', product: 'oma' });
+    await checkRateLimit(env, { ip: '5.6.7.8', product: 'etc' });
     expect(kv.put).toHaveBeenCalledWith(
-      expect.stringContaining('rl:daily:5.6.7.8:oma:'),
+      expect.stringContaining('rl:daily:5.6.7.8:etc:'),
       '1',
       expect.objectContaining({ expirationTtl: 90000 }),
     );

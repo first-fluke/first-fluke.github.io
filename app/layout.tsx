@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s · FIRST FLUKE",
   },
   description:
-    "퍼스트플루크(FIRST FLUKE)는 자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니입니다. 플레이스 해줘 · 콘텐츠 해줘 · 법률 검토해줘 · Shopzy. 모두의 창업 2026 AI 솔루션 공급기업 선정.",
+    "퍼스트플루크(FIRST FLUKE)는 자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니입니다. 플레이스해줘 · 콘텐츠해줘 · 법률검토해줘 · Shopzy. 모두의 창업 2026 AI 솔루션 공급기업 선정.",
   keywords: [
     "FIRST FLUKE",
     "Firstfluke",

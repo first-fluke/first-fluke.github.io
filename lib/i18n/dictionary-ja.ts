@@ -138,7 +138,6 @@ export const DICTIONARY_JA: Dictionary = {
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
-      oma: "OMA (oh-my-agent)",
       etc: "その他",
     },
     emailLabel: "メールアドレス",
