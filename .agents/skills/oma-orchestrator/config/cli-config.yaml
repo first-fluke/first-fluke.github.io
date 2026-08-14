@@ -1,26 +1,13 @@
 # SubAgent CLI Configuration
 # Select your preferred CLI vendor for sub-agent execution
 
-# Default CLI vendor (used as fallback when oma-config.yaml is not configured)
-# For per-agent CLI mapping, see: .agents/oma-config.yaml
-active_vendor: gemini
+# NO LONGER READ. Set `default_cli:` in .agents/oma-config.yaml instead — this
+# file is overwritten by `oma update`, and migration 022 moves a non-default
+# value across for you. For per-agent CLI mapping, see .agents/oma-config.yaml.
+active_vendor: claude
 
 # Vendor configurations
 vendors:
-  gemini:
-    command: gemini
-    prompt_flag: "-p"
-    output_format_flag: "--output-format"
-    output_format: "json"
-    auto_approve_flag: "--approval-mode=yolo"
-    model_flag: "-m"
-    default_model: "auto"
-    include_dirs_flag: "--include-directories"
-    # JSON output parsing
-    response_jq: ".response"
-    # Isolation: gemini uses current directory context
-    isolation_method: "directory"
-
   claude:
     command: claude
     prompt_flag: "-p"
@@ -53,6 +40,20 @@ vendors:
     model_flag: "-m"
     default_model: "qwen3.6-plus"
     response_jq: ".output"
+    isolation_method: "directory"
+
+  # Antigravity (agy) headless print mode: `agy -p "<prompt>"`.
+  # Models: run `agy models`. `--model` accepts ONLY those display names —
+  # a slug like `gemini-3.1-pro` makes agy exit with `Error: invalid --model`
+  # before running the prompt. The parenthesised tier is agy's effort dial.
+  # agy 1.0 had no --model / --add-dir / --print-timeout; oma probes
+  # `agy --help` once and drops whichever flags the installed binary lacks.
+  antigravity:
+    command: agy
+    prompt_flag: "-p"
+    auto_approve_flag: "--dangerously-skip-permissions"
+    model_flag: "--model"
+    default_model: "Gemini 3.1 Pro (High)"
     isolation_method: "directory"
 
   # Cursor Agent headless CLI: `cursor agent -p …` (--print). Prompt is positional.

@@ -10,20 +10,15 @@
       ]
     },
     "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp@latest"
-      ]
+      "serverUrl": "https://mcp.context7.com/mcp"
     },
     "serena": {
       "command": "serena",
       "args": [
         "start-mcp-server",
         "--context",
-        "claude-code",
-        "--project",
-        ".",
+        "antigravity",
+        "--project-from-cwd",
         "--open-web-dashboard",
         "false"
       ],

@@ -18,11 +18,11 @@
           {
             "name": "oma-hook-PreToolUse",
             "type": "command",
-            "command": "\"$QWEN_PROJECT_DIR/.qwen/hooks/oma-hook.sh\" --vendor 'qwen' --event 'PreToolUse' --matcher 'Bash'",
-            "timeout": 10
+            "command": "\"$QWEN_PROJECT_DIR/.qwen/hooks/oma-hook.sh\" --vendor 'qwen' --event 'PreToolUse' --matcher 'run_shell_command'",
+            "timeout": 13
           }
         ],
-        "matcher": "Bash"
+        "matcher": "run_shell_command"
       }
     ],
     "Stop": [
@@ -40,15 +40,11 @@
   },
   "mcpServers": {
     "serena": {
-      "command": "serena",
+      "command": "oma",
       "args": [
-        "start-mcp-server",
+        "bridge",
         "--context",
-        "ide",
-        "--project",
-        ".",
-        "--open-web-dashboard",
-        "false"
+        "ide"
       ],
       "env": {
         "SERENA_LOG_LEVEL": "info"
@@ -72,5 +68,14 @@
       "type": "command",
       "command": "'bun' \"$QWEN_PROJECT_DIR/.qwen/hooks/hud.ts\""
     }
+  },
+  "$version": 4,
+  "model": {
+    "generationConfig": {
+      "timeout": 300000
+    }
+  },
+  "hooksConfig": {
+    "enabled": true
   }
 }

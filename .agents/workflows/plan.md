@@ -11,7 +11,7 @@ disable-model-invocation: true
 - **You MUST use MCP tools throughout the workflow.**
   - Use code analysis tools (`get_symbols_overview`, `find_symbol`, `search_for_pattern`) to analyze the existing codebase.
   - Use memory tools (write/edit) to record planning results.
-  - Memory path: configurable via `memoryConfig.basePath` (default: `.serena/memories`)
+  - Memory path: configurable via `memoryConfig.basePath` (default: `.agents/state/memories`)
   - Tool names: configurable via `memoryConfig.tools` in `.agents/mcp.json`
   - Do NOT use raw file reads or grep as substitutes.
 
@@ -23,13 +23,15 @@ disable-model-invocation: true
 
 ## L1 Decision Events
 
-Use the `oma_emit` helper documented in `.agents/skills/_shared/runtime/event-spec.md` before required L1 decision checkpoints. The helper wraps `oma state:emit`.
+Emit required L1 decisions by calling `oma state:emit` directly, as documented in `.agents/skills/_shared/runtime/event-spec.md`.
 
 ---
 
 ## Core Philosophy
 
 **Plans are first-class artifacts**: structured, templated, and consumed by other workflows. They are local working artifacts (not committed to the repo; `docs/plans/` is gitignored), but they follow strict conventions so any agent can read and update them.
+
+> `docs/plans/` does not survive a fresh clone. When a specific artifact must be durable across machines (a design doc referenced from committed documentation, a promoted API contract), commit that file deliberately with `git add -f` — tracked files are unaffected by the ignore afterwards. Committed docs must never reference a plan file that has not been promoted this way.
 
 Two artifacts per plan:
 
@@ -41,7 +43,9 @@ Two artifacts per plan:
 ```
 docs/plans/
 ├── designs/                       ← permanent design references (Status: Approved/Draft/Superseded)
-│   └── {NNN}-{name}.md
+│   └── {NNN}-{name}.md            (referenced-from-committed-docs files are force-added)
+├── contracts/                     ← promoted API contracts (deliberately committed via `git add -f`)
+│   └── {contract-name}.md
 └── work/                          ← execution plans (Status: Active/Completed)
     ├── {NNN}-{name}.md
     └── tech-debt-tracker.md
@@ -49,7 +53,7 @@ docs/plans/
 
 - Folder = type (designs vs work). Status field = lifecycle.
 - Filename always uses 3-digit zero-padded sequential prefix (`001-`, `002-`, …) per folder.
-- Determine the next number with `ls docs/plans/{designs,work}/ | grep -E '^[0-9]{3}-' | tail -1`.
+- Numbering is **per folder**. Determine the next number for the target folder only: `ls docs/plans/work/ | grep -E '^[0-9]{3}-' | tail -1` (or `docs/plans/designs/` respectively). Never combine both folders in one listing — the trailing entry would come from whichever folder lists last.
 - Plan content language follows the top-of-file rule (`oma-config.yaml` `language` setting). Mixed-language guidance lives in `.agents/rules/i18n-guide.md`.
 
 ---
@@ -92,14 +96,14 @@ Report scope assessment to the user. Get confirmation before proceeding.
 // turbo
 If the plan involves cross-boundary work (frontend ↔ backend, service ↔ service):
 
-1. Design API contracts using `.agents/skills/_shared/core/api-contracts/template.md`. Per endpoint:
+1. Design API contracts using `.agents/skills/_shared/core/api-contracts/template.md` (definition/template only — SSOT). Per endpoint:
    - Method, path, request/response schemas
    - Auth requirements, error responses
-2. Save to `.agents/skills/_shared/core/api-contracts/{contract-name}.md`.
+2. Save the generated contract to `.agents/results/api-contracts/{contract-name}.md` (run artifact; gitignored). If the contract must be versioned as a durable spec, promote it to `docs/plans/contracts/{contract-name}.md` when committing the feature.
 3. Reference from the markdown tracker generated in Step 6.
 4. Emit and verify the required API contract decision:
    ```bash
-   oma_emit "decision.made" '{"subject":"plan.api-contract","decision":"Use the approved endpoint and contract shape for this plan.","rationale":"The cross-boundary API contract has been reviewed and accepted before task decomposition."}'
+   oma state:emit "decision.made" '{"subject":"plan.api-contract","decision":"Use the approved endpoint and contract shape for this plan.","rationale":"The cross-boundary API contract has been reviewed and accepted before task decomposition."}'
    oma state:verify --workflow plan --checkpoint api-contract
    ```
 
@@ -109,9 +113,9 @@ If the plan involves cross-boundary work (frontend ↔ backend, service ↔ serv
 
 // turbo
 Break down the project into actionable tasks. Each task must have:
-- Assigned agent (frontend/backend/mobile/qa/debug)
+- Assigned agent (backend/frontend/mobile/db/qa/debug/architecture/refactor/tf-infra/docs — see the agent mapping in `orchestrate.md`)
 - Title, acceptance criteria
-- Priority (P0–P3), dependencies
+- Priority tier (1 = independent, ascending; lower runs first), dependencies
 
 **Engineering-first decomposition:** prefer tasks that address root causes over tasks that patch individual symptoms. When a deliberate workaround or hotfix is included, record the reason in the Decision Log.
 
@@ -159,9 +163,9 @@ Generate `docs/plans/work/{NNN}-{name}.md` using this template (replace `{NNN}` 
 
 | # | Task | Agent | Priority | Status | Dependencies |
 |---|------|-------|----------|--------|--------------|
-| 1 | {task} | {agent} | P0 | TODO | — |
-| 2 | {task} | {agent} | P0 | TODO | 1 |
-| 3 | {task} | {agent} | P1 | TODO | 1, 2 |
+| 1 | {task} | {agent} | 1 | TODO | — |
+| 2 | {task} | {agent} | 1 | TODO | 1 |
+| 3 | {task} | {agent} | 2 | TODO | 1, 2 |
 
 ## Done When
 {Testable completion criteria}

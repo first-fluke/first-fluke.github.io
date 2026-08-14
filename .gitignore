@@ -68,3 +68,6 @@ product-routes.json
 
 .agents/backup/
 .migration-backup/
+
+docs/plans/
+.qwen/tmp/
