@@ -50,6 +50,15 @@ export function ContactForm() {
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || !product || isSubmitting;
   const reduceMotion = useReducedMotion();
+  const sortedProductIds = React.useMemo<ProductId[]>(() => {
+    const nonEtc = PRODUCT_IDS.filter((id): id is ProductId => id !== "etc");
+    nonEtc.sort((a, b) => {
+      const labelA = t.contact.productOptions[a] ?? a;
+      const labelB = t.contact.productOptions[b] ?? b;
+      return labelA.localeCompare(labelB);
+    });
+    return PRODUCT_IDS.includes("etc") ? [...nonEtc, "etc" as ProductId] : nonEtc;
+  }, [t.contact.productOptions]);
   const isFormValid = React.useMemo(
     () => schema.safeParse({ email, message, agree, product, _hp: hp }).success,
     [schema, email, message, agree, product, hp],
@@ -206,7 +215,7 @@ export function ContactForm() {
             <SelectValue placeholder={t.contact.productPlaceholder} />
           </SelectTrigger>
           <SelectContent>
-            {PRODUCT_IDS.map((id) => (
+            {sortedProductIds.map((id) => (
               <SelectItem key={id} value={id}>
                 {t.contact.productOptions[id]}
               </SelectItem>

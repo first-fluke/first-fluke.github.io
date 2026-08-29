@@ -166,7 +166,7 @@ export const DICTIONARY_KO: Dictionary = {
       "place-haejo": "플레이스해줘",
       "contents-haejo": "콘텐츠해줘",
       "legalize-kr": "법률검토해줘",
-      shopzy: "Shopzy",
+      shopzy: "샵지",
       "deploy-haejo": "배포해줘",
       medisupporter: "메디서포터",
       fortunebom: "운세봄",
