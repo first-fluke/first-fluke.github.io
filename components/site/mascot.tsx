@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { useI18n } from "@/lib/i18n/use-i18n";
@@ -26,9 +26,8 @@ const SPARKLE_LIFE = 900;
 export function Mascot({ className, size = 360 }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
-  const reduceMotion = useReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const idleLoops = isDesktop && !reduceMotion;
+  const idleLoops = isDesktop;
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const idCounter = useRef(0);
 
@@ -41,14 +40,14 @@ export function Mascot({ className, size = 360 }: MascotProps) {
 
   const handleClick = () => {
     playWink();
-    if (reduceMotion) return;
     const baseAngle = Math.random() * 360;
     const startRadius = size * 0.5;
     const newOnes: Sparkle[] = Array.from({ length: SPARKLE_COUNT }, () => {
       const id = idCounter.current++;
       return {
         id,
-        angle: baseAngle + (360 / SPARKLE_COUNT) * id + (Math.random() * 30 - 15),
+        angle:
+          baseAngle + (360 / SPARKLE_COUNT) * id + (Math.random() * 30 - 15),
         startDistance: startRadius,
         endDistance: startRadius + size * 0.18 + Math.random() * (size * 0.1),
         scale: 0.9 + Math.random() * 0.6,
@@ -57,7 +56,9 @@ export function Mascot({ className, size = 360 }: MascotProps) {
     });
     setSparkles((prev) => [...prev, ...newOnes]);
     window.setTimeout(() => {
-      setSparkles((prev) => prev.filter((s) => !newOnes.find((n) => n.id === s.id)));
+      setSparkles((prev) =>
+        prev.filter((s) => !newOnes.find((n) => n.id === s.id)),
+      );
     }, SPARKLE_LIFE);
   };
 
@@ -95,7 +96,6 @@ export function Mascot({ className, size = 360 }: MascotProps) {
           "pointer-events-none absolute inset-0 rounded-full bg-[var(--color-primary)] opacity-0 blur-2xl",
           "transition-[opacity,transform] duration-500 ease-out",
           "group-hover:scale-[1.18] group-hover:opacity-[0.16]",
-          "motion-reduce:transition-none motion-reduce:group-hover:scale-100",
         )}
       />
       <button
@@ -110,7 +110,6 @@ export function Mascot({ className, size = 360 }: MascotProps) {
           "hover:scale-[1.03]",
           "active:scale-[0.97]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/50 focus-visible:ring-offset-2",
-          "motion-reduce:transition-none motion-reduce:hover:scale-100",
         )}
       >
         <video
@@ -141,7 +140,13 @@ export function Mascot({ className, size = 360 }: MascotProps) {
               aria-hidden
               className="pointer-events-none absolute top-1/2 left-1/2 select-none"
               style={{ fontSize: Math.max(18, size * 0.09) }}
-              initial={{ x: startX, y: startY, scale: 0, opacity: 0, rotate: 0 }}
+              initial={{
+                x: startX,
+                y: startY,
+                scale: 0,
+                opacity: 0,
+                rotate: 0,
+              }}
               animate={{
                 x: endX,
                 y: endY,

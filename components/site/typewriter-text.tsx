@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "motion/react";
+import { useInView } from "motion/react";
 
 type Mode = "typing" | "pausing-type" | "erasing" | "pausing-erase";
 
@@ -26,13 +26,12 @@ export function TypewriterText({
 }: TypewriterTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
-  const reduceMotion = useReducedMotion();
   const [displayed, setDisplayed] = useState("");
   const [textIdx, setTextIdx] = useState(0);
   const [mode, setMode] = useState<Mode>("typing");
 
   useEffect(() => {
-    if (!inView || reduceMotion) return;
+    if (!inView) return;
     const currentText = texts[textIdx];
     if (!currentText) return;
 
@@ -66,7 +65,6 @@ export function TypewriterText({
     return () => window.clearTimeout(timer);
   }, [
     inView,
-    reduceMotion,
     displayed,
     mode,
     textIdx,
@@ -77,7 +75,7 @@ export function TypewriterText({
     pauseAfterErase,
   ]);
 
-  const visibleText = reduceMotion ? (texts[0] ?? "") : displayed;
+  const visibleText = displayed;
 
   return (
     <span ref={ref} className={className} aria-label={texts[0]}>

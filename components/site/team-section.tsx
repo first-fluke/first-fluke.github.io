@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { TEAM } from "@/lib/team";
@@ -28,32 +28,25 @@ function LinkedInIcon() {
 }
 
 export function TeamSection() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
 
   const container = {
     hidden: {},
-    show: reduceMotion
-      ? { transition: { staggerChildren: 0 } }
-      : { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+    show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
   };
 
   const heading = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
-        },
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    },
   };
 
   const card = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : { opacity: 1, y: 0, transition: BRAKE_SPRING },
+    hidden: { opacity: 0, y: 24 },
+    show: { opacity: 1, y: 0, transition: BRAKE_SPRING },
   };
 
   return (

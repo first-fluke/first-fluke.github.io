@@ -79,6 +79,7 @@ export interface Dictionary {
     ctaContact: string;
     mascotButtonAria: string;
     mascotVideoAria: string;
+    scrollHintAria: string;
   };
   about: {
     paragraphs: [string, string, string, string];

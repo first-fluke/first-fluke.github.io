@@ -1,6 +1,7 @@
 import { Header } from "@/components/site/header";
 import { FloatingNav } from "@/components/site/floating-nav";
 import { Hero } from "@/components/site/hero";
+import { BrandMarquee } from "@/components/site/brand-marquee";
 import { CompanyIntro } from "@/components/site/company-intro";
 import { SolutionsGrid } from "@/components/site/solutions-grid";
 import { OmaSection } from "@/components/site/oma-section";
@@ -16,6 +17,7 @@ export default function Home() {
       <FloatingNav />
       <main className="flex-1">
         <Hero />
+        <BrandMarquee />
         <CompanyIntro />
         <OmaSection />
         <SolutionsGrid />

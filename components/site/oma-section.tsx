@@ -7,8 +7,9 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
 } from "motion/react";
+import { Parallax } from "@/components/bits/parallax";
+import { TiltedCard } from "@/components/bits/tilted-card";
 import { LinkButton } from "@/components/ui/button";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { TypewriterText } from "@/components/site/typewriter-text";
@@ -22,10 +23,9 @@ const STATIC_BORDER_BG =
   "conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)";
 
 export function OmaSection() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const animateBorder = isDesktop && !reduceMotion;
+  const animateBorder = isDesktop;
   const angle = useMotionValue(0);
 
   useEffect(() => {
@@ -40,42 +40,37 @@ export function OmaSection() {
 
   const animatedBorderBackground = useMotionTemplate`conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)`;
 
-  const fadeUpInitial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 };
-  const fadeUpAnimate = reduceMotion
-    ? { opacity: 1, transition: { duration: 0.3 } }
-    : {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.55, ease: easeOutExpo },
-      };
+  const fadeUpInitial = { opacity: 0, y: 20 };
+  const fadeUpAnimate = {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: easeOutExpo },
+  };
 
-  const cardInitial = reduceMotion
-    ? { opacity: 0 }
-    : { opacity: 0, y: 24, scale: 0.985 };
-  const cardAnimate = reduceMotion
-    ? { opacity: 1, transition: { duration: 0.3 } }
-    : {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: { duration: 0.7, ease: easeOutExpo, delay: 0.12 },
-      };
+  const cardInitial = { opacity: 0, y: 24, scale: 0.985 };
+  const cardAnimate = {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.7, ease: easeOutExpo, delay: 0.12 },
+  };
 
   const itemStagger = {
     hidden: {},
     show: {
-      transition: { staggerChildren: reduceMotion ? 0 : 0.06, delayChildren: 0.1 },
+      transition: {
+        staggerChildren: 0.06,
+        delayChildren: 0.1,
+      },
     },
   };
   const itemVariant = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.4, ease: easeOutExpo },
-        },
+    hidden: { opacity: 0, y: 10 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: easeOutExpo },
+    },
   };
 
   return (
@@ -142,111 +137,119 @@ export function OmaSection() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={cardInitial}
-            whileInView={cardAnimate}
-            viewport={{ once: true, amount: 0.25 }}
-            className="relative"
-          >
-            {/* Animated conic gradient border (desktop) / static fallback (mobile) */}
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute -inset-[1.5px] rounded-2xl opacity-90 blur-[0.5px]"
-              style={{ background: animateBorder ? animatedBorderBackground : STATIC_BORDER_BG }}
-            />
-            {/* Soft outer glow */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -inset-3 -z-10 rounded-3xl bg-[radial-gradient(60%_60%_at_50%_40%,rgba(122,185,76,0.18),transparent_70%)] opacity-70 blur-2xl"
-            />
-
-            <article
-              aria-labelledby="oma-showcase-title"
-              className="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]"
-            >
-              <header className="relative flex items-center gap-3 border-b border-[var(--color-border)] px-6 py-5 md:px-8 md:py-6">
-                <Image
-                  src="/oma-logo.png"
-                  alt=""
-                  width={40}
-                  height={40}
-                  className="h-10 w-10"
+          <Parallax offset={36}>
+            <TiltedCard>
+              <motion.div
+                initial={cardInitial}
+                whileInView={cardAnimate}
+                viewport={{ once: true, amount: 0.25 }}
+                className="relative"
+              >
+                {/* Animated conic gradient border (desktop) / static fallback (mobile) */}
+                <motion.div
                   aria-hidden
+                  className="pointer-events-none absolute -inset-[1.5px] rounded-2xl opacity-90 blur-[0.5px]"
+                  style={{
+                    background: animateBorder
+                      ? animatedBorderBackground
+                      : STATIC_BORDER_BG,
+                  }}
                 />
-                <div className="flex flex-col">
-                  <h3
-                    id="oma-showcase-title"
-                    className="font-mono text-xl font-bold tracking-tight text-[var(--color-primary)] md:text-2xl"
+                {/* Soft outer glow */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -inset-3 -z-10 rounded-3xl bg-[radial-gradient(60%_60%_at_50%_40%,rgba(122,185,76,0.18),transparent_70%)] opacity-70 blur-2xl"
+                />
+
+                <article
+                  aria-labelledby="oma-showcase-title"
+                  className="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]"
+                >
+                  <header className="relative flex items-center gap-3 border-b border-[var(--color-border)] px-6 py-5 md:px-8 md:py-6">
+                    <Image
+                      src="/oma-logo.png"
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="h-10 w-10"
+                      aria-hidden
+                    />
+                    <div className="flex flex-col">
+                      <h3
+                        id="oma-showcase-title"
+                        className="font-mono text-xl font-bold tracking-tight text-[var(--color-primary)] md:text-2xl"
+                      >
+                        oh-my-agent
+                      </h3>
+                      <p className="text-[12.5px] text-[var(--color-fg-muted)] md:text-[13px]">
+                        Portable Multi-Agent Harness
+                      </p>
+                    </div>
+                  </header>
+
+                  <motion.div
+                    className="relative space-y-6 px-6 py-7 md:px-8 md:py-8"
+                    variants={itemStagger}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.2 }}
                   >
-                    oh-my-agent
-                  </h3>
-                  <p className="text-[12.5px] text-[var(--color-fg-muted)] md:text-[13px]">
-                    Portable Multi-Agent Harness
-                  </p>
-                </div>
-              </header>
-
-              <motion.div
-                className="relative space-y-6 px-6 py-7 md:px-8 md:py-8"
-                variants={itemStagger}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.2 }}
-              >
-                <motion.div variants={itemVariant}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-                    {t.oma.requestLabel}
-                  </p>
-                  <p className="mt-1.5 text-lg font-semibold text-[var(--color-fg)] md:text-xl">
-                    &ldquo;
-                    <TypewriterText texts={t.oma.typewriterTexts} />
-                    &rdquo;
-                  </p>
-                </motion.div>
-                <ul className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  {t.oma.agents.map((agent) => (
-                    <motion.li
-                      key={agent.tag}
-                      variants={itemVariant}
-                      className="flex flex-col gap-1"
-                    >
-                      <p className="text-[15px] font-semibold text-[var(--color-primary)]">
-                        {agent.tag}
+                    <motion.div variants={itemVariant}>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+                        {t.oma.requestLabel}
                       </p>
-                      <p className="text-[13px] leading-snug text-[var(--color-fg-muted)]">
-                        {agent.desc}
+                      <p className="mt-1.5 text-lg font-semibold text-[var(--color-fg)] md:text-xl">
+                        &ldquo;
+                        <TypewriterText texts={t.oma.typewriterTexts} />
+                        &rdquo;
                       </p>
-                    </motion.li>
-                  ))}
-                </ul>
-              </motion.div>
+                    </motion.div>
+                    <ul className="grid grid-cols-2 gap-x-6 gap-y-4">
+                      {t.oma.agents.map((agent) => (
+                        <motion.li
+                          key={agent.tag}
+                          variants={itemVariant}
+                          className="flex flex-col gap-1"
+                        >
+                          <p className="text-[15px] font-semibold text-[var(--color-primary)]">
+                            {agent.tag}
+                          </p>
+                          <p className="text-[13px] leading-snug text-[var(--color-fg-muted)]">
+                            {agent.desc}
+                          </p>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
 
-              <motion.div
-                className="relative border-t border-[var(--color-border)] bg-[var(--color-bg-soft)]/60 px-6 py-5 md:px-8 md:py-6"
-                variants={itemStagger}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.2 }}
-              >
-                <ul className="grid grid-cols-2 gap-x-5 gap-y-3">
-                  {t.oma.highlights.map((h) => (
-                    <motion.li
-                      key={h.label}
-                      variants={itemVariant}
-                      className="flex flex-col gap-0.5"
-                    >
-                      <span className="text-[12.5px] font-semibold text-[var(--color-primary)]">
-                        {h.label}
-                      </span>
-                      <span className="text-[12px] leading-snug text-[var(--color-fg-muted)]">
-                        {h.desc}
-                      </span>
-                    </motion.li>
-                  ))}
-                </ul>
+                  <motion.div
+                    className="relative border-t border-[var(--color-border)] bg-[var(--color-bg-soft)]/60 px-6 py-5 md:px-8 md:py-6"
+                    variants={itemStagger}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.2 }}
+                  >
+                    <ul className="grid grid-cols-2 gap-x-5 gap-y-3">
+                      {t.oma.highlights.map((h) => (
+                        <motion.li
+                          key={h.label}
+                          variants={itemVariant}
+                          className="flex flex-col gap-0.5"
+                        >
+                          <span className="text-[12.5px] font-semibold text-[var(--color-primary)]">
+                            {h.label}
+                          </span>
+                          <span className="text-[12px] leading-snug text-[var(--color-fg-muted)]">
+                            {h.desc}
+                          </span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                </article>
               </motion.div>
-            </article>
-          </motion.div>
+            </TiltedCard>
+          </Parallax>
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { ContactForm } from "@/components/site/contact-form";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { useI18n } from "@/lib/i18n/use-i18n";
@@ -8,25 +8,20 @@ import { useI18n } from "@/lib/i18n/use-i18n";
 const easeOutExpo = [0.22, 1, 0.36, 1] as const;
 
 export function ContactSection() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
 
   const container = {
     hidden: {},
-    show: reduceMotion
-      ? { transition: { staggerChildren: 0 } }
-      : { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+    show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
   };
 
   const item = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.5, ease: easeOutExpo },
-        },
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: easeOutExpo },
+    },
   };
 
   return (

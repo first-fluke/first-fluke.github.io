@@ -24,6 +24,7 @@ export const DICTIONARY_JA: Dictionary = {
     ctaContact: "お問い合わせ",
     mascotButtonAria: "マスコットに挨拶する",
     mascotVideoAria: "FIRST FLUKEのマスコット（カワウソ）",
+    scrollHintAria: "下にスクロール",
   },
   about: {
     paragraphs: [

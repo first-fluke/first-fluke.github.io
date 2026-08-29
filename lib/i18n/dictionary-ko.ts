@@ -24,6 +24,7 @@ export const DICTIONARY_KO: Dictionary = {
     ctaContact: "문의하기",
     mascotButtonAria: "마스코트에게 인사하기",
     mascotVideoAria: "FIRST FLUKE 마스코트 (수달)",
+    scrollHintAria: "아래로 스크롤",
   },
   about: {
     paragraphs: [

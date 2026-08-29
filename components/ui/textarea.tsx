@@ -13,7 +13,6 @@ export const Textarea = React.forwardRef<
       "focus:border-[var(--color-primary)] focus:outline-none focus:ring-4 focus:ring-[var(--color-primary)]/15",
       "aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-500/20",
       "disabled:cursor-not-allowed disabled:opacity-60",
-      "motion-reduce:transition-none",
       "resize-y",
       className,
     )}

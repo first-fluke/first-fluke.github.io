@@ -6,7 +6,6 @@ import {
   AnimatePresence,
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
 } from "motion/react";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
@@ -23,7 +22,6 @@ const NAV_ITEMS = [
 const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 
 export function FloatingNav() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
   const { scrollY } = useScroll();
   const [visible, setVisible] = useState(false);
@@ -37,9 +35,9 @@ export function FloatingNav() {
       {visible && (
         <motion.nav
           aria-label={t.nav.sectionsAria}
-          initial={reduceMotion ? { opacity: 0 } : { y: -80, opacity: 0 }}
-          animate={reduceMotion ? { opacity: 1 } : { y: 0, opacity: 1 }}
-          exit={reduceMotion ? { opacity: 0 } : { y: -80, opacity: 0 }}
+          initial={{ y: -80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -80, opacity: 0 }}
           transition={{ duration: 0.32, ease: EASE_OUT_EXPO }}
           className="fixed inset-x-0 top-4 z-40 mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center gap-1 rounded-full border border-[var(--color-border)] bg-white/85 px-3 py-2 shadow-[0_8px_30px_rgba(15,76,58,0.08)] backdrop-blur-md md:gap-2 md:px-5 md:py-2.5"
         >
@@ -77,7 +75,10 @@ export function FloatingNav() {
             aria-hidden
             className="hidden h-4 w-px bg-[var(--color-border)] sm:inline-block"
           />
-          <LanguageSwitcher size="sm" className="hidden ring-0 sm:inline-flex" />
+          <LanguageSwitcher
+            size="sm"
+            className="hidden ring-0 sm:inline-flex"
+          />
         </motion.nav>
       )}
     </AnimatePresence>

@@ -24,6 +24,7 @@ export const DICTIONARY_EN: Dictionary = {
     ctaContact: "Contact us",
     mascotButtonAria: "Say hi to the mascot",
     mascotVideoAria: "FIRST FLUKE mascot (an otter)",
+    scrollHintAria: "Scroll down",
   },
   about: {
     paragraphs: [

@@ -1,14 +1,15 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingUnderlineProps {
   className?: string;
 }
 
-export function SectionHeadingUnderline({ className }: SectionHeadingUnderlineProps) {
-  const reduceMotion = useReducedMotion();
+export function SectionHeadingUnderline({
+  className,
+}: SectionHeadingUnderlineProps) {
   return (
     <motion.div
       aria-hidden
@@ -17,18 +18,14 @@ export function SectionHeadingUnderline({ className }: SectionHeadingUnderlinePr
         "mt-4 h-[3px] w-16 rounded-full bg-[var(--color-primary)]",
         className,
       )}
-      initial={{ scaleX: reduceMotion ? 1 : 0 }}
+      initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true, amount: 0.5 }}
-      transition={
-        reduceMotion
-          ? { duration: 0 }
-          : {
-              duration: 0.8,
-              ease: [0.22, 1, 0.36, 1] as const,
-              delay: 0.35,
-            }
-      }
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1] as const,
+        delay: 0.35,
+      }}
     />
   );
 }

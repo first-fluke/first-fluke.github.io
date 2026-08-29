@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export function BackToTop() {
   const handleClick = () => {
     window.scrollTo({
       top: 0,
-      behavior: reduceMotion ? "auto" : "smooth",
+      behavior: "smooth",
     });
   };
 

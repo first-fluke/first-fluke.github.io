@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
+import { Parallax } from "@/components/bits/parallax";
 import { SolutionCard } from "@/components/site/solution-card";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { SOLUTIONS } from "@/lib/solutions";
@@ -15,37 +16,26 @@ const BRAKE_SPRING = {
 };
 
 export function SolutionsGrid() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   const container = {
     hidden: {},
-    show: reduceMotion
-      ? { transition: { staggerChildren: 0 } }
-      : { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+    show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
   };
 
   const heading = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
-        },
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    },
   };
 
   const card = {
-    hidden: reduceMotion
-      ? { opacity: 0 }
-      : isDesktop
-        ? { opacity: 0, x: -160 }
-        : { opacity: 0, x: -64 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : { opacity: 1, x: 0, transition: BRAKE_SPRING },
+    hidden: isDesktop ? { opacity: 0, x: -160 } : { opacity: 0, x: -64 },
+    show: { opacity: 1, x: 0, transition: BRAKE_SPRING },
   };
 
   return (
@@ -71,9 +61,14 @@ export function SolutionsGrid() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
-            {SOLUTIONS.map((solution) => (
+            {SOLUTIONS.map((solution, index) => (
               <motion.div key={solution.id} variants={card}>
-                <SolutionCard solution={solution} />
+                <Parallax
+                  offset={index % 2 === 0 ? -18 : 18}
+                  className="h-full"
+                >
+                  <SolutionCard solution={solution} />
+                </Parallax>
               </motion.div>
             ))}
           </div>

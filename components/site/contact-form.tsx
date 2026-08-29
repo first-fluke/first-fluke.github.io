@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +18,9 @@ import { PRODUCT_IDS, type ProductId } from "@/lib/contact/products";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
 type Status = "idle" | "submitting" | "success" | "error";
-type FieldErrors = Partial<Record<"email" | "message" | "agree" | "product", string>>;
+type FieldErrors = Partial<
+  Record<"email" | "message" | "agree" | "product", string>
+>;
 type ServerErrorKind = "rate_limit" | "send_failed";
 
 export function ContactForm() {
@@ -35,7 +37,9 @@ export function ContactForm() {
   const [hp, setHp] = React.useState("");
   const [status, setStatus] = React.useState<Status>("idle");
   const [errors, setErrors] = React.useState<FieldErrors>({});
-  const [serverError, setServerError] = React.useState<ServerErrorKind | null>(null);
+  const [serverError, setServerError] = React.useState<ServerErrorKind | null>(
+    null,
+  );
 
   const validateEmail = React.useCallback(
     (value: string): string | undefined => {
@@ -49,7 +53,6 @@ export function ContactForm() {
 
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || !product || isSubmitting;
-  const reduceMotion = useReducedMotion();
   const sortedProductIds = React.useMemo<ProductId[]>(() => {
     const nonEtc = PRODUCT_IDS.filter((id): id is ProductId => id !== "etc");
     nonEtc.sort((a, b) => {
@@ -57,29 +60,27 @@ export function ContactForm() {
       const labelB = t.contact.productOptions[b] ?? b;
       return labelA.localeCompare(labelB);
     });
-    return PRODUCT_IDS.includes("etc") ? [...nonEtc, "etc" as ProductId] : nonEtc;
+    return PRODUCT_IDS.includes("etc")
+      ? [...nonEtc, "etc" as ProductId]
+      : nonEtc;
   }, [t.contact.productOptions]);
   const isFormValid = React.useMemo(
     () => schema.safeParse({ email, message, agree, product, _hp: hp }).success,
     [schema, email, message, agree, product, hp],
   );
-  const shouldPulse = isFormValid && !isSubmitting && !reduceMotion;
+  const shouldPulse = isFormValid && !isSubmitting;
 
   const fieldStagger = {
     hidden: {},
-    show: reduceMotion
-      ? { transition: { staggerChildren: 0 } }
-      : { transition: { staggerChildren: 0.07, delayChildren: 0.02 } },
+    show: { transition: { staggerChildren: 0.07, delayChildren: 0.02 } },
   };
   const fieldItem = {
-    hidden: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
-    show: reduceMotion
-      ? { opacity: 1, transition: { duration: 0.3 } }
-      : {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
-        },
+    hidden: { opacity: 0, y: 12 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
+    },
   };
 
   function resetForm() {

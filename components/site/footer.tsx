@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { SITE } from "@/lib/site";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
@@ -22,7 +22,6 @@ function ThreadsIcon({ className }: { className?: string }) {
 
 function BusinessInfoDisclosure() {
   const { t } = useI18n();
-  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
 
   return (
@@ -50,17 +49,13 @@ function BusinessInfoDisclosure() {
         {open && (
           <motion.div
             id="footer-business-info"
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{
               opacity: 1,
               y: 0,
               transition: { duration: 0.18, ease: "easeOut" },
             }}
-            exit={
-              reduceMotion
-                ? { opacity: 0, transition: { duration: 0.12 } }
-                : { opacity: 0, y: 4, transition: { duration: 0.12 } }
-            }
+            exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}
             className="absolute bottom-full left-0 z-50 mb-3 w-[19rem] rounded-xl border border-[var(--color-border)] bg-white p-4 text-left shadow-[var(--shadow-card-hover)]"
           >
             <p className="text-[13px] font-semibold text-[var(--color-primary)]">
@@ -91,16 +86,13 @@ function BusinessInfoDisclosure() {
 }
 
 export function Footer() {
-  const reduceMotion = useReducedMotion();
   const { t } = useI18n();
-  const initial = reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 };
-  const inView = reduceMotion
-    ? { opacity: 1, transition: { duration: 0.3 } }
-    : {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
-      };
+  const initial = { opacity: 0, y: 12 };
+  const inView = {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  };
 
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-8 md:py-10">
@@ -124,12 +116,17 @@ export function Footer() {
           >
             <ThreadsIcon className="h-4 w-4" />
             <span className="font-semibold tracking-tight">Threads</span>
-            <span className="text-[var(--color-fg-muted)]">@{SITE.threadsHandle}</span>
+            <span className="text-[var(--color-fg-muted)]">
+              @{SITE.threadsHandle}
+            </span>
           </a>
         </div>
         <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
           <BusinessInfoDisclosure />
-          <nav aria-label={t.footer.legalAria} className="flex items-center gap-4">
+          <nav
+            aria-label={t.footer.legalAria}
+            className="flex items-center gap-4"
+          >
             <Link
               href="/privacy"
               className="transition-colors hover:text-[var(--color-primary)]"
