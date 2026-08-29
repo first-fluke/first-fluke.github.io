@@ -11,6 +11,9 @@ export const PRODUCT_IDS = [
   "contents-haejo",
   "legalize-kr",
   "shopzy",
+  "deploy-haejo",
+  "medisupporter",
+  "fortunebom",
   "etc",
 ] as const;
 
@@ -23,5 +26,8 @@ export const PRODUCT_LABELS: Record<ProductId, string> = {
   "contents-haejo": "콘텐츠해줘",
   "legalize-kr": "법률검토해줘",
   shopzy: "Shopzy",
+  "deploy-haejo": "배포해줘",
+  medisupporter: "메디서포터",
+  fortunebom: "운세봄",
   etc: "기타",
 };

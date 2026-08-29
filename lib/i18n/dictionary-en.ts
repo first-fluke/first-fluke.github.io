@@ -109,6 +109,36 @@ export const DICTIONARY_EN: Dictionary = {
           "Every change is auto-backed-up and rollback-ready",
         ],
       },
+      "deploy-haejo": {
+        name: "Deploy Haejo",
+        tagline: "One-click app deployment platform — just connect your source code",
+        category: "Infra · Deployment",
+        features: [
+          "One-click connection with GitHub and cloud providers (Vercel, Cloudflare)",
+          "Automatic framework detection and pre-deployment plan verification",
+          "Real-time deployment logs and instant one-click rollback support",
+        ],
+      },
+      medisupporter: {
+        name: "Medisupporter",
+        tagline: "Hospital consultation SaaS unifying inquiries from Kakao, Naver, and web",
+        category: "Healthcare · Support",
+        features: [
+          "Unified inbox aggregating KakaoTalk, Naver, and website patient inquiries",
+          "Consistent answers powered by approved clinic manuals and AI drafts",
+          "Seamless reservation calendar and built-in clinic landing page",
+        ],
+      },
+      fortunebom: {
+        name: "Fortunebom",
+        tagline: "All-in-one AI fortune platform for Saju, Zi Wei Dou Shu, Tarot, and Astrology",
+        category: "Lifestyle · Fortune",
+        features: [
+          "Precise birth-chart calculation for Korean Saju and Zi Wei Dou Shu natal charts",
+          "Western astrology horoscopes combined with interactive Tarot card readings",
+          "Personalized AI reports covering daily fortune, compatibility, and life cycles",
+        ],
+      },
     },
   },
   team: {
@@ -138,6 +168,9 @@ export const DICTIONARY_EN: Dictionary = {
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
+      "deploy-haejo": "Deploy Haejo",
+      medisupporter: "Medisupporter",
+      fortunebom: "Fortunebom",
       etc: "Other",
     },
     emailLabel: "Email",

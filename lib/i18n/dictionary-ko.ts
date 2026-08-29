@@ -108,6 +108,36 @@ export const DICTIONARY_KO: Dictionary = {
           "모든 수정은 자동 백업되어 언제든 롤백",
         ],
       },
+      "deploy-haejo": {
+        name: "배포해줘",
+        tagline: "소스만 연결하면 알아서 배포되는 원클릭 앱 배포 플랫폼",
+        category: "인프라 · 배포",
+        features: [
+          "GitHub 저장소와 공식 클라우드 계정(Vercel, Cloudflare) 원클릭 연결",
+          "프레임워크 및 루트 디렉터리 자동 감지 및 배포 계획 사전 확인",
+          "배포 로그 실시간 모니터링과 문제 발생 시 즉각 롤백 지원",
+        ],
+      },
+      medisupporter: {
+        name: "메디서포터",
+        tagline: "카톡·네이버·홈페이지 문의를 상담함 하나로 모으는 병원 상담 SaaS",
+        category: "의료 · 상담",
+        features: [
+          "카카오톡, 네이버, 홈페이지 문의를 통합 상담함 하나에서 즉시 응대",
+          "승인된 병원 응대 매뉴얼과 AI 초안으로 일관되고 빠른 답변 작성",
+          "상담 내용에서 바로 연결되는 예약 관리 캘린더 및 소개 페이지 제공",
+        ],
+      },
+      fortunebom: {
+        name: "운세봄",
+        tagline: "사주·자미두수·타로·점성술을 한곳에서 분석하는 AI 운세 서비스",
+        category: "라이프 · 운세",
+        features: [
+          "생년월일시 기반 자체 정밀 만세력으로 사주팔자 및 자미두수 명반 분석",
+          "서양 점성술 천궁도와 인터랙티브 타로 카드 리딩 통합 제공",
+          "오늘의 운세부터 궁합, 재회, 인생 대운 흐름까지 맞춤형 AI 리포트",
+        ],
+      },
     },
   },
   team: {
@@ -137,6 +167,9 @@ export const DICTIONARY_KO: Dictionary = {
       "contents-haejo": "콘텐츠해줘",
       "legalize-kr": "법률검토해줘",
       shopzy: "Shopzy",
+      "deploy-haejo": "배포해줘",
+      medisupporter: "메디서포터",
+      fortunebom: "운세봄",
       etc: "기타",
     },
     emailLabel: "이메일",

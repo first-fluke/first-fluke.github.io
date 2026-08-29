@@ -109,6 +109,36 @@ export const DICTIONARY_JA: Dictionary = {
           "すべての修正は自動バックアップされ、いつでもロールバック可能",
         ],
       },
+      "deploy-haejo": {
+        name: "Deploy Haejo",
+        tagline: "ソースコードを接続するだけのワンクリックアプリデプロイプラットフォーム",
+        category: "インフラ · デプロイ",
+        features: [
+          "GitHubリポジトリとクラウド公式アカウント(Vercel、Cloudflare)の簡単連携",
+          "フレームワークとルートディレクトリの自動検出およびデプロイ計画の事前確認",
+          "リアルタイムのデプロイログ監視とワンクリックでのロールバック対応",
+        ],
+      },
+      medisupporter: {
+        name: "Medisupporter",
+        tagline: "カカオ・NAVER・ウェブからの問い合わせを一元管理する病院相談SaaS",
+        category: "医療 · カスタマーサポート",
+        features: [
+          "複数チャネルの患者からの問い合わせをひとつの相談トレイに集約",
+          "承認済み応対マニュアルとAI下書きによる迅速かつ均一な回答作成",
+          "相談からスムーズにつながる予約管理カレンダーと紹介ページを提供",
+        ],
+      },
+      fortunebom: {
+        name: "Fortunebom",
+        tagline: "四柱推命・紫微斗数・タロット・西洋占星術を網羅したAI占いサービス",
+        category: "ライフ · 占い",
+        features: [
+          "生年月日時をもとにした高精度な万年暦による四柱推命・紫微斗数の命盤分析",
+          "西洋占星術のホロスコープとインタラクティブなタロットカードリーディング",
+          "今日の運勢から相性、復縁、人生の大運の流れまで網羅したAIレポート",
+        ],
+      },
     },
   },
   team: {
@@ -138,6 +168,9 @@ export const DICTIONARY_JA: Dictionary = {
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
+      "deploy-haejo": "Deploy Haejo",
+      medisupporter: "Medisupporter",
+      fortunebom: "Fortunebom",
       etc: "その他",
     },
     emailLabel: "メールアドレス",
