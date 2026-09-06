@@ -62,7 +62,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
       <span aria-hidden className="h-5 w-px bg-[var(--color-border)]" />
       <span className="flex flex-col text-right leading-tight">
         <span className="text-[9px] font-medium uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
-          Selected · 2026
+          2026
         </span>
         <span className="text-[11px] font-semibold text-[var(--color-primary)]">
           {t.badge.providerLabel}
