@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useSyncExternalStore } from "react";
 import {
   motion,
   useScroll,
@@ -21,19 +21,23 @@ interface ScrollRevealTextProps {
 /** Fraction of the paragraph's scroll range each word takes to fully reveal. */
 const WORD_WINDOW = 0.3;
 const DIM_OPACITY = 0.14;
+const subscribeToHydration = () => () => undefined;
+const getHydratedSnapshot = () => true;
+const getServerHydratedSnapshot = () => false;
 
 interface RevealWordProps {
   progress: MotionValue<number>;
   start: number;
   end: number;
   children: string;
+  hydrated: boolean;
 }
 
-function RevealWord({ progress, start, end, children }: RevealWordProps) {
+function RevealWord({ progress, start, end, children, hydrated }: RevealWordProps) {
   const opacity = useTransform(progress, [start, end], [DIM_OPACITY, 1]);
   const y = useTransform(progress, [start, end], [6, 0]);
   return (
-    <motion.span className="inline-block" style={{ opacity, y }}>
+    <motion.span className="inline-block" style={hydrated ? { opacity, y } : undefined}>
       {children}
     </motion.span>
   );
@@ -44,6 +48,12 @@ function RevealWord({ progress, start, end, children }: RevealWordProps) {
  * viewport, scrubbed to scroll position (React Bits `ScrollReveal` style).
  */
 export function ScrollRevealText({ text, className }: ScrollRevealTextProps) {
+  // Keep exported HTML readable; enable scroll effects after hydration.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getHydratedSnapshot,
+    getServerHydratedSnapshot,
+  );
   const ref = useRef<HTMLParagraphElement>(null);
   const tokens = useMemo(() => {
     const raw = tokenizeWords(text);
@@ -84,6 +94,7 @@ export function ScrollRevealText({ text, className }: ScrollRevealTextProps) {
               progress={scrollYProgress}
               start={token.start}
               end={token.start + WORD_WINDOW}
+              hydrated={hydrated}
             >
               {token.text}
             </RevealWord>

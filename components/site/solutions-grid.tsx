@@ -43,7 +43,7 @@ export function SolutionsGrid() {
       <div className="mx-auto w-full max-w-6xl px-6 md:px-12">
         <motion.div
           variants={container}
-          initial="hidden"
+          initial={false}
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
         >

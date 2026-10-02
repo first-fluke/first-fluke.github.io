@@ -2,9 +2,12 @@
 
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { Check, Globe } from "@phosphor-icons/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/i18n.types";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { cn } from "@/lib/cn";
+import { localizedPath } from "@/lib/i18n/locale-routing";
 
 interface LanguageSwitcherProps {
   size?: "sm" | "md";
@@ -12,7 +15,8 @@ interface LanguageSwitcherProps {
 }
 
 export function LanguageSwitcher({ size = "md", className }: LanguageSwitcherProps) {
-  const { locale, setLocale, t } = useI18n();
+  const { locale, t } = useI18n();
+  const pathname = usePathname();
 
   return (
     <DropdownMenuPrimitive.Root>
@@ -43,8 +47,7 @@ export function LanguageSwitcher({ size = "md", className }: LanguageSwitcherPro
             return (
               <DropdownMenuPrimitive.Item
                 key={code}
-                lang={code}
-                onSelect={() => setLocale(code)}
+                asChild
                 className={cn(
                   "flex cursor-pointer select-none items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm font-medium outline-none transition-colors focus:bg-[var(--color-primary)]/8 data-[highlighted]:bg-[var(--color-primary)]/8",
                   active
@@ -52,8 +55,15 @@ export function LanguageSwitcher({ size = "md", className }: LanguageSwitcherPro
                     : "text-[var(--color-fg-muted)]",
                 )}
               >
-                {LOCALE_LABELS[code]}
-                {active && <Check aria-hidden className="h-4 w-4" />}
+                <Link
+                  href={localizedPath(code, pathname)}
+                  lang={code}
+                  hrefLang={code}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {LOCALE_LABELS[code]}
+                  {active && <Check aria-hidden className="h-4 w-4" />}
+                </Link>
               </DropdownMenuPrimitive.Item>
             );
           })}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import {
 import { createContactFormSchema } from "@/lib/contact/schema";
 import { PRODUCT_IDS, type ProductId } from "@/lib/contact/products";
 import { useI18n } from "@/lib/i18n/use-i18n";
+import { localizedPath } from "@/lib/i18n/locale-routing";
 
 type Status = "idle" | "submitting" | "success" | "error";
 type FieldErrors = Partial<
@@ -24,7 +26,7 @@ type FieldErrors = Partial<
 type ServerErrorKind = "rate_limit" | "send_failed";
 
 export function ContactForm() {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const schema = React.useMemo(
     () => createContactFormSchema(t.contact.validation),
     [t],
@@ -179,7 +181,7 @@ export function ContactForm() {
       noValidate
       className="flex flex-col gap-5"
       variants={fieldStagger}
-      initial="hidden"
+      initial={false}
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
     >
@@ -326,14 +328,14 @@ export function ContactForm() {
           label={
             <span className="text-sm text-[var(--color-fg-muted)]">
               {t.contact.agreePrefix}{" "}
-              <a
-                href="/privacy"
+              <Link
+                href={localizedPath(locale, "/privacy")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-[var(--color-primary)] underline-offset-2 hover:underline"
               >
                 {t.contact.agreeLink}
-              </a>
+              </Link>
             </span>
           }
         />

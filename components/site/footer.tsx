@@ -5,6 +5,8 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { SITE } from "@/lib/site";
 import { useI18n } from "@/lib/i18n/use-i18n";
+import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/i18n.types";
+import { localizedPath } from "@/lib/i18n/locale-routing";
 
 function ThreadsIcon({ className }: { className?: string }) {
   return (
@@ -86,8 +88,7 @@ function BusinessInfoDisclosure() {
 }
 
 export function Footer() {
-  const { t } = useI18n();
-  const initial = { opacity: 0, y: 12 };
+  const { locale, t } = useI18n();
   const inView = {
     opacity: 1,
     y: 0,
@@ -98,7 +99,7 @@ export function Footer() {
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-8 md:py-10">
       <motion.div
         className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 text-sm text-[var(--color-fg-muted)] md:px-12"
-        initial={initial}
+        initial={false}
         whileInView={inView}
         viewport={{ once: true, amount: 0.4 }}
       >
@@ -128,13 +129,27 @@ export function Footer() {
             className="flex items-center gap-4"
           >
             <Link
-              href="/privacy"
+              href={localizedPath(locale, "/privacy")}
               className="transition-colors hover:text-[var(--color-primary)]"
             >
               {t.footer.privacyLabel}
             </Link>
           </nav>
         </div>
+        <nav aria-label={t.languageSwitcher.groupAria} className="flex flex-wrap gap-4">
+          {LOCALES.map((code) => (
+            <Link
+              key={code}
+              href={localizedPath(code)}
+              lang={code}
+              hrefLang={code}
+              aria-current={code === locale ? "page" : undefined}
+              className="transition-colors hover:text-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+            >
+              {LOCALE_LABELS[code]}
+            </Link>
+          ))}
+        </nav>
       </motion.div>
     </footer>
   );

@@ -56,10 +56,10 @@ export function CompanyIntro() {
         />
       </motion.div>
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-12">
-        <div className="grid gap-10 lg:grid-cols-[minmax(220px,1fr)_minmax(560px,2.5fr)] lg:gap-20">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(220px,1fr)_minmax(560px,2.5fr)] lg:gap-20">
           <motion.div
             variants={item}
-            initial="hidden"
+            initial={false}
             whileInView="show"
             viewport={{ once: true, amount: 0.5 }}
             className="lg:self-start"
@@ -73,7 +73,7 @@ export function CompanyIntro() {
             <SectionHeadingUnderline />
           </motion.div>
 
-          <div className="space-y-7 break-keep text-[17px] leading-[1.75] text-[var(--color-fg)] md:space-y-9 md:text-lg md:leading-[1.75] lg:space-y-10 lg:text-xl lg:leading-[1.8]">
+          <div className="min-w-0 space-y-7 break-keep text-[17px] leading-[1.75] text-[var(--color-fg)] md:space-y-9 md:text-lg md:leading-[1.75] lg:space-y-10 lg:text-xl lg:leading-[1.8] [&:lang(ja)]:break-normal">
             {t.about.paragraphs.map((text, i) => (
               <ScrollRevealText
                 key={`${i}-${text}`}

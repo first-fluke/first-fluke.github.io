@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
-export const dynamic = "force-static";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "FIRST FLUKE — Make Your First Win";
@@ -87,7 +86,7 @@ export default async function OpengraphImage() {
             height: 440,
           }}
         >
-          {/** biome-ignore lint/performance/noImgElement: ImageResponse only supports img */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse requires a native img element. */}
           <img
             src={mascotSrc}
             alt=""

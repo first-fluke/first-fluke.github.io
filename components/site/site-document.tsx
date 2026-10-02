@@ -1,70 +1,22 @@
-import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { ClarityAnalytics } from "@/components/site/clarity";
 import { SITE } from "@/lib/site";
 import { SOLUTIONS } from "@/lib/solutions";
-import "./globals.css";
+import type { Locale } from "@/lib/i18n/i18n.types";
+import "@/app/globals.css";
 
 const CLARITY_PROJECT_ID = "wpd0eau95q";
-
-export const metadata: Metadata = {
-  metadataBase: new URL("https://firstfluke.com"),
-  title: {
-    default: "FIRST FLUKE",
-    template: "%s · FIRST FLUKE",
-  },
-  description:
-    "퍼스트플루크(FIRST FLUKE)는 자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니입니다. 플레이스해줘 · 콘텐츠해줘 · 법률검토해줘 · Shopzy. 모두의 창업 2026 AI 솔루션 공급기업 선정.",
-  keywords: [
-    "FIRST FLUKE",
-    "Firstfluke",
-    "퍼스트플루크",
-    "AI SaaS",
-    "AI 프로덕트 컴퍼니",
-    "AI 솔루션",
-    "모두의 창업",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "ko_KR",
-    url: "https://firstfluke.com",
-    siteName: "FIRST FLUKE",
-    title: "FIRST FLUKE — Make Your First Win",
-    description:
-      "자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니, FIRST FLUKE.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "FIRST FLUKE — Make Your First Win",
-    description:
-      "자체 AI SaaS 제품을 직접 만들고 운영하는 AI 프로덕트 컴퍼니.",
-  },
-  icons: {
-    icon: "/favicon.png",
-  },
-  alternates: {
-    canonical: "https://firstfluke.com",
-  },
-  verification: {
-    other: {
-      "msvalidate.01": "AB465FAFD5463302675999E4C50844FA",
-    },
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#0f4c3a",
-};
 
 const ORGANIZATION_JSONLD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${SITE.url}/#organization`,
   name: SITE.name,
+  alternateName: ["퍼스트플루크", "Firstfluke"],
   legalName: SITE.legalName,
   url: SITE.url,
   logo: `${SITE.url}/logo.png`,
-  image: `${SITE.url}/opengraph-image`,
+  image: `${SITE.url}/opengraph-image.png`,
   email: SITE.contactEmail,
   foundingDate: "2026-03",
   sameAs: [`https://www.threads.com/@${SITE.threadsHandle}`],
@@ -88,7 +40,7 @@ const ORGANIZATION_JSONLD = {
       contactType: "customer support",
       email: SITE.contactEmail,
       url: `${SITE.url}/#contact`,
-      availableLanguage: ["Korean", "English"],
+      availableLanguage: ["Korean", "English", "Japanese"],
     },
   ],
   award: SITE.selectionLabel,
@@ -112,18 +64,21 @@ const WEBSITE_JSONLD = {
   "@type": "WebSite",
   "@id": `${SITE.url}/#website`,
   name: SITE.name,
+  alternateName: ["퍼스트플루크", "Firstfluke"],
   url: SITE.url,
-  inLanguage: "ko-KR",
+  inLanguage: ["ko", "en", "ja"],
   publisher: { "@id": `${SITE.url}/#organization` },
 };
 
-export default function RootLayout({
+export function SiteDocument({
   children,
+  locale,
 }: Readonly<{
   children: React.ReactNode;
+  locale: Locale;
 }>) {
   return (
-    <html lang="ko" className="h-full">
+    <html lang={locale} className="h-full">
       <body className="min-h-full antialiased flex flex-col">
         <script
           dangerouslySetInnerHTML={{
@@ -137,13 +92,13 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(ORGANIZATION_JSONLD),
+            __html: JSON.stringify(ORGANIZATION_JSONLD).replace(/</g, "\\u003c"),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(WEBSITE_JSONLD),
+            __html: JSON.stringify(WEBSITE_JSONLD).replace(/</g, "\\u003c"),
           }}
         />
       </body>

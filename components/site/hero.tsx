@@ -85,7 +85,7 @@ export function Hero() {
         <motion.div
           className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"
           variants={container}
-          initial="hidden"
+          initial={false}
           animate="show"
           style={
             heavyEffects
@@ -184,7 +184,7 @@ export function Hero() {
             href="#about"
             aria-label={t.hero.scrollHintAria}
             className="flex flex-col items-center gap-2 rounded-full text-[var(--color-fg-muted)] transition-colors hover:text-[var(--color-primary)]"
-            initial={{ opacity: 0, y: 8 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.3, duration: 0.6 }}
           >

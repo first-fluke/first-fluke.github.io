@@ -10,7 +10,7 @@ import { ContactSection } from "@/components/site/contact-section";
 import { Footer } from "@/components/site/footer";
 import { BackToTop } from "@/components/site/back-to-top";
 
-export default function Home() {
+export function HomePage() {
   return (
     <>
       <Header />
