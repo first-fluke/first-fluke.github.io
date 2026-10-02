@@ -8,6 +8,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return createPageMetadata(locale, "home");
 }
 
-export default function LocalizedHome() {
-  return <HomePage />;
+export default async function LocalizedHome({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (locale !== "en" && locale !== "ja") notFound();
+  return <HomePage locale={locale} />;
 }
