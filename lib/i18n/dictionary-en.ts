@@ -29,7 +29,7 @@ export const DICTIONARY_EN: Dictionary = {
   about: {
     paragraphs: [
       "FIRST FLUKE is an AI product company founded in March 2026. Rather than building software for other companies, we design, build, and operate our own AI SaaS products under our own name.",
-      "From local-business marketing to creator content and online-store operations, we ship a family of subscription SaaS products that hand everyday repetitive work to AI. Each product runs on a monthly subscription and can be tried right away with a free trial.",
+      "Our AI products cover store marketing, social content, legal research, online-store operations, app deployment, clinic inquiries, and fortune readings. Each product website provides its own pricing and free-use details.",
       "Instead of putting complex technology front and center, we design experiences anyone can understand and use immediately — execution-driven products that carry an idea all the way to daily use.",
       "Before the technology itself, we ask why it is needed — and what kind of experience it leaves behind.",
     ],
@@ -65,7 +65,7 @@ export const DICTIONARY_EN: Dictionary = {
   },
   solutions: {
     heading: "Solutions",
-    subtitle: "A family of subscription AI SaaS products we build and operate ourselves.",
+    subtitle: "AI products built and operated by FIRST FLUKE.",
     openAria: "Visit the {name} website (external link)",
     viewCta: "Visit site",
     liveBadge: "Live",
@@ -142,6 +142,48 @@ export const DICTIONARY_EN: Dictionary = {
       },
     },
   },
+  faq: {
+    "heading": "Choosing and using our products",
+    "intro": "Find the product that fits your work and learn how to get started.",
+    "items": [
+      {
+        "question": "What is FIRST FLUKE?",
+        "answer": "FIRST FLUKE is an AI product company founded in March 2026. We build and operate Place Haejo, Contents Haejo, Legalize Haejo, Shopzy, Deploy Haejo, Medisupporter, and Fortunebom.",
+        "href": "#about",
+        "linkLabel": "About the company"
+      },
+      {
+        "question": "Which products help with store marketing and social content?",
+        "answer": "Explore Place Haejo for marketing based on store information and reviews, or Contents Haejo for social post ideas and content creation. The solutions section includes features and screenshots of both products.",
+        "href": "#solutions",
+        "linkLabel": "See features and screenshots"
+      },
+      {
+        "question": "Which products support online stores, clinic inquiries, and deployment?",
+        "answer": "Shopzy helps operate Cafe24 stores, Medisupporter brings together clinic inquiries and appointment management, and Deploy Haejo helps deploy apps from connected source code. Choose the product that fits the task you need to manage.",
+        "href": "#solutions",
+        "linkLabel": "Explore products by task"
+      },
+      {
+        "question": "What do Legalize Haejo and Fortunebom do?",
+        "answer": "Legalize Haejo is an AI research tool for analyzing and comparing legislation and clauses. Fortunebom is an AI fortune service covering Saju, Zi Wei Dou Shu, Tarot, and Western astrology. Each product website explains its features and how to use it.",
+        "href": "#solutions",
+        "linkLabel": "Find the product websites"
+      },
+      {
+        "question": "Where can I check pricing and free trials?",
+        "answer": "Plans, free features, and trial availability vary by product. Open the product website from the solutions section for its current terms. For adoption or partnership inquiries, select the product in our contact form.",
+        "href": "#contact",
+        "linkLabel": "Ask about a product"
+      },
+      {
+        "question": "How can I contact the team about a product?",
+        "answer": "Select the product in the contact form below and send your email address and question. Our team will review your inquiry and reply. Company contact and business information are also available at the bottom of this page.",
+        "href": "#contact",
+        "linkLabel": "Go to the contact form"
+      }
+    ]
+  },
   team: {
     heading: "Team",
     subtitle: "The people behind FIRST FLUKE",
@@ -204,7 +246,7 @@ export const DICTIONARY_EN: Dictionary = {
       title: "Business Information",
       rows: [
         { label: "Business Reg. No.", value: "711-23-02368" },
-        { label: "Representative", value: "Gahyun Kim" },
+        { label: "Representative", value: "Kim Gahyun" },
         { label: "Phone", value: "+82 10-3953-2827" },
         {
           label: "Address",

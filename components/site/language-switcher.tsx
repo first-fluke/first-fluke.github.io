@@ -56,6 +56,7 @@ export function LanguageSwitcher({ size = "md", className }: LanguageSwitcherPro
                 )}
               >
                 <Link
+                  prefetch={false}
                   href={localizedPath(code, pathname)}
                   lang={code}
                   hrefLang={code}

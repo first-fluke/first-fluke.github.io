@@ -1,7 +1,7 @@
-import { Analytics } from "@vercel/analytics/next";
 import { ClarityAnalytics } from "@/components/site/clarity";
 import { SITE } from "@/lib/site";
-import { SOLUTIONS } from "@/lib/solutions";
+import { TEAM } from "@/lib/team";
+import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/i18n.types";
 import "@/app/globals.css";
 
@@ -20,20 +20,6 @@ const ORGANIZATION_JSONLD = {
   email: SITE.contactEmail,
   foundingDate: "2026-03",
   sameAs: [`https://www.threads.com/@${SITE.threadsHandle}`],
-  founder: [
-    {
-      "@type": "Person",
-      name: "Kim Gahyun",
-      jobTitle: "Co-Founder & CEO",
-      sameAs: ["https://www.linkedin.com/in/otti-nuna/"],
-    },
-    {
-      "@type": "Person",
-      name: "Shin Eunkwang",
-      jobTitle: "Co-Founder & CTO",
-      sameAs: ["https://www.linkedin.com/in/gracefullight/"],
-    },
-  ],
   contactPoint: [
     {
       "@type": "ContactPoint",
@@ -44,19 +30,6 @@ const ORGANIZATION_JSONLD = {
     },
   ],
   award: SITE.selectionLabel,
-  makesOffer: SOLUTIONS.map((solution) => ({
-    "@type": "Offer",
-    name: solution.name,
-    category: solution.category,
-    url: solution.href,
-    itemOffered: {
-      "@type": "SoftwareApplication",
-      name: solution.name,
-      description: solution.tagline,
-      applicationCategory: "BusinessApplication",
-      url: solution.href,
-    },
-  })),
 };
 
 const WEBSITE_JSONLD = {
@@ -77,6 +50,29 @@ export function SiteDocument({
   children: React.ReactNode;
   locale: Locale;
 }>) {
+  const { footer, team } = DICTIONARIES[locale];
+  const organization = {
+    ...ORGANIZATION_JSONLD,
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "Business registration number",
+      value: footer.business.rows[0].value,
+    },
+    telephone: "+82-10-3953-2827",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: footer.business.rows[3].value,
+      addressCountry: "KR",
+    },
+    founder: TEAM.map((member) => ({
+      "@type": "Person",
+      "@id": `${SITE.url}/#${member.id}`,
+      name: team.members[member.id].name,
+      jobTitle: team.members[member.id].role,
+      sameAs: [member.linkedin],
+    })),
+  };
+
   return (
     <html lang={locale} className="h-full">
       <body className="min-h-full antialiased flex flex-col">
@@ -87,12 +83,11 @@ export function SiteDocument({
           }}
         />
         {children}
-        <Analytics />
         <ClarityAnalytics projectId={CLARITY_PROJECT_ID} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(ORGANIZATION_JSONLD).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(organization).replace(/</g, "\\u003c"),
           }}
         />
         <script

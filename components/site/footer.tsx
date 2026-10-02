@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { SITE } from "@/lib/site";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/i18n.types";
@@ -24,66 +23,23 @@ function ThreadsIcon({ className }: { className?: string }) {
 
 function BusinessInfoDisclosure() {
   const { t } = useI18n();
-  const [open, setOpen] = useState(false);
 
   return (
-    <span
-      className="relative inline-flex"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        type="button"
-        aria-label={t.footer.business.triggerAria}
-        aria-expanded={open}
-        aria-controls="footer-business-info"
-        onClick={() => setOpen(true)}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") setOpen(false);
-        }}
-        className="cursor-help underline decoration-[var(--color-fg-muted)]/50 decoration-dotted underline-offset-4 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)]"
+    <details className="w-full max-w-xl">
+      <summary
+        className="cursor-pointer text-[var(--color-primary)] underline decoration-dotted underline-offset-4"
       >
-        © 2026 FIRST FLUKE
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            id="footer-business-info"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              transition: { duration: 0.18, ease: "easeOut" },
-            }}
-            exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}
-            className="absolute bottom-full left-0 z-50 mb-3 w-[19rem] rounded-xl border border-[var(--color-border)] bg-white p-4 text-left shadow-[var(--shadow-card-hover)]"
-          >
-            <p className="text-[13px] font-semibold text-[var(--color-primary)]">
-              {t.footer.business.title}
-            </p>
-            <dl className="mt-2.5 space-y-1.5">
-              {t.footer.business.rows.map((row) => (
-                <div
-                  key={row.label}
-                  className="flex gap-2 text-[12.5px] leading-relaxed"
-                >
-                  <dt className="w-28 shrink-0 text-[var(--color-fg-muted)]">
-                    {row.label}
-                  </dt>
-                  <dd className="text-[var(--color-fg)]">{row.value}</dd>
-                </div>
-              ))}
-            </dl>
-            <span
-              aria-hidden
-              className="absolute -bottom-[5px] left-8 h-2.5 w-2.5 rotate-45 border-r border-b border-[var(--color-border)] bg-white"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </span>
+        © 2026 FIRST FLUKE · {t.footer.business.title}
+      </summary>
+      <dl className="mt-4 space-y-2 rounded-xl border border-[var(--color-border)] p-4">
+        {t.footer.business.rows.map((row) => (
+          <div key={row.label} className="grid gap-1 text-sm leading-relaxed sm:grid-cols-[9rem_1fr]">
+            <dt className="text-[var(--color-fg-muted)]">{row.label}</dt>
+            <dd className="break-words text-[var(--color-fg)]">{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </details>
   );
 }
 
@@ -112,7 +68,6 @@ export function Footer() {
             href={`https://www.threads.com/@${SITE.threadsHandle}`}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Threads @${SITE.threadsHandle}`}
             className="inline-flex items-center gap-1.5 transition-colors hover:text-[var(--color-primary)]"
           >
             <ThreadsIcon className="h-4 w-4" />
@@ -129,6 +84,7 @@ export function Footer() {
             className="flex items-center gap-4"
           >
             <Link
+              prefetch={false}
               href={localizedPath(locale, "/privacy")}
               className="transition-colors hover:text-[var(--color-primary)]"
             >
@@ -136,9 +92,13 @@ export function Footer() {
             </Link>
           </nav>
         </div>
+        <a href={`mailto:${SITE.contactEmail}`} className="w-fit underline underline-offset-4 hover:text-[var(--color-primary)]">
+          {SITE.contactEmail}
+        </a>
         <nav aria-label={t.languageSwitcher.groupAria} className="flex flex-wrap gap-4">
           {LOCALES.map((code) => (
             <Link
+              prefetch={false}
               key={code}
               href={localizedPath(code)}
               lang={code}

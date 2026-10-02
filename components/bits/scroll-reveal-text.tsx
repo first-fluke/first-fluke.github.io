@@ -20,7 +20,8 @@ interface ScrollRevealTextProps {
 
 /** Fraction of the paragraph's scroll range each word takes to fully reveal. */
 const WORD_WINDOW = 0.3;
-const DIM_OPACITY = 0.14;
+// Keep text readable throughout the scroll animation, including before reveal.
+const DIM_OPACITY = 0.8;
 const subscribeToHydration = () => () => undefined;
 const getHydratedSnapshot = () => true;
 const getServerHydratedSnapshot = () => false;
