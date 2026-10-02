@@ -24,6 +24,8 @@ The site uses Next.js 16 static export and is deployed to GitHub Pages by `.gith
 - `/sitemap.xml` includes the three indexable homepages and their language alternates. It omits `lastmod` until a reliable content modification date is available.
 - The three privacy pages use their own canonical URLs and `noindex, follow`. They remain crawlable so search engines can read `noindex`.
 - Main content is visible in the exported HTML without JavaScript. Language links in the footer also work without JavaScript.
+- Product selection and usage questions are answered in all three languages. Business information uses a native disclosure so it remains available without JavaScript; Organization JSON-LD uses the same localized team and business details.
+- See the [SEO, AEO, and GEO audit](docs/seo/optimization-audit.md) for documentation scope, implementation evidence, and the distinction between sitemap submission and Google's processing status.
 
 Verify the actual deployment artifacts:
 

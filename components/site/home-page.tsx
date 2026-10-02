@@ -9,8 +9,10 @@ import { TeamSection } from "@/components/site/team-section";
 import { ContactSection } from "@/components/site/contact-section";
 import { Footer } from "@/components/site/footer";
 import { BackToTop } from "@/components/site/back-to-top";
+import { ProductFaq } from "@/components/site/product-faq";
+import type { Locale } from "@/lib/i18n/i18n.types";
 
-export function HomePage() {
+export function HomePage({ locale = "ko" }: { locale?: Locale }) {
   return (
     <>
       <Header />
@@ -21,6 +23,7 @@ export function HomePage() {
         <CompanyIntro />
         <OmaSection />
         <SolutionsGrid />
+        <ProductFaq locale={locale} />
         <TeamSection />
         <ContactSection />
       </main>
