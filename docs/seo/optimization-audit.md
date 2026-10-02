@@ -36,6 +36,7 @@
 
 - [PR #10](https://github.com/first-fluke/first-fluke.github.io/pull/10) 병합 및 [프로덕션 배포](https://github.com/first-fluke/first-fluke.github.io/actions/runs/37027184851) 성공. 배포 커밋 `2059c65290a0f8418c3d04a61ac9eeece2c83db7`.
 - 배포 후 한국어·영어·일본어 페이지 HTTP 200, 새 FAQ·회사 정보, 불필요한 분석 스크립트 제거를 확인. 사이트맵은 홈페이지 URL 3개를 포함한 유효 XML을 반환.
+- 세 언어의 실제 HTML에서 잘못된 head 요소 없음, 이미지 21개씩 alt 속성 존재, 색인 허용 및 언어 전환 링크 확인. Chrome에서 영문 FAQ의 `#:~:text=` 링크가 해당 문장으로 이동하는 것을 확인.
 - 정적 빌드 및 TypeScript 검사 통과.
 - SEO 회귀 검사: 17개 테스트, 355개 assertion 통과. 3개 언어 본문·FAQ·회사 정보·구조화된 데이터, metadata, sitemap, privacy noindex 검증.
 - 변경 파일 ESLint 통과.
