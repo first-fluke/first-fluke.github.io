@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | 크롤링·색인 | 정적 HTML, 정상 페이지 200, 없는 페이지 404, robots 크롤링 허용 | `app/robots.ts`, 정적 배포 결과, [기술 요구사항](https://developers.google.com/search/docs/essentials/technical) |
 | URL·다국어 | 언어별 URL, self canonical, 상호 hreflang, x-default, 실제 언어 링크 | `lib/site-seo.ts`, [다국어 버전](https://developers.google.com/search/docs/specialty/international/localized-versions), [언어 적응형 페이지](https://developers.google.com/search/docs/specialty/international/locale-adaptive-pages) |
+| HTTPS·호스트 통일 | HTTP와 www 요청을 경로·쿼리를 유지한 채 `https://firstfluke.com`으로 301 리디렉션 | 실제 HTTP·HTTPS·www 응답 확인 |
 | 검색 제목·설명 | 7개 제품 분야를 반영한 언어별 설명, OG·Twitter 이미지 | `lib/site-seo.ts`, [기본 가이드](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) |
 | 사이트맵 | 정규 홈페이지 3개와 언어 대체 링크, 근거 없는 lastmod 제외 | `app/sitemap.ts`, [사이트맵 가이드](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) |
 | 개인정보 페이지 | 별도 canonical, noindex·follow, robots에서 접근 허용 | `tests/seo.test.mjs`, [색인 차단](https://developers.google.com/search/docs/crawling-indexing/block-indexing) |
@@ -33,6 +34,8 @@
 
 ## 검증 결과
 
+- [PR #10](https://github.com/first-fluke/first-fluke.github.io/pull/10) 병합 및 [프로덕션 배포](https://github.com/first-fluke/first-fluke.github.io/actions/runs/37027184851) 성공. 배포 커밋 `2059c65290a0f8418c3d04a61ac9eeece2c83db7`.
+- 배포 후 한국어·영어·일본어 페이지 HTTP 200, 새 FAQ·회사 정보, 불필요한 분석 스크립트 제거를 확인. 사이트맵은 홈페이지 URL 3개를 포함한 유효 XML을 반환.
 - 정적 빌드 및 TypeScript 검사 통과.
 - SEO 회귀 검사: 17개 테스트, 355개 assertion 통과. 3개 언어 본문·FAQ·회사 정보·구조화된 데이터, metadata, sitemap, privacy noindex 검증.
 - 변경 파일 ESLint 통과.
