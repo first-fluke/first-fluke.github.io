@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | 크롤링·색인 | 정적 HTML, 정상 페이지 200, 없는 페이지 404, robots 크롤링 허용 | `app/robots.ts`, 정적 배포 결과, [기술 요구사항](https://developers.google.com/search/docs/essentials/technical) |
 | URL·다국어 | 언어별 URL, self canonical, 상호 hreflang, x-default, 실제 언어 링크 | `lib/site-seo.ts`, [다국어 버전](https://developers.google.com/search/docs/specialty/international/localized-versions), [언어 적응형 페이지](https://developers.google.com/search/docs/specialty/international/locale-adaptive-pages) |
+| HTTPS·호스트 통일 | HTTP와 www 요청을 경로·쿼리를 유지한 채 `https://firstfluke.com`으로 301 리디렉션 | Cloudflare 단일 리디렉션 `firstfluke.com canonical HTTPS`. 실제 HTTP·HTTPS·www 응답 확인 |
 | 검색 제목·설명 | 7개 제품 분야를 반영한 언어별 설명, OG·Twitter 이미지 | `lib/site-seo.ts`, [기본 가이드](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) |
 | 사이트맵 | 정규 홈페이지 3개와 언어 대체 링크, 근거 없는 lastmod 제외 | `app/sitemap.ts`, [사이트맵 가이드](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) |
 | 개인정보 페이지 | 별도 canonical, noindex·follow, robots에서 접근 허용 | `tests/seo.test.mjs`, [색인 차단](https://developers.google.com/search/docs/crawling-indexing/block-indexing) |
@@ -38,6 +39,9 @@
 
 - 도메인 속성 `firstfluke.com` 소유권 인증 상태 정상.
 - `https://firstfluke.com/`은 **Google에 등록되어 있음 / 페이지 색인이 생성됨**.
+- 배포 후 홈페이지의 색인 생성 재요청에서 **색인 생성 요청됨** 확인.
+- 영문 페이지는 색인 요청 후 **크롤링됨 - 현재 색인이 생성되지 않음**. 최근 크롤링은 2026-10-03 00:39:11 KST, Googlebot 스마트폰, 크롤링 허용 및 페이지 가져오기 성공. 방문 성공과 색인 생성은 별개다.
+- 일본어 페이지의 **색인 생성 요청됨** 및 우선순위 크롤링 대기열 추가 확인. 요청 전 상태는 Google에 아직 알려지지 않은 URL이었다. 색인 반영 완료로 간주하지 않는다.
 - `https://firstfluke.com/sitemap.xml` 제출 완료. 보고서는 **가져올 수 없음 / 발견된 페이지 0**. 제출 완료와 처리 성공을 구분한다.
 - 공개 사이트맵은 HTTP 200, `application/xml`, 유효한 XML 및 홈페이지 3개를 반환한다. 기존 `/sitemap`도 같은 XML을 반환한다. 앞선 Google 실제 URL 테스트에서는 파일 가져오기가 성공했다. 오류 원인이 확정되었다고 기록하지 않는다.
 - robots 보고서의 심각한 오류 1건은 `haejo-api.firstfluke.com`에 해당한다. 회사 홈페이지 robots에는 정상 수집 기록이 있으며 최신 파일 재크롤링을 요청했다. API의 접근 제한을 임의 해제하지 않았다.
@@ -45,6 +49,8 @@
 
 ## 검증 결과
 
+- [PR #10](https://github.com/first-fluke/first-fluke.github.io/pull/10) 병합 및 [프로덕션 배포](https://github.com/first-fluke/first-fluke.github.io/actions/runs/37027184851) 성공. 배포 커밋 `2059c65290a0f8418c3d04a61ac9eeece2c83db7`.
+- 배포 후 한국어·영어·일본어 페이지 HTTP 200, 새 FAQ·회사 정보, 불필요한 분석 스크립트 제거를 확인. 사이트맵은 홈페이지 URL 3개를 포함한 유효 XML을 반환.
 - 정적 빌드 및 TypeScript 검사 통과.
 - SEO 회귀 검사: 17개 테스트, 355개 assertion 통과. 3개 언어 본문·FAQ·회사 정보·구조화된 데이터, metadata, sitemap, privacy noindex 검증.
 - 변경 파일 ESLint 통과.
