@@ -40,10 +40,12 @@
 - 도메인 속성 `firstfluke.com` 소유권 인증 상태 정상.
 - `https://firstfluke.com/`은 **Google에 등록되어 있음 / 페이지 색인이 생성됨**.
 - 배포 후 홈페이지의 색인 생성 재요청에서 **색인 생성 요청됨** 확인.
-- 영문 페이지는 색인 요청 후 **크롤링됨 - 현재 색인이 생성되지 않음**. 최근 크롤링은 2026-10-03 00:39:11 KST, Googlebot 스마트폰, 크롤링 허용 및 페이지 가져오기 성공. 방문 성공과 색인 생성은 별개다.
-- 일본어 페이지의 **색인 생성 요청됨** 및 우선순위 크롤링 대기열 추가 확인. 요청 전 상태는 Google에 아직 알려지지 않은 URL이었다. 색인 반영 완료로 간주하지 않는다.
+- 영문·일본어 페이지 모두 요청 이후 재검사에서 **Google에 등록되어 있음 / 페이지 색인이 생성됨** 확인. 요청 접수 상태에서 실제 색인 생성 상태로 바뀌었다.
+- 영문 페이지는 최근 크롤링 2026-10-03 00:39:11 KST, Googlebot 스마트폰, 페이지 가져오기 성공. 사용자 선언 canonical과 Google에서 선택한 canonical 모두 `https://firstfluke.com/en/`. URL 검사 내부의 Sitemaps 항목은 **일시적인 처리 오류**로 표시되며 페이지 자체의 색인 생성은 완료 상태다.
+- 일본어 페이지는 최근 크롤링 2026-10-03 00:45:11 KST, Googlebot 스마트폰, 페이지 가져오기 성공. 사용자 선언 canonical과 Google에서 선택한 canonical 모두 `https://firstfluke.com/ja/`.
 - `https://firstfluke.com/sitemap.xml` 제출 완료. 보고서는 **가져올 수 없음 / 발견된 페이지 0**. 제출 완료와 처리 성공을 구분한다.
-- 공개 사이트맵은 HTTP 200, `application/xml`, 유효한 XML 및 홈페이지 3개를 반환한다. 기존 `/sitemap`도 같은 XML을 반환한다. 앞선 Google 실제 URL 테스트에서는 파일 가져오기가 성공했다. 오류 원인이 확정되었다고 기록하지 않는다.
+- 공개 사이트맵은 HTTP 200, `application/xml`, 유효한 XML 및 홈페이지 3개를 반환한다. 기존 `/sitemap`도 같은 XML을 반환한다. **2026-10-03 00:51:23 KST Google 실제 URL 테스트에서 크롤링 허용·페이지 가져오기 성공** 확인. 테스트된 페이지의 소스에서도 세 언어 URL과 상호 hreflang이 있는 XML을 직접 확인했다. 사이트맵 보고서 처리 성공과 구분하며, 오류 원인을 확정하지 않는다.
+- Search Console의 **직접 조치·보안 문제 모두 감지된 문제 없음**. [사이트맵 오류 진단 안내](https://support.google.com/webmasters/answer/7451001?hl=en-GB)에 따라 접근 차단·수동 조치·실제 가져오기를 점검했다. 확인된 기술 결함 없이 사이트맵을 반복 변경하거나 재제출하지 않는다.
 - robots 보고서의 심각한 오류 1건은 `haejo-api.firstfluke.com`에 해당한다. 회사 홈페이지 robots에는 정상 수집 기록이 있으며 최신 파일 재크롤링을 요청했다. API의 접근 제한을 임의 해제하지 않았다.
 - Google 처리·재색인·순위·AI 인용은 배포와 별도의 외부 결과다. 정상 응답이나 테스트 통과만으로 처리 성공이라고 보고하지 않는다.
 
@@ -51,6 +53,7 @@
 
 - [PR #10](https://github.com/first-fluke/first-fluke.github.io/pull/10) 병합 및 [프로덕션 배포](https://github.com/first-fluke/first-fluke.github.io/actions/runs/37027184851) 성공. 배포 커밋 `2059c65290a0f8418c3d04a61ac9eeece2c83db7`.
 - 배포 후 한국어·영어·일본어 페이지 HTTP 200, 새 FAQ·회사 정보, 불필요한 분석 스크립트 제거를 확인. 사이트맵은 홈페이지 URL 3개를 포함한 유효 XML을 반환.
+- 세 언어의 실제 HTML에서 잘못된 head 요소 없음, 이미지 21개씩 alt 속성 존재, 색인 허용 및 언어 전환 링크 확인. Chrome에서 영문 FAQ의 `#:~:text=` 링크가 해당 문장으로 이동하는 것을 확인.
 - 정적 빌드 및 TypeScript 검사 통과.
 - SEO 회귀 검사: 17개 테스트, 355개 assertion 통과. 3개 언어 본문·FAQ·회사 정보·구조화된 데이터, metadata, sitemap, privacy noindex 검증.
 - 변경 파일 ESLint 통과.
