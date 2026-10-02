@@ -19,7 +19,6 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
         href={SITE.selectionPageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={t.badge.linkAria}
         className={cn(
           "inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[var(--color-fg)] ring-1 ring-[var(--color-border)] transition-colors hover:ring-[var(--color-primary)]/30",
           className,
@@ -36,6 +35,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
           ·
         </span>
         <span>{t.badge.chipLabel}</span>
+        <span className="sr-only">{t.badge.linkAria}</span>
       </a>
     );
   }
@@ -45,7 +45,6 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
       href={SITE.selectionPageUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={t.badge.linkAria}
       className={cn(
         "inline-flex items-center gap-2.5 rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 transition-colors hover:border-[var(--color-primary)]/30",
         className,
@@ -68,6 +67,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
           {t.badge.providerLabel}
         </span>
       </span>
+      <span className="sr-only">{t.badge.linkAria}</span>
     </a>
   );
 }

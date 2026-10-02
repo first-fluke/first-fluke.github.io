@@ -107,6 +107,11 @@ export interface Dictionary {
     liveBadge: string;
     items: Record<string, SolutionCopy>;
   };
+  faq: {
+    heading: string;
+    intro: string;
+    items: { question: string; answer: string; href: string; linkLabel: string }[];
+  };
   team: {
     heading: string;
     subtitle: string;

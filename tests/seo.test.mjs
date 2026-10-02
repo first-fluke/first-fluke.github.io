@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { localizedPath } from "../lib/i18n/locale-routing.ts";
 import { createPageMetadata } from "../lib/site-seo.ts";
+import { DICTIONARIES } from "../lib/i18n/dictionaries.ts";
 
 const origin = "https://firstfluke.com";
 const homePaths = { ko: "/", en: "/en/", ja: "/ja/" };
@@ -90,6 +91,20 @@ describe("exported SEO", () => {
           expect(main).not.toContain("opacity:0.14");
           for (const path of Object.values(homePaths)) expect(html).toContain(`href="${path}"`);
           expect(html).toContain(`href="${homePath}privacy/"`);
+          const bodyWithoutScripts = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
+          const guide = bodyWithoutScripts.match(/<section id="product-guide"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+          expect(guide).toBeDefined();
+          for (const item of DICTIONARIES[locale].faq.items) {
+            expect(guide).toContain(item.question);
+            expect(guide).toContain(item.answer);
+            expect(bodyWithoutScripts).toContain(`id="${item.href.slice(1)}"`);
+          }
+          // Company facts must be in the initial HTML, not only in JSON-LD or a client popup.
+          for (const row of DICTIONARIES[locale].footer.business.rows) {
+            expect(bodyWithoutScripts).toContain(row.value);
+          }
+          expect(bodyWithoutScripts).toContain("mailto:hello@firstfluke.com");
+          expect(html).not.toContain("/_vercel/insights/script.js");
         } else {
           expect(h1).toContain(metadata.title.absolute.split(" · ")[0]);
           expect(html).toContain(`href="${homePath}"`);
@@ -100,6 +115,12 @@ describe("exported SEO", () => {
         const website = structuredData.find((data) => data["@type"] === "WebSite");
         expect(organization.alternateName).toContain("퍼스트플루크");
         expect(website.publisher["@id"]).toBe(organization["@id"]);
+        expect(organization.identifier.value).toBe("711-23-02368");
+        expect(organization.address.addressCountry).toBe("KR");
+        expect(organization.makesOffer).toBeUndefined();
+        for (const founder of organization.founder) {
+          expect(Object.values(DICTIONARIES[locale].team.members).some((member) => member.name === founder.name)).toBe(true);
+        }
         expect(existsSync(join("out", new URL(organization.logo).pathname))).toBe(true);
         expect(existsSync(join("out", new URL(organization.image).pathname))).toBe(true);
       });

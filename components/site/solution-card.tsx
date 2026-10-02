@@ -101,7 +101,6 @@ export function SolutionCard({ solution }: SolutionCardProps) {
       href={solution.href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={t.solutions.openAria.replace("{name}", copy.name)}
       onMouseMove={handleMouseMove}
       className="group relative block h-full rounded-2xl focus:outline-none"
       style={
@@ -124,7 +123,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
           {solution.screenshotSrc ? (
             <Image
               src={solution.screenshotSrc}
-              alt={`${copy.name} — ${copy.tagline}`}
+              alt={`${copy.name}: ${copy.tagline}`}
               fill
               unoptimized
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -184,6 +183,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
 
           <div className="mt-auto flex items-center gap-1.5 pt-1 text-sm font-semibold text-[var(--color-primary)]">
             {t.solutions.viewCta}
+            <span className="sr-only">{t.solutions.openAria.replace("{name}", copy.name)}</span>
             <span
               aria-hidden
               className="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-0.5 group-focus-visible:translate-x-1 group-focus-visible:-translate-y-0.5"

@@ -78,7 +78,8 @@ export function TypewriterText({
   const visibleText = displayed;
 
   return (
-    <span ref={ref} className={className} aria-label={texts[0]}>
+    <span ref={ref} className={className}>
+      <span className="sr-only">{texts[0]}</span>
       <span aria-hidden>{visibleText}</span>
       {cursor && (
         <span
