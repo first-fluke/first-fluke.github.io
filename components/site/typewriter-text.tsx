@@ -26,9 +26,9 @@ export function TypewriterText({
 }: TypewriterTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [displayed, setDisplayed] = useState("");
+  const [displayed, setDisplayed] = useState(texts[0] ?? "");
   const [textIdx, setTextIdx] = useState(0);
-  const [mode, setMode] = useState<Mode>("typing");
+  const [mode, setMode] = useState<Mode>("pausing-type");
 
   useEffect(() => {
     if (!inView) return;

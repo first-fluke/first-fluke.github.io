@@ -40,14 +40,12 @@ export function OmaSection() {
 
   const animatedBorderBackground = useMotionTemplate`conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, rgba(122,185,76,0.55) 80deg, transparent 160deg, transparent 240deg, rgba(15,84,64,0.35) 320deg, transparent 360deg)`;
 
-  const fadeUpInitial = { opacity: 0, y: 20 };
   const fadeUpAnimate = {
     opacity: 1,
     y: 0,
     transition: { duration: 0.55, ease: easeOutExpo },
   };
 
-  const cardInitial = { opacity: 0, y: 24, scale: 0.985 };
   const cardAnimate = {
     opacity: 1,
     y: 0,
@@ -96,7 +94,7 @@ export function OmaSection() {
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-12">
         <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-12">
           <motion.div
-            initial={fadeUpInitial}
+            initial={false}
             whileInView={fadeUpAnimate}
             viewport={{ once: true, amount: 0.3 }}
           >
@@ -140,7 +138,7 @@ export function OmaSection() {
           <Parallax offset={36}>
             <TiltedCard>
               <motion.div
-                initial={cardInitial}
+                initial={false}
                 whileInView={cardAnimate}
                 viewport={{ once: true, amount: 0.25 }}
                 className="relative"
@@ -190,7 +188,7 @@ export function OmaSection() {
                   <motion.div
                     className="relative space-y-6 px-6 py-7 md:px-8 md:py-8"
                     variants={itemStagger}
-                    initial="hidden"
+                    initial={false}
                     whileInView="show"
                     viewport={{ once: true, amount: 0.2 }}
                   >
@@ -200,7 +198,7 @@ export function OmaSection() {
                       </p>
                       <p className="mt-1.5 text-lg font-semibold text-[var(--color-fg)] md:text-xl">
                         &ldquo;
-                        <TypewriterText texts={t.oma.typewriterTexts} />
+                        <TypewriterText key={t.oma.typewriterTexts[0]} texts={t.oma.typewriterTexts} />
                         &rdquo;
                       </p>
                     </motion.div>
@@ -225,7 +223,7 @@ export function OmaSection() {
                   <motion.div
                     className="relative border-t border-[var(--color-border)] bg-[var(--color-bg-soft)]/60 px-6 py-5 md:px-8 md:py-6"
                     variants={itemStagger}
-                    initial="hidden"
+                    initial={false}
                     whileInView="show"
                     viewport={{ once: true, amount: 0.2 }}
                   >

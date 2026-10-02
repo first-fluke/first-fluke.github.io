@@ -57,7 +57,7 @@ export function TeamSection() {
       <div className="mx-auto w-full max-w-6xl px-6 md:px-12">
         <motion.div
           variants={container}
-          initial="hidden"
+          initial={false}
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
         >
@@ -112,7 +112,7 @@ export function TeamSection() {
                       <p className="text-[13px] font-medium text-[var(--color-primary)]/80">
                         {copy.role}
                       </p>
-                      <p className="text-[14px] leading-relaxed text-[var(--color-fg-muted)] break-keep">
+                      <p className="text-[14px] leading-relaxed text-[var(--color-fg-muted)] break-keep [&:lang(ja)]:break-normal">
                         {copy.bio}
                       </p>
                     </div>

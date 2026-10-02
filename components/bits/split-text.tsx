@@ -68,7 +68,7 @@ export function SplitText({
                   <motion.span
                     key={index}
                     className="inline-block will-change-transform"
-                    initial={{ opacity: 0, y: 28 }}
+                    initial={{ y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       duration: 0.7,

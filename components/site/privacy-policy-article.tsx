@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { useI18n } from "@/lib/i18n/use-i18n";
+import { localizedPath } from "@/lib/i18n/locale-routing";
 
 export function PrivacyPolicyArticle() {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-20 md:px-12 md:py-28">
       <div className="flex items-center justify-between gap-4">
         <Link
-          href="/"
+          href={localizedPath(locale)}
           className="text-sm text-[var(--color-fg-muted)] transition-colors hover:text-[var(--color-primary)]"
         >
           {t.privacy.backLink}

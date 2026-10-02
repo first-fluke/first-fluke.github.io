@@ -32,7 +32,7 @@ export function ContactSection() {
       <motion.div
         className="mx-auto w-full max-w-3xl px-6 md:px-12"
         variants={container}
-        initial="hidden"
+        initial={false}
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
       >
