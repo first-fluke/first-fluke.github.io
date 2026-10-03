@@ -1,4 +1,4 @@
-# SEO · AEO · GEO 적용 기록
+# SEO · AEO · GEO 구현 안내
 
 검토일: 2026-10-03. 대상: 회사 홈페이지 `https://firstfluke.com/`과 `/en/`, `/ja/`. 개별 제품의 도메인·앱은 이 저장소의 배포 대상이 아니다.
 
@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | 크롤링·색인 | 정적 HTML, 정상 페이지 200, 없는 페이지 404, robots 크롤링 허용 | `app/robots.ts`, 정적 배포 결과, [기술 요구사항](https://developers.google.com/search/docs/essentials/technical) |
 | URL·다국어 | 언어별 URL, self canonical, 상호 hreflang, x-default, 실제 언어 링크 | `lib/site-seo.ts`, [다국어 버전](https://developers.google.com/search/docs/specialty/international/localized-versions), [언어 적응형 페이지](https://developers.google.com/search/docs/specialty/international/locale-adaptive-pages) |
-| HTTPS·호스트 통일 | HTTP와 www 요청을 경로·쿼리를 유지한 채 `https://firstfluke.com`으로 301 리디렉션 | Cloudflare 단일 리디렉션 `firstfluke.com canonical HTTPS`. 실제 HTTP·HTTPS·www 응답 확인 |
+| HTTPS·호스트 통일 | HTTP와 www 요청을 경로·쿼리를 유지한 채 `https://firstfluke.com`으로 301 리디렉션 | 실제 HTTP·HTTPS·www 응답 확인 |
 | 검색 제목·설명 | 7개 제품 분야를 반영한 언어별 설명, OG·Twitter 이미지 | `lib/site-seo.ts`, [기본 가이드](https://developers.google.com/search/docs/fundamentals/seo-starter-guide) |
 | 사이트맵 | 정규 홈페이지 3개와 언어 대체 링크, 근거 없는 lastmod 제외 | `app/sitemap.ts`, [사이트맵 가이드](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap) |
 | 개인정보 페이지 | 별도 canonical, noindex·follow, robots에서 접근 허용 | `tests/seo.test.mjs`, [색인 차단](https://developers.google.com/search/docs/crawling-indexing/block-indexing) |
@@ -28,26 +28,9 @@
 
 [Google 생성형 AI 최적화 가이드](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide)와 [AI 기능 안내](https://developers.google.com/search/docs/appearance/ai-features)에 따라 일반 검색의 크롤링·색인·콘텐츠 원칙을 적용했다. Google 검색만을 위한 `llms.txt`, 숨겨진 AI 전용 문장, 키워드 변형별 대량 페이지, 임의 평점·리뷰는 추가하지 않는다. FAQ는 방문자에게 보이는 이용 안내이며, FAQ 리치 결과나 AI 답변 인용을 보장하지 않는다.
 
-- Aside MCP로 Search Console의 **Google 검색 생성형 AI: 포함** 상태 확인. [Google 제어 안내](https://support.google.com/webmasters/answer/16908024?hl=ko).
 - robots의 `User-agent: *` 규칙은 검색 크롤러의 홈페이지 접근을 허용한다.
 - Googlebot, Google-InspectionTool, bingbot, OAI-SearchBot, Claude-SearchBot, PerplexityBot 사용자 에이전트 요청에서 모두 HTTP 200 확인. 이는 사용자 에이전트별 응답 점검이며, 실제 공급자 IP의 접근·수집·인용까지 입증하는 검사는 아니다.
 - 검색 크롤러와 학습 크롤러는 별개다. 기존 학습 정책을 검색 설정 변경과 혼동하지 않는다. [OpenAI](https://developers.openai.com/api/docs/bots), [Anthropic](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler), [Perplexity](https://docs.perplexity.ai/docs/resources/perplexity-crawlers).
-
-## 계정·서비스 상태
-
-2026-10-03 Aside MCP 확인:
-
-- 도메인 속성 `firstfluke.com` 소유권 인증 상태 정상.
-- `https://firstfluke.com/`은 **Google에 등록되어 있음 / 페이지 색인이 생성됨**.
-- 배포 후 홈페이지의 색인 생성 재요청에서 **색인 생성 요청됨** 확인.
-- 영문·일본어 페이지 모두 요청 이후 재검사에서 **Google에 등록되어 있음 / 페이지 색인이 생성됨** 확인. 요청 접수 상태에서 실제 색인 생성 상태로 바뀌었다.
-- 영문 페이지는 최근 크롤링 2026-10-03 00:39:11 KST, Googlebot 스마트폰, 페이지 가져오기 성공. 사용자 선언 canonical과 Google에서 선택한 canonical 모두 `https://firstfluke.com/en/`. 최초 검사 때 URL 검사 내부의 Sitemaps 항목에 일시적인 처리 오류가 있었으나, 후속 사이트맵 보고서에서 처리 성공을 확인했다.
-- 일본어 페이지는 최근 크롤링 2026-10-03 00:45:11 KST, Googlebot 스마트폰, 페이지 가져오기 성공. 사용자 선언 canonical과 Google에서 선택한 canonical 모두 `https://firstfluke.com/ja/`.
-- `https://firstfluke.com/sitemap.xml` 제출 및 **처리 성공** 확인. 최초의 **가져올 수 없음 / 발견된 페이지 0** 상태가 후속 검사에서 **성공 / 발견된 페이지 3**으로 바뀌었다. 상세 보고서도 **사이트맵 처리 완료**, 마지막으로 읽은 날짜 **2026-10-03**, 발견한 동영상 **0**으로 표시한다.
-- 공개 사이트맵은 후속 검사에서도 HTTP 200, `application/xml`, 유효한 XML 및 홈페이지 3개를 반환한다. 기존 `/sitemap`도 같은 XML을 반환한다. **2026-10-03 00:51:23 KST Google 실제 URL 테스트에서 크롤링 허용·페이지 가져오기 성공** 확인. 테스트된 페이지의 소스에서도 세 언어 URL과 상호 hreflang이 있는 XML을 직접 확인했다. 기존 오류는 해소됐으며 그 최초 원인은 확정하지 않는다.
-- Search Console의 **직접 조치·보안 문제 모두 감지된 문제 없음**. [사이트맵 오류 진단 안내](https://support.google.com/webmasters/answer/7451001?hl=en-GB)에 따라 접근 차단·수동 조치·실제 가져오기를 점검했다. 확인된 기술 결함 없이 사이트맵을 반복 변경하거나 재제출하지 않는다.
-- robots 보고서의 심각한 오류 1건은 `haejo-api.firstfluke.com`에 해당한다. 회사 홈페이지 robots에는 정상 수집 기록이 있으며 최신 파일 재크롤링을 요청했다. API의 접근 제한을 임의 해제하지 않았다.
-- Google 처리·재색인·순위·AI 인용은 배포와 별도의 외부 결과다. 정상 응답이나 테스트 통과만으로 처리 성공이라고 보고하지 않는다.
 
 ## 검증 결과
 
@@ -61,15 +44,8 @@
 - Best Practices 77: 기존 Clarity의 서드파티 쿠키 관련 2개 항목. 분석 기능을 점수 개선만을 위해 제거하지 않았다.
 - 로컬 비제한 네트워크 관측: LCP 109ms, CLS 0.00. 프로덕션 실제 사용자 Core Web Vitals 통과를 뜻하지 않는다. [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals)는 실제 사용자 데이터로 별도 평가한다.
 
-## 운영 확인
+## 운영 기록 관리
 
-2026-10-03 Aside MCP로 사이트맵 목록·상세 보고서와 일반 검색·생성형 AI 실적 보고서를 확인했다. 도메인 속성에는 제품 서브도메인도 포함되므로 실적은 **다음이 포함된 URL: `https://firstfluke.com/`** 필터를 적용해 회사 홈페이지 범위로 제한했다. 보고서의 검색 유형은 **웹(텍스트)**, 최종 업데이트는 확인 당시 **6시간 전**이다.
+이 문서는 공개 구현과 기술 검증만 설명한다. Search Console 실적, 계정·보안 상태, 관리자 화면과 내부 운영 기록은 Git에서 제외된 `.local/`에 보관한다. PR 본문·댓글·첨부 파일에도 이러한 정보를 넣지 않는다.
 
-| 보고서 기간 | 일반 검색 클릭 | 일반 검색 노출 | 평균 CTR | 평균 게재순위 | Google 생성형 AI 노출 |
-| --- | --- | --- | --- | --- | --- |
-| 3개월: 2026-06-30~2026-09-29 | 16 | 88 | 18.2% | 4.4 | 5 |
-| 최근 24시간: 2026-10-02~2026-10-03, 현지 시간대 | 0 | 3 | 0% | 2 | 0 |
-
-3개월 보고서의 페이지 표에는 `https://firstfluke.com/` 한 행이 표시된다. 생성형 AI 베타 보고서는 노출만 제공하므로 AI 클릭·문의 전환을 추정하지 않는다. Google에서 관측된 노출을 ChatGPT·Claude·Perplexity의 인용 성과로 확대 해석하지 않는다.
-
-3개월 수치는 개선 배포 전의 기준값이며, 최근 24시간 수치는 갱신 지연과 작은 표본 때문에 개선 효과를 판정하기에 부족하다. 사이트 적용·배포·색인·사이트맵 처리는 확인 완료했다. 이후에는 데이터가 쌓인 뒤 같은 홈페이지 필터로 검색·AI 노출과 문의 전환을 비교한다.
+검색 성과는 배포 후 데이터가 쌓인 뒤 운영자가 별도로 비교한다. 정상 HTTP 응답이나 테스트 통과만으로 검색 순위 개선·AI 인용 성과를 주장하지 않는다.

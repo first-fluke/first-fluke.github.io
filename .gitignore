@@ -71,3 +71,6 @@ product-routes.json
 
 docs/plans/
 .qwen/tmp/
+
+# Private operator notes and account reports — never commit
+.local/
