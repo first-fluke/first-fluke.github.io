@@ -25,7 +25,7 @@ The site uses Next.js 16 static export and is deployed to GitHub Pages by `.gith
 - The three privacy pages use their own canonical URLs and `noindex, follow`. They remain crawlable so search engines can read `noindex`.
 - Main content is visible in the exported HTML without JavaScript. Language links in the footer also work without JavaScript.
 - Product selection and usage questions are answered in all three languages. Business information uses a native disclosure so it remains available without JavaScript; Organization JSON-LD uses the same localized team and business details.
-- See the [SEO, AEO, and GEO audit](docs/seo/optimization-audit.md) for documentation scope, implementation evidence, and the distinction between sitemap submission and Google's processing status.
+- See the [SEO, AEO, and GEO audit](docs/seo/optimization-audit.md) for documentation scope and public implementation evidence.
 
 Verify the actual deployment artifacts:
 
@@ -35,6 +35,8 @@ bun run test:seo
 ```
 
 GitHub Pages deployment runs these SEO checks after the build. After publishing, verify ownership in [Google Search Console](https://search.google.com/search-console), submit `https://firstfluke.com/sitemap.xml`, and inspect `/`, `/en/`, and `/ja/` with URL Inspection. Account ownership verification and sitemap submission are external setup steps; they are not performed by the build. See Google's guides for [localized pages](https://developers.google.com/search/docs/specialty/international/localized-versions), [sitemaps](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap), and [noindex](https://developers.google.com/search/docs/crawling-indexing/block-indexing).
+
+Keep account reports, analytics, credentials, and internal operator notes out of commits, PR descriptions, comments, and attachments. Store private verification records only in the Git-ignored `.local/` directory.
 
 ## Learn More
 

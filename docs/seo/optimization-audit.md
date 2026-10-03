@@ -44,3 +44,8 @@
 - Best Practices 77: 기존 Clarity의 서드파티 쿠키 관련 2개 항목. 분석 기능을 점수 개선만을 위해 제거하지 않았다.
 - 로컬 비제한 네트워크 관측: LCP 109ms, CLS 0.00. 프로덕션 실제 사용자 Core Web Vitals 통과를 뜻하지 않는다. [Core Web Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals)는 실제 사용자 데이터로 별도 평가한다.
 
+## 운영 기록 관리
+
+이 문서는 공개 구현과 기술 검증만 설명한다. Search Console 실적, 계정·보안 상태, 관리자 화면과 내부 운영 기록은 Git에서 제외된 `.local/`에 보관한다. PR 본문·댓글·첨부 파일에도 이러한 정보를 넣지 않는다.
+
+검색 성과는 배포 후 데이터가 쌓인 뒤 운영자가 별도로 비교한다. 정상 HTTP 응답이나 테스트 통과만으로 검색 순위 개선·AI 인용 성과를 주장하지 않는다.
