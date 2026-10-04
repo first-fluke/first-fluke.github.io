@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 @theme {
   --color-primary: #0f4c3a;
@@ -11,7 +10,7 @@
   --color-border: #e5e7e2;
 
   --font-sans:
-    "Pretendard Variable", Pretendard, system-ui, -apple-system,
+    var(--font-first-fluke), Pretendard, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --radius-card: 1rem;

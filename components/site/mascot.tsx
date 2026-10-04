@@ -10,6 +10,7 @@ interface MascotProps {
   className?: string;
   size?: number;
   media?: string;
+  autoPlay?: boolean;
 }
 
 interface Sparkle {
@@ -24,7 +25,7 @@ interface Sparkle {
 const SPARKLE_COUNT = 6;
 const SPARKLE_LIFE = 900;
 
-export function Mascot({ className, size = 360, media }: MascotProps) {
+export function Mascot({ className, size = 360, media, autoPlay = true }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -43,12 +44,12 @@ export function Mascot({ className, size = 360, media }: MascotProps) {
       } else if (!video.currentSrc) {
         // Source media is evaluated when loading; reselect on viewport changes.
         video.load();
-        video.play().catch(() => {});
+        if (autoPlay) video.play().catch(() => {});
       }
     };
     query.addEventListener("change", syncPlayback);
     return () => query.removeEventListener("change", syncPlayback);
-  }, [media]);
+  }, [media, autoPlay]);
 
   const playWink = () => {
     const video = videoRef.current;
@@ -134,10 +135,10 @@ export function Mascot({ className, size = 360, media }: MascotProps) {
         <video
           ref={videoRef}
           poster="/firstfluke-mascot-poster.webp"
-          autoPlay
+          autoPlay={autoPlay}
           muted
           playsInline
-          preload="auto"
+          preload={autoPlay ? "auto" : "none"}
           aria-label={t.hero.mascotVideoAria}
           className="h-full w-full object-cover"
         >
