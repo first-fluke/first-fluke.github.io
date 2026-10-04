@@ -16,6 +16,7 @@ export function Wordmark({ className }: WordmarkProps) {
   return (
     <Link
       href={localizedPath(locale)}
+      prefetch={false}
       aria-label={t.header.homeAria}
       className={cn(
         "inline-flex items-center gap-2 text-[var(--color-primary)]",
@@ -23,11 +24,11 @@ export function Wordmark({ className }: WordmarkProps) {
       )}
     >
       <Image
-        src="/logo.png"
+        src="/logo-small.webp"
         alt=""
         width={40}
         height={40}
-        priority
+        loading="eager"
         unoptimized
         className="h-10 w-auto"
       />

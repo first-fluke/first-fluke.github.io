@@ -47,7 +47,7 @@ export function FloatingNav() {
             className="mr-1 inline-flex shrink-0 items-center gap-1.5 rounded-full px-1.5 py-0.5 text-[var(--color-primary)] md:mr-2"
           >
             <Image
-              src="/logo.png"
+              src="/logo-small.webp"
               alt=""
               width={24}
               height={24}

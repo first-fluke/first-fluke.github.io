@@ -25,7 +25,7 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
         )}
       >
         <Image
-          src="/moduecangup-logo.png"
+          src="/moduecangup-logo.webp"
           alt=""
           width={42}
           height={14}
@@ -51,12 +51,11 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
       )}
     >
       <Image
-        src="/moduecangup-logo.png"
+        src="/moduecangup-logo.webp"
         alt="모두의 창업"
         width={66}
         height={22}
         unoptimized
-        priority
       />
       <span aria-hidden className="h-5 w-px bg-[var(--color-border)]" />
       <span className="flex flex-col text-right leading-tight">

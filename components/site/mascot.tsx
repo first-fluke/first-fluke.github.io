@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { useMediaQuery } from "@/lib/use-media-query";
@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/i18n/use-i18n";
 interface MascotProps {
   className?: string;
   size?: number;
+  media?: string;
 }
 
 interface Sparkle {
@@ -23,13 +24,31 @@ interface Sparkle {
 const SPARKLE_COUNT = 6;
 const SPARKLE_LIFE = 900;
 
-export function Mascot({ className, size = 360 }: MascotProps) {
+export function Mascot({ className, size = 360, media }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const idleLoops = isDesktop;
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const idCounter = useRef(0);
+
+  useEffect(() => {
+    if (!media) return;
+    const query = window.matchMedia(media);
+    const syncPlayback = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      if (!query.matches) {
+        video.pause();
+      } else if (!video.currentSrc) {
+        // Source media is evaluated when loading; reselect on viewport changes.
+        video.load();
+        video.play().catch(() => {});
+      }
+    };
+    query.addEventListener("change", syncPlayback);
+    return () => query.removeEventListener("change", syncPlayback);
+  }, [media]);
 
   const playWink = () => {
     const video = videoRef.current;
@@ -114,7 +133,7 @@ export function Mascot({ className, size = 360 }: MascotProps) {
       >
         <video
           ref={videoRef}
-          poster="/firstfluke-mascot-poster.jpg"
+          poster="/firstfluke-mascot-poster.webp"
           autoPlay
           muted
           playsInline
@@ -122,8 +141,8 @@ export function Mascot({ className, size = 360 }: MascotProps) {
           aria-label={t.hero.mascotVideoAria}
           className="h-full w-full object-cover"
         >
-          <source src="/firstfluke-mascot-wink.webm" type="video/webm" />
-          <source src="/firstfluke-mascot-wink.mp4" type="video/mp4" />
+          <source src="/firstfluke-mascot-wink.webm" type="video/webm" media={media} />
+          <source src="/firstfluke-mascot-wink.mp4" type="video/mp4" media={media} />
         </video>
       </button>
 
