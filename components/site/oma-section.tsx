@@ -165,7 +165,7 @@ export function OmaSection() {
                 >
                   <header className="relative flex items-center gap-3 border-b border-[var(--color-border)] px-6 py-5 md:px-8 md:py-6">
                     <Image
-                      src="/oma-logo.png"
+                      src="/oma-logo.webp"
                       alt=""
                       width={40}
                       height={40}

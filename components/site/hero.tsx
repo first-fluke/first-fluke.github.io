@@ -123,7 +123,7 @@ export function Hero() {
               variants={itemFromRight}
               className="flex justify-center lg:hidden"
             >
-              <Mascot size={220} />
+              <Mascot size={220} media="(max-width: 1023px)" />
             </motion.div>
 
             <motion.p
@@ -171,7 +171,7 @@ export function Hero() {
                   : undefined
               }
             >
-              <Mascot size={420} />
+              <Mascot size={420} media="(min-width: 1024px)" />
             </motion.div>
           </motion.div>
         </motion.div>

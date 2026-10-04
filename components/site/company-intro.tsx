@@ -47,7 +47,7 @@ export function CompanyIntro() {
         style={heavyEffects ? { y: cloverY } : undefined}
       >
         <Image
-          src="/logo.png"
+          src="/logo-background.webp"
           alt=""
           width={720}
           height={720}
