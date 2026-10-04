@@ -2,12 +2,8 @@
 
 import Image from "next/image";
 import { useEffect } from "react";
-import {
-  animate,
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-} from "motion/react";
+import { animate, useMotionTemplate, useMotionValue } from "motion/react";
+import * as motion from "motion/react-m";
 import { Parallax } from "@/components/bits/parallax";
 import { TiltedCard } from "@/components/bits/tilted-card";
 import { LinkButton } from "@/components/ui/button";

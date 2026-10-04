@@ -1,4 +1,15 @@
-import { z } from "zod";
+import {
+  email,
+  enum as enumeration,
+  literal,
+  maxLength,
+  minLength,
+  object,
+  optional,
+  string,
+  trim,
+  type infer as Infer,
+} from "zod/mini";
 import { PRODUCT_IDS } from "@/lib/contact/products";
 
 export interface ContactFormMessages {
@@ -11,25 +22,25 @@ export interface ContactFormMessages {
 }
 
 export function createContactFormSchema(messages: ContactFormMessages) {
-  return z.object({
-    email: z
-      .string()
-      .trim()
-      .min(1, messages.emailRequired)
-      .email(messages.emailInvalid),
-    message: z
-      .string()
-      .trim()
-      .min(1, messages.messageRequired)
-      .max(5000, messages.messageTooLong),
-    agree: z.literal(true, {
+  return object({
+    email: string().check(
+      trim(),
+      minLength(1, messages.emailRequired),
+      email(messages.emailInvalid),
+    ),
+    message: string().check(
+      trim(),
+      minLength(1, messages.messageRequired),
+      maxLength(5000, messages.messageTooLong),
+    ),
+    agree: literal(true, {
       error: messages.agreeRequired,
     }),
-    product: z.enum(PRODUCT_IDS, { error: messages.productRequired }),
-    turnstileToken: z.string().optional(),
+    product: enumeration(PRODUCT_IDS, { error: messages.productRequired }),
+    turnstileToken: optional(string()),
     // Honeypot: accept any value at schema layer; the route handler silently drops
     // submissions where this is non-empty so bots can't tell they were caught.
-    _hp: z.string().optional(),
+    _hp: optional(string()),
   });
 }
 
@@ -43,4 +54,4 @@ export const ContactFormSchema = createContactFormSchema({
   productRequired: "문의 종류를 선택해주세요.",
 });
 
-export type ContactFormValues = z.infer<typeof ContactFormSchema>;
+export type ContactFormValues = Infer<typeof ContactFormSchema>;

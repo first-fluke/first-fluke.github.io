@@ -1,12 +1,8 @@
 "use client";
 
 import { useMemo, useRef, useSyncExternalStore } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
+import { useScroll, useTransform, type MotionValue } from "motion/react";
+import * as motion from "motion/react-m";
 import {
   tokenizeWords,
   type TextToken,

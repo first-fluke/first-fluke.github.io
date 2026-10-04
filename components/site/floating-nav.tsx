@@ -2,12 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from "motion/react";
+import { AnimatePresence, useMotionValueEvent, useScroll } from "motion/react";
+import * as motion from "motion/react-m";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
 import { useI18n } from "@/lib/i18n/use-i18n";
 

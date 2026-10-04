@@ -1,4 +1,5 @@
 import { ClarityAnalytics } from "@/components/site/clarity";
+import { SiteMotion } from "@/components/site/site-motion";
 import { SITE } from "@/lib/site";
 import { TEAM } from "@/lib/team";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
@@ -91,7 +92,7 @@ export function SiteDocument({
               "if('scrollRestoration' in history){history.scrollRestoration='manual';if(!location.hash){window.scrollTo(0,0);}}",
           }}
         />
-        {children}
+        <SiteMotion>{children}</SiteMotion>
         <ClarityAnalytics projectId={CLARITY_PROJECT_ID} />
         <script
           type="application/ld+json"

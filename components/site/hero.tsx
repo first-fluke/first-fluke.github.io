@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "motion/react";
+import { useScroll, useTransform } from "motion/react";
+import * as motion from "motion/react-m";
 import { DotGrid } from "@/components/bits/dot-grid";
 import { Magnet } from "@/components/bits/magnet";
 import { ShinyText } from "@/components/bits/shiny-text";

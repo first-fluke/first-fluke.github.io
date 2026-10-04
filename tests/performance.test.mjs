@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import { DICTIONARIES } from "../lib/i18n/dictionaries.ts";
 
 const assetSize = (url) => url.startsWith("data:image/")
@@ -34,6 +35,17 @@ test("small visible logos do not ship full-resolution originals", () => {
   for (const image of smallImages) {
     expect(assetSize(image.src), image.src).toBeLessThan(20 * 1024);
   }
+});
+
+test.each(["/", "/en/", "/ja/"])("%s stays within the initial JavaScript budget", (pathname) => {
+  const html = readFileSync(join("out", pathname, "index.html"), "utf8");
+  const scripts = [...html.matchAll(/<script\b[^>]*src="([^"]+)"[^>]*>/g)]
+    .filter(([tag]) => !/nomodule/i.test(tag));
+  const urls = [...new Set(scripts.map(([, url]) => url))];
+  const initialBytes = urls.reduce((total, url) => total + gzipSync(
+    readFileSync(join("out", new URL(url, "https://example.test").pathname)),
+  ).length, 0);
+  expect(initialBytes).toBeLessThan(285 * 1024);
 });
 
 test("each exported font request stays within the mobile font budget", () => {

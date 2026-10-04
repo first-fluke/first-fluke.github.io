@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { flattenError } from "zod/mini";
 import Link from "next/link";
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -110,7 +111,7 @@ export function ContactForm() {
     });
 
     if (!parsed.success) {
-      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const fieldErrors = flattenError(parsed.error).fieldErrors;
       setErrors({
         email: fieldErrors.email?.[0],
         message: fieldErrors.message?.[0],

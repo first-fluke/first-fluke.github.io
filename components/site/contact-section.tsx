@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { ContactForm } from "@/components/site/contact-form";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { useI18n } from "@/lib/i18n/use-i18n";
