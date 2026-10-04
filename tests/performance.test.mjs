@@ -4,6 +4,13 @@ import { join } from "node:path";
 
 const assetSize = (url) => statSync(join("out", new URL(url, "https://example.test").pathname)).size;
 
+test.each(["/", "/en/", "/ja/"])("%s renders without waiting for an external stylesheet", (pathname) => {
+  const html = readFileSync(join("out", pathname, "index.html"), "utf8");
+  const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1];
+  expect(head).toContain("<style");
+  expect(head).not.toMatch(/<link\b[^>]*rel="stylesheet"/);
+});
+
 test("small visible logos do not ship full-resolution originals", () => {
   const html = readFileSync("out/index.html", "utf8");
   const images = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) =>
