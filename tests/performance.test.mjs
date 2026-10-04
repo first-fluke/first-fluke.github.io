@@ -12,7 +12,10 @@ test.each(["/", "/en/", "/ja/"])("%s renders without waiting for an external sty
   expect(head).not.toMatch(/<link\b[^>]*rel="stylesheet"/);
   const preloads = [...head.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)].map(([tag]) => tag);
   expect(preloads.filter((tag) => tag.includes('as="font"'))).toHaveLength(1);
-  expect(preloads.find((tag) => tag.includes('href="/firstfluke-mascot-poster.webp"'))).toMatch(/fetchpriority="high"/i);
+  expect(preloads.find((tag) => tag.includes('href="/firstfluke-mascot-cover.webp"'))).toMatch(/fetchpriority="high"/i);
+  const initialImageBytes = preloads.filter((tag) => tag.includes('as="image"'))
+    .reduce((sum, tag) => sum + assetSize(tag.match(/href="([^"]*)"/)[1]), 0);
+  expect(initialImageBytes).toBeLessThan(32 * 1024);
 });
 
 test("small visible logos do not ship full-resolution originals", () => {

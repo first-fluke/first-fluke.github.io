@@ -75,3 +75,19 @@ section[id] {
   max-width: 56ch;
   margin-inline: auto;
 }
+
+@keyframes reveal-glyph {
+  from {
+    transform: translateY(28px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .split-text-glyph {
+    animation: reveal-glyph 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--glyph-delay) both;
+    will-change: transform;
+  }
+}

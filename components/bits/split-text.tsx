@@ -1,14 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { motion } from "motion/react";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
 import {
   splitGraphemes,
   tokenizeWords,
 } from "@/components/bits/text-segmenter";
-
-const EASE_OUT_EXPO = [0.22, 1, 0.36, 1] as const;
 
 interface SplitTextProps {
   /** Text to reveal. `\n` renders a line break. */
@@ -26,7 +24,7 @@ interface SplitTextProps {
 }
 
 /**
- * Glyph-by-glyph rise-and-fade reveal (React Bits `SplitText` style).
+ * CSS glyph reveal on desktop, with immediately visible text on mobile.
  * Words stay unbreakable so lines wrap only at natural boundaries; the
  * full string is mirrored in a visually-hidden span for assistive tech.
  */
@@ -65,19 +63,13 @@ export function SplitText({
             <span key={tokenIndex} className="inline-block whitespace-nowrap">
               {token.glyphs.map(({ glyph, index }) => {
                 return (
-                  <motion.span
+                  <span
                     key={index}
-                    className="inline-block will-change-transform"
-                    initial={{ y: 28 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.7,
-                      ease: EASE_OUT_EXPO,
-                      delay: delay + index * glyphStagger,
-                    }}
+                    className="split-text-glyph inline-block"
+                    style={{ "--glyph-delay": `${delay + index * glyphStagger}s` } as CSSProperties}
                   >
                     {glyph}
-                  </motion.span>
+                  </span>
                 );
               })}
             </span>

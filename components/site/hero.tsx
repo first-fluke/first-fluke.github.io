@@ -25,7 +25,7 @@ const TITLE_DELAY = 0.12;
 const AFTER_TITLE_DELAY = 0.5;
 
 export function Hero() {
-  preload("/firstfluke-mascot-poster.webp", { as: "image", fetchPriority: "high" });
+  preload("/firstfluke-mascot-cover.webp", { as: "image", fetchPriority: "high" });
   const { t, locale } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const heavyEffects = isDesktop;
