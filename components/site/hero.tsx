@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "motion/react";
+import { preload } from "react-dom";
 import { DotGrid } from "@/components/bits/dot-grid";
 import { Magnet } from "@/components/bits/magnet";
 import { ShinyText } from "@/components/bits/shiny-text";
@@ -24,6 +25,7 @@ const TITLE_DELAY = 0.12;
 const AFTER_TITLE_DELAY = 0.5;
 
 export function Hero() {
+  preload("/firstfluke-mascot-poster.webp", { as: "image", fetchPriority: "high" });
   const { t, locale } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const heavyEffects = isDesktop;
@@ -123,7 +125,7 @@ export function Hero() {
               variants={itemFromRight}
               className="flex justify-center lg:hidden"
             >
-              <Mascot size={220} media="(max-width: 1023px)" />
+              <Mascot size={220} media="(max-width: 1023px)" autoPlay={false} />
             </motion.div>
 
             <motion.p

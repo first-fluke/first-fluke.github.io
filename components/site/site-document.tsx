@@ -4,6 +4,15 @@ import { TEAM } from "@/lib/team";
 import { DICTIONARIES } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/i18n.types";
 import "@/app/globals.css";
+import localFont from "next/font/local";
+
+const siteFont = localFont({
+  src: "../../public/fonts/first-fluke-sans.woff2",
+  variable: "--font-first-fluke",
+  display: "swap",
+  weight: "45 920",
+  adjustFontFallback: false,
+});
 
 const CLARITY_PROJECT_ID = "wpd0eau95q";
 
@@ -74,7 +83,7 @@ export function SiteDocument({
   };
 
   return (
-    <html lang={locale} className="h-full">
+    <html lang={locale} className={`${siteFont.variable} h-full`}>
       <body className="min-h-full antialiased flex flex-col">
         <script
           dangerouslySetInnerHTML={{
