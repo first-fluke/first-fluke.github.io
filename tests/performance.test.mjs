@@ -3,7 +3,9 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { DICTIONARIES } from "../lib/i18n/dictionaries.ts";
 
-const assetSize = (url) => statSync(join("out", new URL(url, "https://example.test").pathname)).size;
+const assetSize = (url) => url.startsWith("data:image/")
+  ? Buffer.from(url.split(",")[1], "base64").length
+  : statSync(join("out", new URL(url, "https://example.test").pathname)).size;
 
 test.each(["/", "/en/", "/ja/"])("%s renders without waiting for an external stylesheet", (pathname) => {
   const html = readFileSync(join("out", pathname, "index.html"), "utf8");
@@ -12,7 +14,11 @@ test.each(["/", "/en/", "/ja/"])("%s renders without waiting for an external sty
   expect(head).not.toMatch(/<link\b[^>]*rel="stylesheet"/);
   const preloads = [...head.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)].map(([tag]) => tag);
   expect(preloads.filter((tag) => tag.includes('as="font"'))).toHaveLength(1);
-  expect(preloads.find((tag) => tag.includes('href="/firstfluke-mascot-cover.webp"'))).toMatch(/fetchpriority="high"/i);
+  const cover = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag)
+    .find((tag) => tag.includes('src="data:image/avif;base64,'));
+  expect(cover).toMatch(/fetchpriority="high"/i);
+  expect(cover).toContain('decoding="sync"');
+  expect(assetSize(cover.match(/src="([^"]*)"/)[1])).toBeLessThan(10 * 1024);
   const initialImageBytes = preloads.filter((tag) => tag.includes('as="image"'))
     .reduce((sum, tag) => sum + assetSize(tag.match(/href="([^"]*)"/)[1]), 0);
   expect(initialImageBytes).toBeLessThan(32 * 1024);
