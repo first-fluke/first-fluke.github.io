@@ -35,6 +35,8 @@ jobs:
 
       - run: bun run test:performance
 
+      - run: bun test tests/contact-schema.test.ts
+
       - uses: actions/configure-pages@v6
         with:
           enablement: true

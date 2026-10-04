@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { SITE } from "@/lib/site";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { LOCALES, LOCALE_LABELS } from "@/lib/i18n/i18n.types";

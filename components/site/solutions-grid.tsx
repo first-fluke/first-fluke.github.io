@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { Parallax } from "@/components/bits/parallax";
 import { SolutionCard } from "@/components/site/solution-card";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";

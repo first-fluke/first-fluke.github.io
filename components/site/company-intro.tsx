@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useScroll, useTransform } from "motion/react";
+import * as motion from "motion/react-m";
 import { ScrollRevealText } from "@/components/bits/scroll-reveal-text";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { useMediaQuery } from "@/lib/use-media-query";

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { Card } from "@/components/ui/card";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { TEAM } from "@/lib/team";

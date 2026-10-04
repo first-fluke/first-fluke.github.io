@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import * as motion from "motion/react-m";
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingUnderlineProps {
