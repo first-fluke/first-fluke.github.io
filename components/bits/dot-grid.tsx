@@ -34,7 +34,7 @@ const MAX_GROW = 2.4;
  *
  * Desktop: dots near the cursor bloom, brighten, and drift outward; the render
  * loop only runs while something is still moving and the canvas is on screen.
- * Mobile / reduced motion: a single static paint.
+ * Mobile: a static CSS pattern is visible before JavaScript loads.
  */
 export function DotGrid({
   className,
@@ -47,6 +47,7 @@ export function DotGrid({
   const interactive = isDesktop;
 
   useEffect(() => {
+    if (!interactive) return;
     const canvas = canvasRef.current;
     const host = canvas?.parentElement;
     if (!canvas || !host) return;
@@ -163,10 +164,6 @@ export function DotGrid({
     resizeObserver.observe(host);
     resize();
 
-    if (!interactive) {
-      return () => resizeObserver.disconnect();
-    }
-
     const onPointerMove = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -222,10 +219,21 @@ export function DotGrid({
   }, [interactive, gap, dotRadius, proximity]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden
-      className={cn("pointer-events-none absolute inset-0 block", className)}
-    />
+    <>
+      <div
+        aria-hidden
+        className={cn("pointer-events-none absolute inset-0 lg:hidden", className)}
+        style={{
+          backgroundImage: `radial-gradient(circle, rgba(${BASE_RGB.join(",")},${BASE_ALPHA}) ${dotRadius}px, transparent ${dotRadius}px)`,
+          backgroundSize: `${gap}px ${gap}px`,
+          backgroundPosition: "center",
+        }}
+      />
+      <canvas
+        ref={canvasRef}
+        aria-hidden
+        className={cn("pointer-events-none absolute inset-0 hidden lg:block", className)}
+      />
+    </>
   );
 }

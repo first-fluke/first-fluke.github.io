@@ -14,7 +14,7 @@ export function ShinyText({ children, className }: ShinyTextProps) {
   return (
     <span
       className={cn(
-        "inline-block bg-clip-text text-transparent animate-shine",
+        "inline-block bg-clip-text text-transparent lg:animate-shine motion-reduce:animate-none",
         className,
       )}
       style={{
