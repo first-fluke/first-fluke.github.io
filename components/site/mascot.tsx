@@ -12,6 +12,7 @@ interface MascotProps {
   size?: number;
   media?: string;
   autoPlay?: boolean;
+  cover: string;
 }
 
 interface Sparkle {
@@ -26,7 +27,7 @@ interface Sparkle {
 const SPARKLE_COUNT = 6;
 const SPARKLE_LIFE = 900;
 
-export function Mascot({ className, size = 360, media, autoPlay = true }: MascotProps) {
+export function Mascot({ className, size = 360, media, autoPlay = true, cover }: MascotProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { t } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -137,18 +138,19 @@ export function Mascot({ className, size = 360, media, autoPlay = true }: Mascot
       >
         {!autoPlay && !hasPlayed && (
           <Image
-            src="/firstfluke-mascot-cover.webp"
+            src={cover}
             alt=""
             fill
             unoptimized
             loading="eager"
             fetchPriority="high"
+            decoding="sync"
             className="object-cover"
           />
         )}
         <video
           ref={videoRef}
-          poster="/firstfluke-mascot-cover.webp"
+          poster={cover}
           autoPlay={autoPlay}
           muted
           playsInline

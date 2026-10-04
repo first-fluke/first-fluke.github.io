@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "motion/react";
-import { preload } from "react-dom";
 import { DotGrid } from "@/components/bits/dot-grid";
 import { Magnet } from "@/components/bits/magnet";
 import { ShinyText } from "@/components/bits/shiny-text";
@@ -24,8 +23,7 @@ const TITLE_DELAY = 0.12;
 /** Elements below the headline wait for most of the glyph reveal. */
 const AFTER_TITLE_DELAY = 0.5;
 
-export function Hero() {
-  preload("/firstfluke-mascot-cover.webp", { as: "image", fetchPriority: "high" });
+export function Hero({ mascotCover }: { mascotCover: string }) {
   const { t, locale } = useI18n();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const heavyEffects = isDesktop;
@@ -125,7 +123,7 @@ export function Hero() {
               variants={itemFromRight}
               className="flex justify-center lg:hidden"
             >
-              <Mascot size={220} media="(max-width: 1023px)" autoPlay={false} />
+              <Mascot size={220} media="(max-width: 1023px)" autoPlay={false} cover={mascotCover} />
             </motion.div>
 
             <motion.p
@@ -173,7 +171,7 @@ export function Hero() {
                   : undefined
               }
             >
-              <Mascot size={420} media="(min-width: 1024px)" />
+              <Mascot size={420} media="(min-width: 1024px)" cover={mascotCover} />
             </motion.div>
           </motion.div>
         </motion.div>

@@ -12,13 +12,15 @@ import { BackToTop } from "@/components/site/back-to-top";
 import { ProductFaq } from "@/components/site/product-faq";
 import type { Locale } from "@/lib/i18n/i18n.types";
 
+const MASCOT_COVER = `data:image/avif;base64,${readFileSync("public/firstfluke-mascot-cover.avif").toString("base64")}`;
+
 export function HomePage({ locale = "ko" }: { locale?: Locale }) {
   return (
     <>
       <Header />
       <FloatingNav />
       <main className="flex-1">
-        <Hero />
+        <Hero mascotCover={MASCOT_COVER} />
         <BrandMarquee />
         <CompanyIntro />
         <OmaSection />
@@ -32,3 +34,4 @@ export function HomePage({ locale = "ko" }: { locale?: Locale }) {
     </>
   );
 }
+import { readFileSync } from "node:fs";
