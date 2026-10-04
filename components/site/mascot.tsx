@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/cn";
 import { useMediaQuery } from "@/lib/use-media-query";
@@ -31,6 +32,7 @@ export function Mascot({ className, size = 360, media, autoPlay = true }: Mascot
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const idleLoops = isDesktop;
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const [hasPlayed, setHasPlayed] = useState(false);
   const idCounter = useRef(0);
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export function Mascot({ className, size = 360, media, autoPlay = true }: Mascot
   const playWink = () => {
     const video = videoRef.current;
     if (!video) return;
+    setHasPlayed(true);
     video.currentTime = 0;
     video.play().catch(() => {});
   };
@@ -132,15 +135,26 @@ export function Mascot({ className, size = 360, media, autoPlay = true }: Mascot
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/50 focus-visible:ring-offset-2",
         )}
       >
+        {!autoPlay && !hasPlayed && (
+          <Image
+            src="/firstfluke-mascot-cover.webp"
+            alt=""
+            fill
+            unoptimized
+            loading="eager"
+            fetchPriority="high"
+            className="object-cover"
+          />
+        )}
         <video
           ref={videoRef}
-          poster="/firstfluke-mascot-poster.webp"
+          poster="/firstfluke-mascot-cover.webp"
           autoPlay={autoPlay}
           muted
           playsInline
           preload={autoPlay ? "auto" : "none"}
           aria-label={t.hero.mascotVideoAria}
-          className="h-full w-full object-cover"
+          className={cn("h-full w-full object-cover", !autoPlay && !hasPlayed && "hidden")}
         >
           <source src="/firstfluke-mascot-wink.webm" type="video/webm" media={media} />
           <source src="/firstfluke-mascot-wink.mp4" type="video/mp4" media={media} />
