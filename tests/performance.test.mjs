@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
+import { createHash } from "node:crypto";
 import { DICTIONARIES } from "../lib/i18n/dictionaries.ts";
 
 const assetSize = (url) => url.startsWith("data:image/")
@@ -61,4 +62,28 @@ test("the primary font covers the current translated copy", () => {
   const known = new Set([...coverage.included, ...coverage.unsupported]);
   const missing = [...new Set(JSON.stringify(DICTIONARIES))].filter((character) => !known.has(character.codePointAt(0)));
   expect(missing, "Regenerate the font with scripts/subset-site-font.py after changing copy").toEqual([]);
+});
+
+test("responsive image variants match their source and export every candidate", () => {
+  const variants = JSON.parse(readFileSync("lib/responsive-image-variants.json", "utf8"));
+  expect(Object.keys(variants)).toHaveLength(9);
+  for (const [src, entry] of Object.entries(variants)) {
+    expect(createHash("sha256").update(readFileSync(join("public", src))).digest("hex"), src)
+      .toBe(entry.sourceHash);
+    for (const candidate of entry.srcSet.split(", ")) {
+      const [url] = candidate.split(" ");
+      expect(statSync(join("out", url)).size, url).toBeGreaterThan(0);
+    }
+  }
+});
+
+test.each(["/", "/en/", "/ja/"])("%s exports responsive screenshots and plain readable paragraphs", (pathname) => {
+  const html = readFileSync(join("out", pathname, "index.html"), "utf8");
+  const screenshots = [...html.matchAll(/<picture><source\b[^>]*srcSet="[^"]*\/optimized\/[^>]*>[\s\S]*?<\/picture>/g)];
+  expect(screenshots.length).toBeGreaterThanOrEqual(9);
+  expect(html).not.toContain('src="/_next/image');
+  const locale = pathname === "/" ? "ko" : pathname.split("/")[1];
+  for (const paragraph of DICTIONARIES[locale].about.paragraphs) {
+    expect(html).toContain(paragraph.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+  }
 });

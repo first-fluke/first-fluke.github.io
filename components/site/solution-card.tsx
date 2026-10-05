@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ResponsiveImage } from "@/components/site/responsive-image";
 import { useRef, type CSSProperties, type MouseEvent } from "react";
 import type { Solution } from "@/lib/solutions";
 import { Card } from "@/components/ui/card";
@@ -121,12 +122,12 @@ export function SolutionCard({ solution }: SolutionCardProps) {
       <Card className="relative flex h-full flex-col overflow-hidden p-0 group-hover:-translate-y-1.5 group-hover:border-[var(--color-primary)]/40 group-hover:shadow-[var(--shadow-card-hover)] group-focus-visible:-translate-y-1.5 group-focus-visible:border-[var(--color-primary)]/40 group-focus-visible:shadow-[var(--shadow-card-hover)]">
         <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-[var(--color-border)] bg-[var(--color-bg-soft)]">
           {solution.screenshotSrc ? (
-            <Image
+            <ResponsiveImage
               src={solution.screenshotSrc}
               alt={`${copy.name}: ${copy.tagline}`}
               fill
               unoptimized
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1151px) calc((100vw - 120px) / 2), 516px"
               className="object-cover object-top transition-transform duration-300 ease-out group-hover:scale-[1.03]"
             />
           ) : (

@@ -1,0 +1,38 @@
+{
+  "/screenshots/medisupporter.webp": {
+    "sourceHash": "a437bad16cb8adaa71d1cd1cc3b5dd5985f2474e299f7199b8ddca0f82515ec8",
+    "srcSet": "/optimized/medisupporter-320.71d77708c3a8.avif 320w, /optimized/medisupporter-640.9f0ff9d4bd32.avif 640w, /optimized/medisupporter-960.bc07db0067ea.avif 960w, /optimized/medisupporter-1200.b1e9bfda5a11.avif 1200w"
+  },
+  "/screenshots/place-haejo.webp": {
+    "sourceHash": "cbbd130ca99ddde43dcb7ee4acd938aa7600a2caec77b273ecc12ffb547a3ecf",
+    "srcSet": "/optimized/place-haejo-320.9d537d3ea195.avif 320w, /optimized/place-haejo-640.fbe047db9117.avif 640w, /optimized/place-haejo-960.75de5cf573ee.avif 960w, /optimized/place-haejo-1200.b98452be78cf.avif 1200w"
+  },
+  "/screenshots/contents-haejo.webp": {
+    "sourceHash": "fb628b691856ec6833f513f08a497eeba9492bd8e3f6b2153f8f6d76f6cc20cc",
+    "srcSet": "/optimized/contents-haejo-320.ddd60d96eb5d.avif 320w, /optimized/contents-haejo-640.fab1aeed4fb4.avif 640w, /optimized/contents-haejo-960.5d87ed302b16.avif 960w, /optimized/contents-haejo-1200.2e91bb28e299.avif 1200w"
+  },
+  "/screenshots/deploy-haejo.webp": {
+    "sourceHash": "b345062a4fcc528aa90cad965a086a37d883cc41432b457d94b5adb05cabd8d5",
+    "srcSet": "/optimized/deploy-haejo-320.c36ba5620643.avif 320w, /optimized/deploy-haejo-640.07c9d6bb7ddf.avif 640w, /optimized/deploy-haejo-960.acf2ae501c62.avif 960w, /optimized/deploy-haejo-1200.44be1edc5b36.avif 1200w"
+  },
+  "/screenshots/shopzy.webp": {
+    "sourceHash": "9508239485c4cead011e7dff22e4bc7a56eb539a4d50b6326986f2bc4a72ed11",
+    "srcSet": "/optimized/shopzy-320.c1365e6e5a39.avif 320w, /optimized/shopzy-640.3723676aeecf.avif 640w, /optimized/shopzy-960.5ed70f0010eb.avif 960w, /optimized/shopzy-1200.cc9870a7d665.avif 1200w"
+  },
+  "/screenshots/legalize-kr.webp": {
+    "sourceHash": "1371258e784eaa9cd890d12a494afd2e4489a2499b5bee7eb6136866903e3530",
+    "srcSet": "/optimized/legalize-kr-320.55d215ac6565.avif 320w, /optimized/legalize-kr-640.c816b195bedf.avif 640w, /optimized/legalize-kr-960.f5d2ad40f3f4.avif 960w, /optimized/legalize-kr-1200.84324eeb56de.avif 1200w"
+  },
+  "/screenshots/fortunebom.webp": {
+    "sourceHash": "ddbf623eda0ee18f93a60651603ccef7415412114e1d041468a57dd161cc7da4",
+    "srcSet": "/optimized/fortunebom-320.29bddfbbf09f.avif 320w, /optimized/fortunebom-640.069906e6e0f1.avif 640w, /optimized/fortunebom-960.3ac943638aeb.avif 960w, /optimized/fortunebom-1200.f25c42bc0470.avif 1200w"
+  },
+  "/logo-background.webp": {
+    "sourceHash": "5b4fd4682a149bb7c8cde59f9382912d412d247024f1a9bdc534306cf19f4599",
+    "srcSet": "/optimized/logo-background-360.9348bd59f1af.avif 360w, /optimized/logo-background-640.0764a77c1d29.avif 640w, /optimized/logo-background-720.3dc9c425ff31.avif 720w"
+  },
+  "/moduecangup-logo.webp": {
+    "sourceHash": "d9047c43c4da829823be0000783c934e7787b8d652385398a567b2f0dd5c9501",
+    "srcSet": "/optimized/moduecangup-logo-84.41ce8d756302.avif 84w, /optimized/moduecangup-logo-132.f0adbe5d2fed.avif 132w, /optimized/moduecangup-logo-198.16af00bbe7a0.avif 198w"
+  }
+}
