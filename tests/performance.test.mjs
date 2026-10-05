@@ -17,9 +17,9 @@ test.each(["/", "/en/", "/ja/"])("%s renders without waiting for an external sty
   const preloads = [...head.matchAll(/<link\b[^>]*rel="preload"[^>]*>/g)].map(([tag]) => tag);
   expect(preloads.filter((tag) => tag.includes('as="font"'))).toHaveLength(1);
   const cover = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => tag)
-    .find((tag) => tag.includes('src="data:image/avif;base64,'));
+    .find((tag) => tag.includes('src="data:image/webp;base64,'));
   expect(cover).toMatch(/fetchpriority="high"/i);
-  expect(cover).toContain('decoding="sync"');
+  expect(cover).toContain('decoding="async"');
   expect(assetSize(cover.match(/src="([^"]*)"/)[1])).toBeLessThan(10 * 1024);
   const initialImageBytes = preloads.filter((tag) => tag.includes('as="image"'))
     .reduce((sum, tag) => sum + assetSize(tag.match(/href="([^"]*)"/)[1]), 0);
