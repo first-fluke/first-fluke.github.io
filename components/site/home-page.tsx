@@ -12,7 +12,7 @@ import { BackToTop } from "@/components/site/back-to-top";
 import { ProductFaq } from "@/components/site/product-faq";
 import type { Locale } from "@/lib/i18n/i18n.types";
 
-const MASCOT_COVER = `data:image/avif;base64,${readFileSync("public/firstfluke-mascot-cover.avif").toString("base64")}`;
+const MASCOT_COVER = `data:image/webp;base64,${readFileSync("public/firstfluke-mascot-cover.webp").toString("base64")}`;
 
 export function HomePage({ locale = "ko" }: { locale?: Locale }) {
   return (

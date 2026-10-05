@@ -145,7 +145,7 @@ export function Mascot({ className, size = 360, media, autoPlay = true, cover }:
             unoptimized
             loading="eager"
             fetchPriority="high"
-            decoding="sync"
+            decoding="async"
             className="object-cover"
           />
         )}
