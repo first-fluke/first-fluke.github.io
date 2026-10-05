@@ -1,7 +1,7 @@
 "use client";
 
 import * as motion from "motion/react-m";
-import { ContactForm } from "@/components/site/contact-form";
+import { ContactFormLoader } from "@/components/site/contact-form-loader";
 import { SectionHeadingUnderline } from "@/components/site/section-heading-underline";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
@@ -58,7 +58,7 @@ export function ContactSection() {
           {t.contact.subtitle}
         </motion.p>
         <motion.div variants={item} className="mt-8">
-          <ContactForm />
+          <ContactFormLoader />
         </motion.div>
       </motion.div>
     </section>
