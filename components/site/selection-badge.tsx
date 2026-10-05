@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ResponsiveImage } from "@/components/site/responsive-image";
 import { SITE } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n/use-i18n";
@@ -24,11 +24,12 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
           className,
         )}
       >
-        <Image
+        <ResponsiveImage
           src="/moduecangup-logo.webp"
           alt=""
           width={42}
           height={14}
+          sizes="42px"
           unoptimized
         />
         <span aria-hidden className="text-[var(--color-border)]">
@@ -50,11 +51,12 @@ export function SelectionBadge({ variant, className }: SelectionBadgeProps) {
         className,
       )}
     >
-      <Image
+      <ResponsiveImage
         src="/moduecangup-logo.webp"
         alt="모두의 창업"
         width={66}
         height={22}
+        sizes="66px"
         unoptimized
       />
       <span aria-hidden className="h-5 w-px bg-[var(--color-border)]" />

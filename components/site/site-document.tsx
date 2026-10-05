@@ -10,7 +10,7 @@ import localFont from "next/font/local";
 const siteFont = localFont({
   src: "../../public/fonts/first-fluke-sans.woff2",
   variable: "--font-first-fluke",
-  display: "swap",
+  display: "optional",
   weight: "45 920",
   adjustFontFallback: false,
 });

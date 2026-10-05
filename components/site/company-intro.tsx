@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
+import { ResponsiveImage } from "@/components/site/responsive-image";
 import { useScroll, useTransform } from "motion/react";
 import * as motion from "motion/react-m";
 import { ScrollRevealText } from "@/components/bits/scroll-reveal-text";
@@ -47,11 +47,12 @@ export function CompanyIntro() {
         className="pointer-events-none absolute -right-20 -bottom-24 select-none md:-right-24 md:-bottom-32"
         style={heavyEffects ? { y: cloverY } : undefined}
       >
-        <Image
+        <ResponsiveImage
           src="/logo-background.webp"
           alt=""
           width={720}
           height={720}
+          sizes="(max-width: 767px) 360px, 640px"
           unoptimized
           className="h-[360px] w-[360px] opacity-[0.09] lg:animate-[spin_120s_linear_infinite] md:h-[640px] md:w-[640px]"
         />

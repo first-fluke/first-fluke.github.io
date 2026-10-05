@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform, useVelocity } from "motion/react";
 import * as motion from "motion/react-m";
 import { cn } from "@/lib/cn";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 interface ScrollVelocityMarqueeProps {
   /** One repeat unit of the ticker (rendered several times to fill the row). */
@@ -29,10 +30,14 @@ export function ScrollVelocityMarquee({
   children,
   className,
   baseVelocity = 40,
-  copies = 6,
+  copies = 2,
 }: ScrollVelocityMarqueeProps) {
   const copyRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
+  const visible = useRef(false);
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [copyWidth, setCopyWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
 
   const baseX = useMotionValue(0);
   const { scrollY } = useScroll();
@@ -48,13 +53,24 @@ export function ScrollVelocityMarquee({
 
   useEffect(() => {
     const node = copyRef.current;
-    if (!node) return;
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry) setCopyWidth(entry.contentRect.width);
+    const host = hostRef.current;
+    if (!node || !host) return;
+    const observer = new ResizeObserver(() => {
+      setCopyWidth(node.getBoundingClientRect().width);
+      setViewportWidth(host.clientWidth);
     });
     observer.observe(node);
+    observer.observe(host);
     setCopyWidth(node.getBoundingClientRect().width);
-    return () => observer.disconnect();
+    setViewportWidth(host.clientWidth);
+    const intersection = new IntersectionObserver(([entry]) => {
+      visible.current = entry?.isIntersecting ?? false;
+    });
+    intersection.observe(host);
+    return () => {
+      observer.disconnect();
+      intersection.disconnect();
+    };
   }, []);
 
   const x = useTransform(baseX, (value) =>
@@ -62,7 +78,7 @@ export function ScrollVelocityMarquee({
   );
 
   useAnimationFrame((_, delta) => {
-    if (copyWidth === 0) return;
+    if (copyWidth === 0 || !visible.current || document.hidden || reducedMotion) return;
     let moveBy = direction.current * baseVelocity * (delta / 1000);
     const factor = velocityFactor.get();
     if (factor < 0) direction.current = -1;
@@ -73,11 +89,12 @@ export function ScrollVelocityMarquee({
 
   return (
     <div
+      ref={hostRef}
       aria-hidden
       className={cn("overflow-hidden whitespace-nowrap", className)}
     >
       <motion.div className="flex w-max" style={{ x }}>
-        {Array.from({ length: copies }, (_, i) => (
+        {Array.from({ length: Math.max(copies, copyWidth ? Math.ceil(viewportWidth / copyWidth) + 1 : copies) }, (_, i) => (
           <div
             key={i}
             ref={i === 0 ? copyRef : undefined}
