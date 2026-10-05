@@ -46,7 +46,9 @@ test.each(["/", "/en/", "/ja/"])("%s stays within the initial JavaScript budget"
   const initialBytes = urls.reduce((total, url) => total + gzipSync(
     readFileSync(join("out", new URL(url, "https://example.test").pathname)),
   ).length, 0);
-  expect(initialBytes).toBeLessThan(285 * 1024);
+  expect(initialBytes).toBeLessThan(265 * 1024);
+  const initialCode = urls.map((url) => readFileSync(join("out", new URL(url, "https://example.test").pathname), "utf8")).join("\n");
+  expect(initialCode).not.toContain("contact-email");
 });
 
 test("each exported font request stays within the mobile font budget", () => {
