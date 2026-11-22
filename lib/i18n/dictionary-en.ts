@@ -70,16 +70,6 @@ export const DICTIONARY_EN: Dictionary = {
     viewCta: "Visit site",
     liveBadge: "Live",
     items: {
-      "place-haejo": {
-        name: "Place Haejo",
-        tagline: "A storefront marketing consultant that starts from a single URL",
-        category: "Local Business · Marketing",
-        features: [
-          "Paste your store URL for a health score benchmarked against nearby rivals",
-          "Aggregates reviews across channels and drafts AI replies for you",
-          "A weekly report that prioritizes this week's to-dos",
-        ],
-      },
       "contents-haejo": {
         name: "Contents Haejo",
         tagline: "End the daily “what do I post?” for your social channels",
@@ -110,24 +100,14 @@ export const DICTIONARY_EN: Dictionary = {
           "Every change is auto-backed-up and rollback-ready",
         ],
       },
-      "deploy-haejo": {
-        name: "Deploy Haejo",
-        tagline: "One-click app deployment platform — just connect your source code",
-        category: "Infra · Deployment",
-        features: [
-          "One-click connection with GitHub and cloud providers (Vercel, Cloudflare)",
-          "Automatic framework detection and pre-deployment plan verification",
-          "Real-time deployment logs and instant one-click rollback support",
-        ],
-      },
       medisupporter: {
-        name: "Medisupporter",
-        tagline: "Hospital consultation SaaS unifying inquiries from Kakao, Naver, and web",
+        name: "Medi24",
+        tagline: "Manage clinic inquiries, appointments, and AI-assisted replies in one place",
         category: "Healthcare · Support",
         features: [
-          "Unified inbox aggregating KakaoTalk, Naver, and website patient inquiries",
-          "Consistent answers powered by approved clinic manuals and AI drafts",
-          "Seamless reservation calendar and built-in clinic landing page",
+          "One inbox for KakaoTalk, Naver, and online inquiries",
+          "Staff review and send AI reply drafts based on approved clinic manuals",
+          "Manage appointments from consultations in a shared calendar",
         ],
       },
       fortunebom: {
@@ -148,19 +128,19 @@ export const DICTIONARY_EN: Dictionary = {
     "items": [
       {
         "question": "What is FIRST FLUKE?",
-        "answer": "FIRST FLUKE is an AI product company founded in March 2026. We build and operate Place Haejo, Contents Haejo, Legalize Haejo, Shopzy, Deploy Haejo, Medisupporter, and Fortunebom.",
+        "answer": "FIRST FLUKE is an AI product company founded in March 2026. We build and operate Contents Haejo, Legalize Haejo, Shopzy, Medi24, and Fortunebom.",
         "href": "#about",
         "linkLabel": "About the company"
       },
       {
-        "question": "Which products help with store marketing and social content?",
-        "answer": "Explore Place Haejo for marketing based on store information and reviews, or Contents Haejo for social post ideas and content creation. The solutions section includes features and screenshots of both products.",
+        "question": "Which product helps with social content?",
+        "answer": "Explore Contents Haejo for social post ideas and content creation. The solutions section includes its features and screenshots.",
         "href": "#solutions",
         "linkLabel": "See features and screenshots"
       },
       {
-        "question": "Which products support online stores, clinic inquiries, and deployment?",
-        "answer": "Shopzy helps operate Cafe24 stores, Medisupporter brings together clinic inquiries and appointment management, and Deploy Haejo helps deploy apps from connected source code. Choose the product that fits the task you need to manage.",
+        "question": "Which products support online stores and clinic inquiries?",
+        "answer": "Shopzy helps operate Cafe24 stores, and Medi24 brings together clinic inquiries and appointment management. Choose the product that fits the task you need to manage.",
         "href": "#solutions",
         "linkLabel": "Explore products by task"
       },
@@ -207,12 +187,10 @@ export const DICTIONARY_EN: Dictionary = {
     productLabel: "Inquiry type",
     productPlaceholder: "Which solution is this about?",
     productOptions: {
-      "place-haejo": "Place Haejo",
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
-      "deploy-haejo": "Deploy Haejo",
-      medisupporter: "Medisupporter",
+      medisupporter: "Medi24",
       fortunebom: "Fortunebom",
       etc: "Other",
     },

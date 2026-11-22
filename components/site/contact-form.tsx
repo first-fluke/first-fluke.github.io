@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createContactFormSchema } from "@/lib/contact/schema";
-import { PRODUCT_IDS, type ProductId } from "@/lib/contact/products";
+import { ACTIVE_PRODUCT_IDS, type ActiveProductId } from "@/lib/contact/products";
 import { useI18n } from "@/lib/i18n/use-i18n";
 import { localizedPath } from "@/lib/i18n/locale-routing";
 
@@ -32,7 +32,7 @@ export function ContactForm() {
     () => createContactFormSchema(t.contact.validation),
     [t],
   );
-  const [product, setProduct] = React.useState<ProductId | "">("");
+  const [product, setProduct] = React.useState<ActiveProductId | "">("");
   const [email, setEmail] = React.useState("");
   const [emailTouched, setEmailTouched] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -56,15 +56,15 @@ export function ContactForm() {
 
   const isSubmitting = status === "submitting";
   const isDisabled = !agree || !product || isSubmitting;
-  const sortedProductIds = React.useMemo<ProductId[]>(() => {
-    const nonEtc = PRODUCT_IDS.filter((id): id is ProductId => id !== "etc");
+  const sortedActiveProductIds = React.useMemo<ActiveProductId[]>(() => {
+    const nonEtc = ACTIVE_PRODUCT_IDS.filter((id): id is ActiveProductId => id !== "etc");
     nonEtc.sort((a, b) => {
       const labelA = t.contact.productOptions[a] ?? a;
       const labelB = t.contact.productOptions[b] ?? b;
       return labelA.localeCompare(labelB);
     });
-    return PRODUCT_IDS.includes("etc")
-      ? [...nonEtc, "etc" as ProductId]
+    return ACTIVE_PRODUCT_IDS.includes("etc")
+      ? [...nonEtc, "etc" as ActiveProductId]
       : nonEtc;
   }, [t.contact.productOptions]);
   const isFormValid = React.useMemo(
@@ -206,7 +206,7 @@ export function ContactForm() {
         </label>
         <Select
           value={product}
-          onValueChange={(v) => setProduct(v as ProductId)}
+          onValueChange={(v) => setProduct(v as ActiveProductId)}
         >
           <SelectTrigger
             id="contact-product"
@@ -219,7 +219,7 @@ export function ContactForm() {
             <SelectValue placeholder={t.contact.productPlaceholder} />
           </SelectTrigger>
           <SelectContent>
-            {sortedProductIds.map((id) => (
+            {sortedActiveProductIds.map((id) => (
               <SelectItem key={id} value={id}>
                 {t.contact.productOptions[id]}
               </SelectItem>

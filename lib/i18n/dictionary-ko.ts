@@ -69,16 +69,6 @@ export const DICTIONARY_KO: Dictionary = {
     viewCta: "사이트 보기",
     liveBadge: "운영 중",
     items: {
-      "place-haejo": {
-        name: "플레이스해줘",
-        tagline: "URL 한 줄로 시작하는 우리 가게 마케팅 컨설턴트",
-        category: "소상공인 · 마케팅",
-        features: [
-          "매장 URL만 넣으면 경쟁 매장과 비교한 헬스 스코어 진단",
-          "채널별 리뷰를 모아 AI가 답글까지 자동 생성",
-          "주간 리포트로 이번 주 할 일을 우선순위로 정리",
-        ],
-      },
       "contents-haejo": {
         name: "콘텐츠해줘",
         tagline: "SNS 콘텐츠 운영, 매일 뭘 올릴지 고민 끝",
@@ -109,24 +99,14 @@ export const DICTIONARY_KO: Dictionary = {
           "모든 수정은 자동 백업되어 언제든 롤백",
         ],
       },
-      "deploy-haejo": {
-        name: "배포해줘",
-        tagline: "소스만 연결하면 알아서 배포되는 원클릭 앱 배포 플랫폼",
-        category: "인프라 · 배포",
-        features: [
-          "GitHub 저장소와 공식 클라우드 계정(Vercel, Cloudflare) 원클릭 연결",
-          "프레임워크 및 루트 디렉터리 자동 감지 및 배포 계획 사전 확인",
-          "배포 로그 실시간 모니터링과 문제 발생 시 즉각 롤백 지원",
-        ],
-      },
       medisupporter: {
-        name: "메디서포터",
-        tagline: "카톡·네이버·홈페이지 문의를 상담함 하나로 모으는 병원 상담 SaaS",
+        name: "메디24",
+        tagline: "병원 상담·예약·AI 답변을 한곳에서 관리하는 서비스",
         category: "의료 · 상담",
         features: [
-          "카카오톡, 네이버, 홈페이지 문의를 통합 상담함 하나에서 즉시 응대",
-          "승인된 병원 응대 매뉴얼과 AI 초안으로 일관되고 빠른 답변 작성",
-          "상담 내용에서 바로 연결되는 예약 관리 캘린더 및 소개 페이지 제공",
+          "카카오톡·네이버·홈페이지 문의를 하나의 상담함에서 관리",
+          "승인된 병원 매뉴얼 기반 AI 답변 초안을 직원이 검토하고 전송",
+          "상담에서 이어지는 예약을 캘린더로 관리",
         ],
       },
       fortunebom: {
@@ -147,19 +127,19 @@ export const DICTIONARY_KO: Dictionary = {
     "items": [
       {
         "question": "퍼스트플루크는 어떤 회사인가요?",
-        "answer": "퍼스트플루크(FIRST FLUKE)는 2026년 3월 설립된 AI 프로덕트 회사입니다. 플레이스해줘, 콘텐츠해줘, 법률검토해줘, 샵지, 배포해줘, 메디서포터, 운세봄을 직접 개발하고 운영합니다.",
+        "answer": "퍼스트플루크(FIRST FLUKE)는 2026년 3월 설립된 AI 프로덕트 회사입니다. 콘텐츠해줘, 법률검토해줘, 샵지, 메디24, 운세봄을 직접 개발하고 운영합니다.",
         "href": "#about",
         "linkLabel": "회사 소개"
       },
       {
-        "question": "매장 마케팅과 SNS 콘텐츠 제작에는 어떤 제품을 사용하나요?",
-        "answer": "매장 정보와 리뷰를 바탕으로 마케팅을 관리하려면 플레이스해줘를, SNS 게시물 아이디어와 콘텐츠 제작을 도우려면 콘텐츠해줘를 살펴보세요. 두 제품의 기능과 실제 화면은 솔루션 목록에서 확인할 수 있습니다.",
+        "question": "SNS 콘텐츠 제작에는 어떤 제품을 사용하나요?",
+        "answer": "SNS 게시물 아이디어와 콘텐츠 제작을 도우려면 콘텐츠해줘를 살펴보세요. 제품의 기능과 실제 화면은 솔루션 목록에서 확인할 수 있습니다.",
         "href": "#solutions",
         "linkLabel": "제품 기능과 화면 보기"
       },
       {
-        "question": "쇼핑몰, 병원 상담, 앱 배포에는 어떤 제품이 맞나요?",
-        "answer": "샵지는 Cafe24 쇼핑몰 운영을, 메디서포터는 병원의 여러 채널 상담과 예약 관리를, 배포해줘는 소스 코드 연결부터 앱 배포까지의 과정을 돕습니다. 해결하려는 업무에 맞춰 제품을 선택하세요.",
+        "question": "쇼핑몰 운영과 병원 상담에는 어떤 제품이 맞나요?",
+        "answer": "샵지는 Cafe24 쇼핑몰 운영을, 메디24는 병원의 여러 채널 상담과 예약 관리를 돕습니다. 해결하려는 업무에 맞춰 제품을 선택하세요.",
         "href": "#solutions",
         "linkLabel": "업무별 제품 살펴보기"
       },
@@ -206,12 +186,10 @@ export const DICTIONARY_KO: Dictionary = {
     productLabel: "문의 종류",
     productPlaceholder: "어떤 솔루션 관련인가요?",
     productOptions: {
-      "place-haejo": "플레이스해줘",
       "contents-haejo": "콘텐츠해줘",
       "legalize-kr": "법률검토해줘",
       shopzy: "샵지",
-      "deploy-haejo": "배포해줘",
-      medisupporter: "메디서포터",
+      medisupporter: "메디24",
       fortunebom: "운세봄",
       etc: "기타",
     },
