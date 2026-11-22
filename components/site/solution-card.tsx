@@ -23,19 +23,9 @@ const ICON_FRAMES: Record<string, IconFrame> = {
       "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
     imageClass: "h-8 w-8",
   },
-  "place-haejo": {
-    containerClass:
-      "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
-    imageClass: "h-9 w-9",
-  },
   "contents-haejo": {
     containerClass:
       "bg-[#1373f4] shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
-    imageClass: "h-9 w-9",
-  },
-  "deploy-haejo": {
-    containerClass:
-      "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)] ring-1 ring-black/5",
     imageClass: "h-9 w-9",
   },
   medisupporter: {

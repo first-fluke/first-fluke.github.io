@@ -1,4 +1,4 @@
-import type { ProductId } from "@/lib/contact/products";
+import type { ActiveProductId } from "@/lib/contact/products";
 
 export const LOCALES = ["ko", "en", "ja"] as const;
 
@@ -124,7 +124,7 @@ export interface Dictionary {
     subtitle: string;
     productLabel: string;
     productPlaceholder: string;
-    productOptions: Record<ProductId, string>;
+    productOptions: Record<ActiveProductId, string>;
     emailLabel: string;
     messageLabel: string;
     messagePlaceholder: string;

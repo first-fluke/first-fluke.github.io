@@ -19,10 +19,16 @@ export const PRODUCT_IDS = [
 
 export type ProductId = (typeof PRODUCT_IDS)[number];
 
-// Korean display labels — brand names are closed-up (no space), matching
-// support_products.label (dahaejo migration 0090) and lib/solutions.ts.
+// Retain registered transport IDs for existing inquiries; only active products
+// appear in the public form. Medi24 still uses the registered medisupporter ID.
+export type ActiveProductId = Exclude<ProductId, "deploy-haejo" | "place-haejo">;
+export const ACTIVE_PRODUCT_IDS = PRODUCT_IDS.filter(
+  (id): id is ActiveProductId => id !== "deploy-haejo" && id !== "place-haejo",
+);
+
+// Current Korean brand labels, independent of the API transport IDs.
 export const PRODUCT_LABELS: Record<ProductId, string> = {
-  medisupporter: "메디서포터",
+  medisupporter: "메디24",
   "deploy-haejo": "배포해줘",
   "legalize-kr": "법률검토해줘",
   shopzy: "샵지",

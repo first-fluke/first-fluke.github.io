@@ -70,16 +70,6 @@ export const DICTIONARY_JA: Dictionary = {
     viewCta: "サイトを見る",
     liveBadge: "運営中",
     items: {
-      "place-haejo": {
-        name: "Place Haejo",
-        tagline: "URL一つで始まる店舗マーケティングコンサルタント",
-        category: "小規模事業者・マーケティング",
-        features: [
-          "店舗URLを入力するだけで、近隣競合と比較したヘルススコアを診断",
-          "チャネル別のレビューを集約し、AIが返信文まで自動生成",
-          "週次レポートで今週やるべきことを優先度順に整理",
-        ],
-      },
       "contents-haejo": {
         name: "Contents Haejo",
         tagline: "SNS運用の「今日は何を投稿する？」を解決",
@@ -110,24 +100,14 @@ export const DICTIONARY_JA: Dictionary = {
           "すべての修正は自動バックアップされ、いつでもロールバック可能",
         ],
       },
-      "deploy-haejo": {
-        name: "Deploy Haejo",
-        tagline: "ソースコードを接続するだけのワンクリックアプリデプロイプラットフォーム",
-        category: "インフラ · デプロイ",
-        features: [
-          "GitHubリポジトリとクラウド公式アカウント(Vercel、Cloudflare)の簡単連携",
-          "フレームワークとルートディレクトリの自動検出およびデプロイ計画の事前確認",
-          "リアルタイムのデプロイログ監視とワンクリックでのロールバック対応",
-        ],
-      },
       medisupporter: {
-        name: "Medisupporter",
-        tagline: "カカオ・NAVER・ウェブからの問い合わせを一元管理する病院相談SaaS",
+        name: "Medi24",
+        tagline: "病院の問い合わせ・予約・AIによる返信作成を一元管理",
         category: "医療 · カスタマーサポート",
         features: [
-          "複数チャネルの患者からの問い合わせをひとつの相談トレイに集約",
-          "承認済み応対マニュアルとAI下書きによる迅速かつ均一な回答作成",
-          "相談からスムーズにつながる予約管理カレンダーと紹介ページを提供",
+          "カカオトーク・NAVER・オンラインの問い合わせをひとつの相談トレイに集約",
+          "承認済みの院内マニュアルに基づくAIの返信案をスタッフが確認して送信",
+          "相談から予約までをカレンダーで管理",
         ],
       },
       fortunebom: {
@@ -148,19 +128,19 @@ export const DICTIONARY_JA: Dictionary = {
     "items": [
       {
         "question": "FIRST FLUKEはどんな会社ですか？",
-        "answer": "FIRST FLUKEは2026年3月に設立されたAIプロダクト会社です。Place Haejo、Contents Haejo、Legalize Haejo、Shopzy、Deploy Haejo、Medisupporter、Fortunebomを自社で開発・運営しています。",
+        "answer": "FIRST FLUKEは2026年3月に設立されたAIプロダクト会社です。Contents Haejo、Legalize Haejo、Shopzy、Medi24、Fortunebomを自社で開発・運営しています。",
         "href": "#about",
         "linkLabel": "会社紹介を見る"
       },
       {
-        "question": "店舗のマーケティングやSNSコンテンツ制作には、どの製品が適していますか？",
-        "answer": "店舗情報やレビューをもとにマーケティングを管理したい場合はPlace Haejo、SNSの投稿アイデアやコンテンツ制作にはContents Haejoをご覧ください。ソリューション一覧で、それぞれの機能と実際の画面を確認できます。",
+        "question": "SNSコンテンツ制作には、どの製品が適していますか？",
+        "answer": "SNSの投稿アイデアやコンテンツ制作にはContents Haejoをご覧ください。ソリューション一覧で、機能と実際の画面を確認できます。",
         "href": "#solutions",
         "linkLabel": "機能と画面を見る"
       },
       {
-        "question": "ショップ運営、病院の問い合わせ対応、アプリのデプロイには、どの製品を選べばよいですか？",
-        "answer": "ShopzyはCafe24ショップの運営、Medisupporterは病院の複数チャネルの問い合わせ対応と予約管理、Deploy Haejoはソースコードの接続からアプリのデプロイまでを支援します。管理したい業務に合わせてお選びください。",
+        "question": "ショップ運営や病院の問い合わせ対応には、どの製品を選べばよいですか？",
+        "answer": "ShopzyはCafe24ショップの運営、Medi24は病院の複数チャネルの問い合わせ対応と予約管理を支援します。管理したい業務に合わせてお選びください。",
         "href": "#solutions",
         "linkLabel": "業務別に製品を見る"
       },
@@ -207,12 +187,10 @@ export const DICTIONARY_JA: Dictionary = {
     productLabel: "お問い合わせ種別",
     productPlaceholder: "どのソリューションに関するお問い合わせですか？",
     productOptions: {
-      "place-haejo": "Place Haejo",
       "contents-haejo": "Contents Haejo",
       "legalize-kr": "Legalize Haejo",
       shopzy: "Shopzy",
-      "deploy-haejo": "Deploy Haejo",
-      medisupporter: "Medisupporter",
+      medisupporter: "Medi24",
       fortunebom: "Fortunebom",
       etc: "その他",
     },

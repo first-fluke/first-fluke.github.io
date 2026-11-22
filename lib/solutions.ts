@@ -11,15 +11,6 @@ export interface Solution {
 
 export const SOLUTIONS: Solution[] = [
   {
-    id: "place-haejo",
-    name: "플레이스해줘",
-    tagline: "URL 한 줄로 시작하는 우리 가게 마케팅 컨설턴트",
-    category: "소상공인 · 마케팅",
-    href: "https://place-haejo.firstfluke.com",
-    iconSrc: "/icons/place-haejo.webp",
-    screenshotSrc: "/screenshots/place-haejo.webp",
-  },
-  {
     id: "contents-haejo",
     name: "콘텐츠해줘",
     tagline: "SNS 콘텐츠 운영, 매일 뭘 올릴지 고민 끝",
@@ -47,22 +38,13 @@ export const SOLUTIONS: Solution[] = [
     screenshotSrc: "/screenshots/shopzy.webp",
   },
   {
-    id: "deploy-haejo",
-    name: "배포해줘",
-    tagline: "소스만 연결하면 알아서 배포되는 원클릭 앱 배포 플랫폼",
-    category: "인프라 · 배포",
-    href: "https://deploy-haejo.firstfluke.com",
-    iconSrc: "/icons/deploy-haejo.webp",
-    screenshotSrc: "/screenshots/deploy-haejo.webp",
-  },
-  {
     id: "medisupporter",
-    name: "메디서포터",
-    tagline: "카톡·네이버·홈페이지 문의를 상담함 하나로 모으는 병원 상담 SaaS",
+    name: "메디24",
+    tagline: "병원 상담·예약·AI 답변을 한곳에서 관리하는 서비스",
     category: "의료 · 상담",
-    href: "https://www.medisupporter.com",
-    iconSrc: "/icons/medisupporter.webp",
-    screenshotSrc: "/screenshots/medisupporter.webp",
+    href: "https://medi-24.com",
+    iconSrc: "/icons/medi24.webp",
+    screenshotSrc: "/screenshots/medi24.webp",
   },
   {
     id: "fortunebom",
