@@ -60,7 +60,7 @@ export function SolutionsGrid() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6 xl:grid-cols-3">
             {SOLUTIONS.map((solution, index) => (
               <motion.div key={solution.id} variants={card}>
                 <Parallax
