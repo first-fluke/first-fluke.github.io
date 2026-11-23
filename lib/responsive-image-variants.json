@@ -19,6 +19,10 @@
     "sourceHash": "ddbf623eda0ee18f93a60651603ccef7415412114e1d041468a57dd161cc7da4",
     "srcSet": "/optimized/fortunebom-320.29bddfbbf09f.avif 320w, /optimized/fortunebom-640.069906e6e0f1.avif 640w, /optimized/fortunebom-960.3ac943638aeb.avif 960w, /optimized/fortunebom-1200.f25c42bc0470.avif 1200w"
   },
+  "/screenshots/jiinfabric.webp": {
+    "sourceHash": "1ec4531f14fa48496575d9c85c2f489ac43be2538b76b3a3e74e221f828ebf84",
+    "srcSet": "/optimized/jiinfabric-320.f95415ddab6d.avif 320w, /optimized/jiinfabric-640.e434aa569954.avif 640w, /optimized/jiinfabric-960.a3c92381bd31.avif 960w, /optimized/jiinfabric-1200.e2428c40313f.avif 1200w"
+  },
   "/logo-background.webp": {
     "sourceHash": "5b4fd4682a149bb7c8cde59f9382912d412d247024f1a9bdc534306cf19f4599",
     "srcSet": "/optimized/logo-background-360.9348bd59f1af.avif 360w, /optimized/logo-background-640.0764a77c1d29.avif 640w, /optimized/logo-background-720.3dc9c425ff31.avif 720w"

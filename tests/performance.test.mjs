@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import { createHash } from "node:crypto";
 import { SOLUTIONS } from "../lib/solutions.ts";
+import { WEBSITE_PROJECTS } from "../lib/website-projects.ts";
 import { DICTIONARIES } from "../lib/i18n/dictionaries.ts";
 
 const assetSize = (url) => url.startsWith("data:image/")
@@ -70,7 +71,7 @@ test("the primary font covers the current translated copy", () => {
 test("responsive image variants match their source and export every candidate", () => {
   const variants = JSON.parse(readFileSync("lib/responsive-image-variants.json", "utf8"));
   expect(Object.keys(variants).sort()).toEqual([
-    ...SOLUTIONS.flatMap((solution) => solution.screenshotSrc ? [solution.screenshotSrc] : []),
+    ...[...SOLUTIONS, ...WEBSITE_PROJECTS].flatMap((card) => card.screenshotSrc ? [card.screenshotSrc] : []),
     "/logo-background.webp",
     "/moduecangup-logo.webp",
   ].sort());
@@ -88,7 +89,7 @@ test.each(["/", "/en/", "/ja/"])("%s exports responsive screenshots and plain re
   const html = readFileSync(join("out", pathname, "index.html"), "utf8");
   const screenshots = [...html.matchAll(/<picture><source\b[^>]*srcSet="[^"]*\/optimized\/[^>]*>[\s\S]*?<\/picture>/g)];
   expect(screenshots.length).toBeGreaterThanOrEqual(
-    SOLUTIONS.filter((solution) => solution.screenshotSrc).length + 2,
+    [...SOLUTIONS, ...WEBSITE_PROJECTS].filter((card) => card.screenshotSrc).length + 2,
   );
   expect(html).not.toContain('src="/_next/image');
   const locale = pathname === "/" ? "ko" : pathname.split("/")[1];

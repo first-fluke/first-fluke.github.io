@@ -107,6 +107,15 @@ export interface Dictionary {
     liveBadge: string;
     items: Record<string, SolutionCopy>;
   };
+  websiteProjects: {
+    heading: string;
+    subtitle: string;
+    /** CTA label linking to the contact form. */
+    contactCta: string;
+    /** Badge label marking a site built for a client. */
+    badge: string;
+    items: Record<string, SolutionCopy>;
+  };
   faq: {
     heading: string;
     intro: string;

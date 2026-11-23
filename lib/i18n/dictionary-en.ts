@@ -28,8 +28,8 @@ export const DICTIONARY_EN: Dictionary = {
   },
   about: {
     paragraphs: [
-      "FIRST FLUKE is an AI product company founded in March 2026. Rather than building software for other companies, we design, build, and operate our own AI SaaS products under our own name.",
-      "Our AI products cover store marketing, social content, legal research, online-store operations, app deployment, clinic inquiries, and fortune readings. Each product website provides its own pricing and free-use details.",
+      "FIRST FLUKE is an AI product company founded in March 2026. We design, build, and operate our own AI SaaS products under our own name, and we use that experience to build websites for clients.",
+      "Our AI products cover clinic inquiries, legal research, social content, online-store operations, and fortune readings. Each product website provides its own pricing and free-use details.",
       "Instead of putting complex technology front and center, we design experiences anyone can understand and use immediately — execution-driven products that carry an idea all the way to daily use.",
       "Before the technology itself, we ask why it is needed — and what kind of experience it leaves behind.",
     ],
@@ -118,6 +118,24 @@ export const DICTIONARY_EN: Dictionary = {
           "Precise birth-chart calculation for Korean Saju and Zi Wei Dou Shu natal charts",
           "Western astrology horoscopes combined with interactive Tarot card readings",
           "Personalized AI reports covering daily fortune, compatibility, and life cycles",
+        ],
+      },
+    },
+  },
+  websiteProjects: {
+    heading: "Website Development",
+    subtitle: "From planning and design to development and launch, we build websites that fit your business.",
+    contactCta: "Ask about a website",
+    badge: "Client work",
+    items: {
+      jiinfabric: {
+        name: "Jiin Fabric",
+        tagline: "Official website of Jiin Fabric, a curtain, blind, bedding, and home fabric specialist",
+        category: "Home Fabric · Brand Site",
+        features: [
+          "A brand site that brings products, installation cases, and guides together",
+          "Quote requests for on-site measurement, with KakaoTalk inquiries",
+          "Showroom information and B2B supply for hotels, clinics, and guesthouses",
         ],
       },
     },

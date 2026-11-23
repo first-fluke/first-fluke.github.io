@@ -4,6 +4,7 @@ import { Hero } from "@/components/site/hero";
 import { BrandMarquee } from "@/components/site/brand-marquee";
 import { CompanyIntro } from "@/components/site/company-intro";
 import { SolutionsGrid } from "@/components/site/solutions-grid";
+import { WebsiteProjectsSection } from "@/components/site/website-projects-section";
 import { OmaSection } from "@/components/site/oma-section";
 import { TeamSection } from "@/components/site/team-section";
 import { ContactSection } from "@/components/site/contact-section";
@@ -26,6 +27,7 @@ export function HomePage({ locale = "ko" }: { locale?: Locale }) {
         <OmaSection />
         <SolutionsGrid />
         <ProductFaq locale={locale} />
+        <WebsiteProjectsSection />
         <TeamSection />
         <ContactSection />
       </main>

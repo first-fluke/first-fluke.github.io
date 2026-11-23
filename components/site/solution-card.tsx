@@ -4,12 +4,23 @@ import Image from "next/image";
 import { ResponsiveImage } from "@/components/site/responsive-image";
 import { useRef, type CSSProperties, type MouseEvent } from "react";
 import type { Solution } from "@/lib/solutions";
+import type { SolutionCopy } from "@/lib/i18n/i18n.types";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n/use-i18n";
 
+/** Screenshot `sizes` for the Solutions grid: 1 column, 2 from md, 3 from xl. */
+const SOLUTIONS_GRID_SIZES =
+  "(max-width: 767px) calc(100vw - 48px), (max-width: 1151px) calc((100vw - 120px) / 2), (max-width: 1279px) 516px, 336px";
+
 interface SolutionCardProps {
   solution: Solution;
+  /** Card copy. Defaults to the solutions dictionary entry for `solution.id`. */
+  copy?: SolutionCopy;
+  /** Badge over the screenshot. Defaults to the live-product badge. */
+  badgeLabel?: string;
+  /** Screenshot `sizes`. Defaults to the Solutions grid column widths. */
+  imageSizes?: string;
 }
 
 interface IconFrame {
@@ -40,9 +51,14 @@ const ICON_FRAMES: Record<string, IconFrame> = {
   },
 };
 
-export function SolutionCard({ solution }: SolutionCardProps) {
+export function SolutionCard({
+  solution,
+  copy: copyOverride,
+  badgeLabel,
+  imageSizes = SOLUTIONS_GRID_SIZES,
+}: SolutionCardProps) {
   const { t } = useI18n();
-  const copy = t.solutions.items[solution.id] ?? solution;
+  const copy = copyOverride ?? t.solutions.items[solution.id] ?? solution;
   const initial = copy.name.charAt(0);
   const iconSrc = solution.iconSrc;
   const iconFrame = ICON_FRAMES[solution.id];
@@ -117,7 +133,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
               alt={`${copy.name}: ${copy.tagline}`}
               fill
               unoptimized
-              sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1151px) calc((100vw - 120px) / 2), 516px"
+              sizes={imageSizes}
               className="object-cover object-top transition-transform duration-300 ease-out group-hover:scale-[1.03]"
             />
           ) : (
@@ -130,7 +146,7 @@ export function SolutionCard({ solution }: SolutionCardProps) {
               aria-hidden
               className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]"
             />
-            {t.solutions.liveBadge}
+            {badgeLabel ?? t.solutions.liveBadge}
           </span>
         </div>
 
