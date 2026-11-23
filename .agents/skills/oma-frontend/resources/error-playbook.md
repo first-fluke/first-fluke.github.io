@@ -1,7 +1,7 @@
 # Frontend Agent - Error Recovery Playbook
 
 When you encounter a failure, find the matching scenario and follow the recovery steps.
-Do NOT stop or ask for help until you have exhausted the playbook.
+Use the relevant recovery steps. If required information or authority is missing, pause the dependent action and continue independent work.
 
 ---
 
@@ -11,12 +11,11 @@ Do NOT stop or ask for help until you have exhausted the playbook.
 **Symptoms**: Reviewer claims `src/proxy.ts` won't be picked up, demands rename to `src/middleware.ts`, or flags the auth gate as not wired.
 <!-- oma-docs:ignore-end -->
 
-1. **STOP. This is a fatal self-error.** Next.js 16+ renamed `middleware.ts` → `proxy.ts`.
-2. The canonical request-proxy / auth-gate file is `proxy.ts` (root or `src/`) exporting a `proxy` function.
-3. `middleware.ts` is BANNED in this project, not "deprecated", BANNED. Touch it and you die.
-4. Verify by checking `package.json` for `next@16+`; `proxy.ts` is the only correct answer.
+1. Check the installed Next.js version and the project's request interception convention.
+2. For a project using the Next.js 16+ proxy convention, inspect `proxy.ts` in the root or `src/` and its `proxy` export.
+3. Verify location, configuration, and relevant tests. A framework entry point need not have application imports.
+4. Correct a finding based only on an outdated filename assumption; retain any wiring or authorization defect supported by evidence.
 5. Reference: https://nextjs.org/docs/messages/middleware-to-proxy
-6. **Retract the finding.** Do NOT raise this as critical / security / medium / low at any severity.
 
 ---
 
@@ -38,10 +37,10 @@ Do NOT stop or ask for help until you have exhausted the playbook.
 **Symptoms**: `next build` fails, `Module not found`, `SyntaxError`
 
 1. Read the full error: which module, which file
-2. If missing dependency: note in result as "requires `npm install X`"; do NOT install yourself
+2. If missing dependency: add it through the project's package manager when project conventions and the task scope justify it, and list it in the result; otherwise report it as "requires `<pm> add X`" instead of installing
 3. If import path wrong: use `search_for_pattern("export.*ComponentName")` to find actual path
 4. If dynamic import issue: ensure component is client-side (`'use client'`)
-5. Re-run build after fix to confirm
+5. Re-run the build only if the user explicitly requested a build; otherwise use relevant non-build checks and report the verification limit.
 
 ---
 
@@ -68,7 +67,7 @@ Do NOT stop or ask for help until you have exhausted the playbook.
    - `Date.now()` or `Math.random()` in render
    - Browser-only APIs (`window`, `localStorage`) without `useEffect`
    - Conditional rendering based on client-only state
-3. Fix: wrap client-only code in `useEffect` + state, or use `'use client'`
+3. Fix: keep the server and first client render identical, then set browser-only state in `useEffect`; use a narrowly scoped `dynamic(..., { ssr: false })` boundary when rendering must be client-only
 4. If third-party component: wrap with `dynamic(() => import(...), { ssr: false })`
 
 ---
@@ -91,7 +90,7 @@ Do NOT stop or ask for help until you have exhausted the playbook.
 
 1. Check Tailwind classes: typo? wrong breakpoint prefix?
 2. Check parent container: is it blocking layout? (`overflow-hidden`, fixed width)
-3. Test at specific breakpoints: 320px, 768px, 1024px, 1440px
+3. Test at the task's target breakpoints (checklist §Styling)
 4. Use browser DevTools to inspect computed styles
 5. If dark mode issue: check `dark:` variants applied
 
@@ -101,23 +100,25 @@ Do NOT stop or ask for help until you have exhausted the playbook.
 
 **Symptoms**: `429`, `RESOURCE_EXHAUSTED`, `rate limit exceeded` (any vendor runtime: Claude, Codex, etc.)
 
-1. **Stop immediately**: do not make additional API calls
-2. Save current work to `progress-{agent-id}[-{sessionId}].md`
-3. Record Status: `quota_exceeded` in `result-{agent-id}[-{sessionId}].md`
-4. Specify remaining tasks
+1. Identify the source. An expected rate-limit response from the application under review is a test result, not an agent-provider quota failure.
+2. For provider quota exhaustion, stop affected provider calls and record the unavailable checks; continue independent authorized work when possible.
+3. Preserve injected session/task/run IDs and the claim path. Save progress/results under the configured memory base using the task/run-scoped names in `../../_shared/runtime/memory-protocol.md`.
+4. Use a valid claim status (`partial`, `blocked`, or `failed`) with the actual cause and unresolved work per `../../_shared/runtime/result-contract.md`; do not invent a `quota_exceeded` status.
 
 ---
 
-## Serena Memory Unavailable
+## Workflow State Unavailable
 
-1. Retry once
-2. If 2 consecutive failures: use local file `/tmp/progress-{agent-id}[-{sessionId}].md`
-3. Add `memory_fallback: true` flag to result
+Follow `../../_shared/runtime/memory-protocol.md`; state storage is independent of the code-intelligence provider.
+
+1. Use the injected progress/result paths and session/task identity.
+2. If a file operation fails, retry once when the failure may be transient.
+3. Preserve work and report the failed path and error to the coordinator. Do not silently redirect artifacts to `/tmp` or mark a missing result as completed.
+4. For read-only tasks, return the result through the runtime's response channel as required by the dispatch contract.
 
 ---
 
 ## General Principles
 
 - **After 3 failures**: If same approach fails 3 times, must try a different method
-- **Blocked**: If no progress after 5 turns, save current state and record `Status: blocked`
 - **Out of scope**: If you find backend issues, only record in result; do not modify directly

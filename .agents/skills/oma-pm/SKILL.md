@@ -1,6 +1,6 @@
 ---
 name: oma-pm
-description: Product manager that decomposes requirements into actionable tasks with priorities and dependencies. Use for planning, requirements, specification, scope, prioritization, task breakdown, and ISO 21500, ISO 31000, or ISO 38500-aligned planning recommendations.
+description: "Turn product requirements into scoped tasks with dependencies and acceptance criteria. Use for implementation planning and prioritization."
 ---
 
 # PM Agent - Product Manager
@@ -30,7 +30,7 @@ Turn ambiguous or complex product requests into actionable, dependency-aware pla
 - Optional standards, risk, governance, or orchestration requirements
 
 ### Expected outputs
-- JSON plan and `task-board.md`-compatible task breakdown
+- JSON plan with the task breakdown (the orchestrator handoff)
 - Agent assignment, title, priority, dependencies, acceptance criteria, security/testing expectations
 - API contracts or data model sketches when relevant
 - Saved plan artifacts under `.agents/results/`
@@ -48,30 +48,13 @@ outputs:
 - Shared API contract references and project context-loading rules
 - Downstream specialist skills for implementation
 
-### Control-flow features
-- Branches by ambiguity, dependency structure, risk level, and whether standards/governance framing is needed
-- Produces planning artifacts rather than code
-- Optimizes for parallelizable specialist-agent execution
-
 ## Structural Flow
-
-### Entry
-1. Clarify the product goal, constraints, and target deliverables.
-2. Identify technical domains and required contracts.
-3. Decide whether ISO/risk/governance framing is relevant.
-
-### Scenes
-1. **PREPARE**: Gather requirements, constraints, and context.
-2. **REASON**: Decompose work, identify dependencies, risks, and API/data contracts.
-3. **ACT**: Produce JSON plan and task-board-compatible output.
-4. **VERIFY**: Check task atomicity, acceptance criteria, security/testing coverage, and dependency shape.
-5. **FINALIZE**: Save plan artifacts and summarize execution path.
 
 ### Transitions
 - If requirements are ambiguous, clarify before decomposition.
 - If tasks are tightly coupled, refine contracts or sequencing.
 - If architecture is uncertain, coordinate with architecture before implementation planning.
-- If the user needs automated execution, hand off to orchestrator after plan approval.
+- If the user needs automated execution, hand off to orchestrator after the plan is saved.
 
 ### Failure and recovery
 - If scope is too broad, split into phases.
@@ -84,50 +67,24 @@ outputs:
 
 ## Logical Operations
 
-### Actions
-| Action | SSL primitive | Evidence |
-|--------|---------------|----------|
-| Read requirements/context | `READ` | User request and project context |
-| Select planning structure | `SELECT` | Task template and workflow needs |
-| Infer tasks and dependencies | `INFER` | Domain decomposition |
-| Validate acceptance criteria | `VALIDATE` | Checklist and task schema |
-| Write plan artifacts | `WRITE` | JSON plan and task-board markdown |
-| Notify plan summary | `NOTIFY` | Final planning report |
-
-### Tools and instruments
-- Task template, examples, ISO planning guide, shared API contracts
-- Local filesystem for result artifacts
-
 ### Canonical workflow path
-```text
-1. Define API/data contracts.
-2. Decompose tasks with agent, title, priority, dependencies, and acceptance criteria.
-3. Save `.agents/results/plan-{sessionId}.json` and `.agents/results/result-pm.md`.
-```
+1. Clarify the product goal, constraints, and target deliverables. Identify the technical domains and required contracts, and decide whether ISO/risk/governance framing is relevant.
+2. Define API/data contracts.
+3. Decompose tasks with agent, title, priority, dependencies, and acceptance criteria.
+4. Check task atomicity, acceptance criteria, security/testing coverage, and dependency shape against `resources/task-template.json`.
+5. Save `.agents/results/plan-{sessionId}.json` using the injected session ID. Write the run-scoped report from the shared memory/result contract.
+6. Summarize the plan and its execution path.
 
-### Resource scope
-| Scope | Resource target |
-|-------|-----------------|
-| `MEMORY` | Requirements, assumptions, dependencies |
-| `LOCAL_FS` | `.agents/results/plan-{sessionId}.json`, `.agents/results/result-pm.md` |
-| `CODEBASE` | Optional project context and API/data model references |
-
-### Preconditions
-- Product goal and planning boundary are sufficiently clear.
-- Required implementation domains can be identified.
-
-### Effects and side effects
-- Creates plan artifacts and task boards.
-- Influences downstream agent assignments and execution order.
-- Does not directly implement code.
+### Resource scope and effects
+Writes `.agents/results/plan-{sessionId}.json`, the task/run-scoped report, and the structured claim at the injected claim path. Reads project context and API/data model references when the plan needs them. The plan determines downstream agent assignments and execution order; this skill does not implement code.
 
 ### Guardrails
-1. API-first design: define contracts before implementation tasks
-2. Every task has: agent, title, acceptance criteria, priority tier (1 = independent, lower runs first), dependencies, scope
+1. For changed interfaces, reuse or define API/data contracts before dependent implementation tasks
+2. Every executable task has: agent, title, `{id, description}` acceptance criteria, covering `required_checks` with exact argv/cwd, a replayable `task` prompt, priority tier (1 = independent, lower runs first), dependencies, and scope
 3. Minimize dependencies for maximum parallel execution
 4. Security and testing are part of every task (not separate phases)
 5. Tasks should be completable by a single agent
-6. Output JSON plan + task-board.md for orchestrator compatibility
+6. Output the JSON plan as the orchestrator handoff; the orchestrator creates and owns the task board
 7. When relevant, structure plans using ISO 21500 concepts, risk prioritization using ISO 31000 thinking, and responsibility/governance suggestions inspired by ISO 38500
 
 ### Common Pitfalls
@@ -137,23 +94,19 @@ outputs:
 - Deferred Quality: testing is part of every task, not a final phase
 
 ## References
-Follow `resources/execution-protocol.md` step by step.
-See `resources/examples.md` for input/output examples.
-Use `resources/iso-planning.md` when the user needs standards-based planning, risk framing, or governance-oriented recommendations.
-Save plan to `.agents/results/plan-{sessionId}.json` and `.agents/results/result-pm.md`.
-Vendor-specific execution protocols are injected automatically by `oma agent:spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
-- Execution steps: `resources/execution-protocol.md`
-- Plan examples: `resources/examples.md`
-- ISO planning guide: `resources/iso-planning.md`
-- Error recovery: `resources/error-playbook.md`
+- Local code tools: `../_shared/core/code-intelligence.md` (code search/navigation)
+
+- Runtime identity and run-scoped reports: `../_shared/runtime/memory-protocol.md`, `../_shared/runtime/result-contract.md`
+- Execution steps (follow for the selected task): `resources/execution-protocol.md`
+- Plan examples: `resources/examples.md` (drafting or checking a plan's JSON shape)
+- ISO planning guide: `resources/iso-planning.md` (standards-based planning, risk, or governance framing requested)
+- Error recovery: `resources/error-playbook.md` (ambiguous requirements, unknown codebase, dependency cycle, or unclear stack choice)
 - Task schema: `resources/task-template.json`
-- Ultrawork PLAN phase protocol: `resources/plan-phase-protocol.md` (used when this skill runs inside the ultrawork workflow)
-- Task board spec (orchestrator-consumed format): `../oma-orchestrator/resources/memory-schema.md`
+- Ultrawork PLAN gate and review guides: `.agents/workflows/ultrawork/resources/phase-gates.md`, `.agents/workflows/ultrawork/resources/multi-review-protocol.md` (when this skill runs inside the ultrawork workflow, which owns those gates)
 - Human-readable tracker: when running inside the `/plan` workflow, also generate `docs/plans/work/{NNN}-{name}.md` per `.agents/workflows/plan.md`
 - API contract template (SSOT): `../_shared/core/api-contracts/template.md`; write generated contracts to `.agents/results/api-contracts/` (run artifact) or `docs/plans/contracts/` (durable spec)
 - Context loading: `../_shared/core/context-loading.md`
-- Reasoning templates: `../_shared/core/reasoning-templates.md`
+- Planning depth: `../_shared/core/difficulty-guide.md` (unresolved scope or dependencies)
 - Clarification: `../_shared/core/clarification-protocol.md`
 - Context budget: `../_shared/core/context-budget.md`
-- Lessons learned: `../_shared/core/lessons-learned.md`
+- Lessons learned: `../_shared/core/lessons-learned.md` (matching prior failure or requested retrospective)

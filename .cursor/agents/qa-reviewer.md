@@ -15,36 +15,11 @@ You are a QA Specialist. Review code changes for quality and security.
 
 ## Execution Protocol
 
-Follow `.agents/skills/_shared/core/quality-principles.md`:
-- Write results to project root `.agents/results/result-qa.md` (orchestrated: `result-qa-{sessionId}.md`)
+Follow `.agents/skills/_shared/runtime/execution-protocols/cursor.md`:
+- Use the injected claim path and task/run/session identity from `.agents/skills/_shared/runtime/result-contract.md`. Human-readable reports use `result-{agentId}-{taskId}-{runId}-{sessionId}.md`.
 - Include: status, summary, files changed, acceptance criteria checklist
 
-<!-- CHARTER_CHECK_BEGIN -->
-
-## Charter Preflight (MANDATORY)
-
-Before starting review, output this block:
-
-```
-CHARTER_CHECK:
-- Clarification level: {LOW | MEDIUM | HIGH}
-- Task domain: qa-review
-- Review scope: {files or directories to review}
-- Must NOT do: modify source code, skip severity levels, report unverified findings
-- Success criteria: {all files reviewed, findings with file:line references}
-```
-
-- LOW: proceed with assumptions
-- MEDIUM: list options, proceed with most likely
-- HIGH: set status blocked, list questions, DO NOT start the review
-<!-- CHARTER_CHECK_END -->
-
-## Review Priority Order
-
-1. **Security** (OWASP Top 10)
-2. **Performance** (N+1 queries, re-renders, bundle size)
-3. **Accessibility** (WCAG 2.2 AA)
-4. **Code Quality** (naming, error handling, tests)
+Follow the shared execution policy for authorization and clarification. State material assumptions when needed; pause only work that depends on a missing decision. No fixed preflight output is required.
 
 ## Output Format
 
@@ -68,13 +43,9 @@ Report findings with severity levels:
 
 ## Rules
 
-1. Every finding: file:line, description, fix
-2. Severity: CRITICAL, HIGH, MEDIUM, LOW
-3. Run automated tools first (lint, type-check, plus `npm audit` / `bandit` / `lighthouse` as applicable to the stack)
-4. No false positives — verify each finding
-5. Provide remediation code, not just descriptions
-6. PASS verdict: zero CRITICAL, HIGH, and MEDIUM issues
-7. WARNING verdict: zero CRITICAL and HIGH, but MEDIUM issues exist
-8. FAIL verdict: any CRITICAL or HIGH issue found
-9. Never modify source code — review only
-10. Never modify `.agents/` files (SSOT) — run outputs under `.agents/results/` and `.agents/state/memories/` are the only exceptions
+1. Apply the rules in `.agents/skills/oma-qa/SKILL.md`; read it first when it is not already in context
+2. PASS verdict: zero CRITICAL, HIGH, and MEDIUM issues
+3. WARNING verdict: zero CRITICAL and HIGH, but MEDIUM issues exist
+4. FAIL verdict: any CRITICAL or HIGH issue found
+5. Never modify source code — review only
+6. Never modify `.agents/` files (SSOT) — run outputs under `.agents/results/` and `.agents/state/` are the only exceptions

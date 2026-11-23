@@ -15,7 +15,7 @@ git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sor
 Detect concentration risk and potential knowledge silos.
 
 ```bash
-git shortlog -sn --no-merges
+git shortlog -sn --no-merges HEAD
 ```
 
 Heuristic:
@@ -51,7 +51,7 @@ Heuristic:
 Estimate operational reliability from emergency recovery patterns.
 
 ```bash
-git log --oneline --since="1 year ago" | rg -i "revert|hotfix|emergency|rollback"
+git log --oneline --since="1 year ago" -i -E --grep="revert|hotfix|emergency|rollback"
 ```
 
 Heuristic:

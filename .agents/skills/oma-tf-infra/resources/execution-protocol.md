@@ -1,18 +1,7 @@
 # TF Infra Agent: Execution Protocol
 
-## Step 0: Prepare
-
-1. **Assess difficulty**: see `../../_shared/core/difficulty-guide.md`
-   - **Simple**: Skip to Step 3 | **Medium**: All 4 steps | **Complex**: All steps + checkpoints
-2. **Check lessons**: read the infrastructure section in `../../_shared/core/lessons-learned.md` for past Terraform pitfalls
-3. **Clarify requirements**: follow `../../_shared/core/clarification-protocol.md`
-   - Check **Uncertainty Triggers**: IAM/security, compliance (PII, residency, audit), cost/sizing, existing-resource or state conflicts, provider/region ambiguity?
-   - Determine level: LOW → proceed | MEDIUM → present options | HIGH → ask immediately
-4. **Budget context**: follow `../../_shared/core/context-budget.md` (read symbols and file overviews, not whole files)
-
-**Intelligent Escalation**: When uncertain, escalate early. Provisioning on wrong assumptions costs more than asking. Don't blindly proceed.
-
-Follow these steps in order (adjust depth by difficulty).
+## Preparation
+Use the task's scope, existing project conventions, and acceptance criteria. Follow `../../_shared/core/execution-policy.md` when it has not already been supplied. Read only references needed by the selected operation; consult lessons or recovery guides for an observed issue. Expand planning depth only when the change requires it.
 
 ## Step 1: Analyze
 
@@ -32,15 +21,17 @@ Follow these steps in order (adjust depth by difficulty).
 
    | Resource Type | Pattern | Examples |
    |--------------|---------|----------|
-   | Compute | `{prefix}-{service}` | `fs-dev-api`, `fs-prod-web` |
-   | Database | `{prefix}-db` | `fs-dev-db`, `fs-prod-postgres` |
-   | Storage | `{prefix}-{purpose}` | `fs-dev-assets`, `fs-dev-tfstate` |
-   | IAM Role/SA | `{prefix}-{role}` | `fs-dev-api-role`, `fs-dev-deployer` |
-   | Network | `{prefix}-{type}` | `fs-dev-vpc`, `fs-dev-subnet` |
+   | Compute | `{prefix}-{service}` | `{prefix}-api`, `{prefix}-web` |
+   | Database | `{prefix}-db` | `{prefix}-db` |
+   | Storage | `{prefix}-{purpose}` | `{prefix}-assets`, `{prefix}-tfstate` |
+   | IAM Role/SA | `{prefix}-{role}` | `{prefix}-api-role`, `{prefix}-deployer` |
+   | Network | `{prefix}-{type}` | `{prefix}-vpc`, `{prefix}-subnet` |
 
-2. Plan file structure following project patterns:
+   Derive `{prefix}` from the project's existing convention (commonly project plus environment).
+
+2. Plan file structure following project patterns (keep an existing layout; this is the default for a new Terraform root):
    ```
-   apps/infra/
+   <terraform-root>/
    ├── provider.tf          # Provider configuration
    ├── versions.tf          # Version constraints
    ├── variables.tf         # Input variables
@@ -90,8 +81,8 @@ Follow these steps in order (adjust depth by difficulty).
    - Required variables only, sensible defaults for optional
    - Essential outputs only
    - Documented inputs/outputs
-7. Run `terraform validate` and `terraform fmt`
-8. Run `terraform plan` and review output
+7. Format and validate the changed configuration (`terraform fmt`, `terraform validate`) when Terraform is available
+8. Run `terraform plan` before any apply, or when the user or active workflow asks for plan verification and backend credentials are available; otherwise report that the plan was not run
 
 ## Infrastructure Testing Levels
 
@@ -108,17 +99,10 @@ See `policy-testing-examples.md` for native `terraform test`, Terratest, and CI/
 
 ## Step 4: Verify
 
-1. Run `checklist.md` self-verification
-2. Run `../../_shared/core/common-checklist.md` common checks
-3. Confirm:
-   - `terraform validate` passes
-   - `terraform plan` shows expected changes only
-   - No secrets in .tf files
-   - All resources tagged
-   - IAM follows least privilege
-   - Cost impact acceptable
-4. For AI systems: verify IAM, logging, encryption, monitoring, and retention controls documented
-5. For continuity: verify RTO/RPO, failover, backup, and restore documented
+1. Check the items in `checklist.md` that apply to the change
+2. Use applicable `../../_shared/core/common-checklist.md` sections for cross-domain checks
+3. When a plan was run, confirm it shows the expected changes only; report validate/plan/scan steps that did not run as unverified
+4. For AI-system, continuity, or architecture-documentation work: confirm the notes required by `iso-42001-infra.md` are present
 
 ## Output Format
 
@@ -129,9 +113,7 @@ When creating new infrastructure, provide:
 4. Outputs for resource IDs and endpoints
 5. Migration notes if importing existing resources
 6. Cost estimation considerations
-7. For AI systems: infrastructure control notes covering access, logging, encryption, monitoring, and retention
-8. For continuity-sensitive systems: RTO/RPO, failover, backup, and restore notes
-9. For architecture documentation requests: stakeholder/concern/view/rationale notes
+7. For AI-system, continuity, or architecture-documentation work: the notes section from `iso-42001-infra.md`
 
 When reviewing terraform plan, provide:
 1. Summary of changes (add/change/destroy counts)

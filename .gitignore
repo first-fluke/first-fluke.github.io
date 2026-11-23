@@ -74,3 +74,6 @@ docs/plans/
 
 # Private operator notes and account reports — never commit
 .local/
+
+.agents/oma-config.local.cue
+.agents/oma-config.local.yaml

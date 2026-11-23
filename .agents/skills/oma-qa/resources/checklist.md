@@ -1,17 +1,23 @@
 # QA Review Checklist
 
+Check the items that apply to the changed scope and the project's declared
+requirements, supported platforms, and existing architecture; skip the rest.
+Measure against adopted targets; example sizes, durations, load levels, or
+implementation patterns are not universal acceptance gates. Record required
+checks that could not run as verification gaps, not passes or defect findings.
+
 ## Security Checklist
 
 ### Authentication & Authorization
 - [ ] Passwords hashed with Argon2id (scrypt/bcrypt acceptable; never MD5/SHA1)
-- [ ] Password strength requirements enforced (min 8 chars)
-- [ ] JWT tokens properly signed and validated
+- [ ] Password policy enforced when local password authentication is used
+- [ ] JWT tokens properly signed and validated when JWT is used
 - [ ] Refresh tokens implemented (if long sessions needed)
-- [ ] Token expiry reasonable (15min access, 7day refresh)
-- [ ] Authorization checks on ALL endpoints
-- [ ] Users can only access their own data
+- [ ] Token/session expiry and rotation match the declared authentication policy
+- [ ] Protected endpoints enforce the required authorization; public endpoints are intentionally public
+- [ ] Resource ownership, tenant, and role boundaries match the access model
 - [ ] Admin functions require admin role
-- [ ] Rate limiting on auth endpoints (5-10 attempts/min)
+- [ ] Authentication abuse controls match the declared threat model and rate-limit policy
 - [ ] Account lockout after failed login attempts (optional)
 - [ ] MFA available (optional, but recommended)
 
@@ -35,16 +41,16 @@
 - [ ] Secure session management (httpOnly, secure, sameSite cookies)
 
 ### API Security
-- [ ] CORS properly configured (not `*` in production)
-- [ ] CSRF protection enabled
+- [ ] CORS matches allowed clients and credential use; public noncredentialed APIs may deliberately use wildcard origins
+- [ ] CSRF defenses apply to authentication that the browser attaches automatically
 - [ ] Rate limiting on API endpoints
 - [ ] API keys/tokens NOT in source code
-- [ ] API versioning implemented
+- [ ] API compatibility/versioning follows the affected contract's evolution policy
 - [ ] Proper error handling (no stack traces exposed)
 
 ### Dependencies
-- [ ] No high/critical vulnerabilities (npm audit / safety check)
-- [ ] Dependencies up-to-date
+- [ ] No high/critical vulnerabilities reported by the stack's dependency audit (e.g. `npm audit`, `pip-audit`)
+- [ ] Affected dependencies are supported and satisfy project policy; unrelated upgrades are not required by this review
 - [ ] No unused dependencies
 - [ ] License compliance checked
 
@@ -52,23 +58,21 @@
 
 ## Performance Checklist
 
+- [ ] Every reported number comes from before/after runs under the same recorded conditions, and the delta is attributable to the change under review; otherwise report it as unverified
+
 ### Backend Performance
-- [ ] API response time < 200ms (p95)
+- [ ] Affected API latency meets the declared SLO at representative load
 - [ ] Database queries optimized (no N+1)
 - [ ] Database indexes on foreign keys and frequent queries
 - [ ] Connection pooling configured
-- [ ] Caching implemented (Redis for frequent queries)
+- [ ] Caching is appropriate where measurements or requirements justify it
 - [ ] Pagination for large result sets
 - [ ] Async operations where appropriate
 - [ ] Background jobs for heavy tasks
 
 ### Frontend Performance
-- [ ] Lighthouse Performance score > 90
-- [ ] First Contentful Paint (FCP) < 1.5s
-- [ ] Largest Contentful Paint (LCP) < 2.5s
-- [ ] Cumulative Layout Shift (CLS) < 0.1
-- [ ] Time to Interactive (TTI) < 3.5s
-- [ ] Bundle size < 500KB (main bundle)
+- [ ] Adopted frontend performance measures meet the project's thresholds on its supported devices and network conditions
+- [ ] Affected bundle sizes meet the project budget; record measured regressions and relevant baseline
 - [ ] Code splitting implemented
 - [ ] Lazy loading for non-critical components
 - [ ] Images optimized (WebP, compression)
@@ -78,9 +82,8 @@
 - [ ] Service worker for caching (optional)
 
 ### Mobile Performance
-- [ ] App size < 30MB (Android), < 50MB (iOS)
-- [ ] Cold start < 2s
-- [ ] Smooth scrolling (60fps)
+- [ ] Size and startup time meet the supported platform/device budgets
+- [ ] Scrolling and interaction meet the adopted frame-time targets
 - [ ] No memory leaks
 - [ ] Battery usage minimal
 - [ ] Offline support (if required)
@@ -89,51 +92,28 @@
 
 ## Accessibility Checklist (WCAG 2.2 AA)
 
-### Perceivable
-- [ ] All images have alt text
-- [ ] Decorative images have empty alt (`alt=""`)
-- [ ] Color contrast 4.5:1 (normal text), 3:1 (large text)
-- [ ] Text resizable up to 200% without loss of content
-- [ ] Content understandable without color alone
-- [ ] Audio/video has captions (if applicable)
+Check the changed UI against the WCAG 2.2 AA success criteria the project targets. The defects that recur in reviews:
 
-### Operable
-- [ ] All functionality available via keyboard
-- [ ] No keyboard trap
-- [ ] Focus order is logical
-- [ ] Focus indicators visible
-- [ ] Skip to main content link
-- [ ] No content flashes more than 3 times per second
-- [ ] Enough time to read/interact with content
-- [ ] Pause/stop for moving content
-
-### Understandable
-- [ ] Page language set (`<html lang="en">`)
-- [ ] Clear labels on form inputs
-- [ ] Error messages clear and helpful
-- [ ] Required fields indicated
-- [ ] Consistent navigation across pages
-- [ ] Predictable behavior (no unexpected popups)
-
-### Robust
-- [ ] Valid HTML (semantic tags)
-- [ ] ARIA labels where needed
-- [ ] ARIA roles appropriate
-- [ ] Works with screen readers (test with NVDA/JAWS)
-- [ ] Works in different browsers (Chrome, Firefox, Safari, Edge)
+- [ ] Text alternatives: informative images have alt text; decorative images use `alt=""`
+- [ ] Contrast: 4.5:1 for normal text, 3:1 for large text; meaning is not carried by color alone
+- [ ] Keyboard: all functionality reachable, no keyboard trap, logical focus order, visible focus indicator
+- [ ] Forms: labels, required-field indication, and error messages are programmatically associated
+- [ ] Structure: page language set, semantic HTML first, ARIA roles/labels only where needed and valid
+- [ ] Motion and timing: moving content can be paused; no content flashes more than 3 times per second
 
 ---
 
 ## Testing Checklist
 
 ### Unit Tests
-- [ ] Test coverage >= 80% (never waived by any task's `test_approach`; `not_applicable` code counts toward the aggregate unless declaratively excluded in coverage config with justification)
+- [ ] Coverage meets the project's declared baseline or changed-code target when coverage is applicable; otherwise record risk-focused tests or alternative verification and its limits
 - [ ] Tasks marked `test_approach: tdd` have a `TDD_EVIDENCE` block in the implementation result (focused test command, RED failure, GREEN pass) — see `../../_shared/core/test-approach.md`; do not require this evidence for `test_after` / `not_applicable` tasks
 - [ ] All business logic functions tested
 - [ ] Edge cases covered
 - [ ] Error handling tested
 - [ ] Mocks used appropriately
-- [ ] Tests run fast (< 10s total)
+- [ ] Tests assert observable behavior; list tests that only pad coverage, pin implementation details, or are mostly mocks as cleanup candidates (report, do not delete)
+- [ ] Test duration and feedback time meet the project's check/CI budget
 - [ ] No flaky tests
 
 ### Integration Tests
@@ -157,7 +137,7 @@
 - [ ] Test design technique is appropriate for risk and feature type
 
 ### Performance Tests
-- [ ] Load testing (1000 concurrent users)
+- [ ] Load tests use the adopted workload, concurrency, and traffic model where this change requires them
 - [ ] Stress testing (identify breaking point)
 - [ ] Database under load tested
 - [ ] API rate limits tested
@@ -168,118 +148,28 @@
 
 ### Architecture
 - [ ] Clear separation of concerns
-- [ ] DRY principle followed (no duplication > 5%)
+- [ ] Duplication does not create conflicting behavior or excessive change cost
 - [ ] SOLID principles followed
 - [ ] Dependency injection used
-- [ ] Repository pattern (backend)
+- [ ] Data-access boundaries match the existing backend architecture
 - [ ] Component composition (frontend)
 
 ### Code Metrics
-- [ ] Cyclomatic complexity < 10 per function
-- [ ] Function length < 50 lines
-- [ ] File length < 500 lines
-- [ ] No deeply nested code (< 4 levels)
+- [ ] Complexity, size, and nesting meet project rules and allow the affected behavior to be understood and verified
 - [ ] Meaningful variable names
 
 ### Error Handling
-- [ ] All async operations have try/catch
+- [ ] Async failures reach the appropriate handler; no swallowed errors or unhandled rejections
 - [ ] Errors logged appropriately
 - [ ] User-friendly error messages
 - [ ] No silent failures
 - [ ] Graceful degradation
+- [ ] Fixes target the root cause: no guard, retry, fallback default, or value clamp added at the symptom site without an identified cause (such patterns get copied)
 
-### Documentation
-- [ ] README with setup instructions
-- [ ] API documentation (OpenAPI/Swagger)
-- [ ] Complex logic documented
-- [ ] Environment variables documented
-- [ ] No TODO/FIXME in production code
-
----
-
-## ISO Quality Alignment
-
-### ISO/IEC 25010
-- [ ] Functional suitability considered
-- [ ] Performance efficiency considered
-- [ ] Compatibility considered where integration matters
-- [ ] Usability / accessibility considered
-- [ ] Reliability considered
-- [ ] Security considered
-- [ ] Maintainability considered
-- [ ] Portability considered when relevant
-
-### ISO/IEC 29119
-- [ ] Test strategy or test plan exists for significant changes
-- [ ] Test basis, test conditions, and expected results are clear
-- [ ] Risk-based prioritization is visible in test scope
-- [ ] Test evidence and traceability are sufficient for review or audit
-
----
-
-## Browser Compatibility Checklist
-
-### Desktop
-- [ ] Chrome (latest 2 versions)
-- [ ] Firefox (latest 2 versions)
-- [ ] Safari (latest 2 versions)
-- [ ] Edge (latest 2 versions)
-
-### Mobile
-- [ ] iOS Safari (latest 2 versions)
-- [ ] Android Chrome (latest 2 versions)
-- [ ] Responsive breakpoints (320px, 768px, 1024px, 1440px)
-
----
-
-## DevOps Checklist
-
-### Environment
-- [ ] Environment variables used (not hardcoded)
-- [ ] .env.example provided
-- [ ] Secrets NOT in source code
-- [ ] Different configs for dev/staging/prod
-
-### Logging
-- [ ] Appropriate log levels (DEBUG, INFO, WARNING, ERROR)
-- [ ] No sensitive data in logs
-- [ ] Structured logging (JSON format)
-- [ ] Log rotation configured
-
-### Monitoring
-- [ ] Health check endpoint (`/health`)
-- [ ] Error tracking (Sentry, Rollbar, etc.)
-- [ ] Performance monitoring (APM)
-- [ ] Uptime monitoring
-
-### Deployment
-- [ ] CI/CD pipeline configured
-- [ ] Automated tests in CI
-- [ ] Database migrations automated
-- [ ] Rollback plan documented
-- [ ] Zero-downtime deployment (if required)
-
----
-
-## Final Sign-Off
-
-### Critical (Must Pass)
-- [ ] No CRITICAL security vulnerabilities
-- [ ] No HIGH security vulnerabilities
-- [ ] All E2E tests passing
-- [ ] Performance meets requirements
-- [ ] No data loss scenarios
-
-### Important (Should Pass)
-- [ ] Test coverage >= 80%
-- [ ] Accessibility WCAG 2.2 AA
-- [ ] Code quality metrics met
-- [ ] Documentation complete
-
-### Nice-to-Have (Can Address Later)
-- [ ] Code refactoring opportunities documented
-- [ ] Performance optimization ideas documented
-- [ ] Future enhancement ideas documented
+### Diff Hygiene
+- [ ] No debug output, commented-out code, or leftover feature flags in the diff
+- [ ] New comments do not restate what the code does
+- [ ] No unused exports or dead branches introduced
 
 ---
 
@@ -292,7 +182,7 @@
 - Complete feature breakage
 
 ### HIGH (Fix Before Launch)
-- Performance issues (> 5s load time)
+- Confirmed performance failures that violate a launch requirement or block a core workflow
 - Major accessibility violations
 - Missing auth checks
 - Broken core functionality
@@ -313,9 +203,10 @@
 
 ## Notes
 
-- Run automated tools FIRST: `npm audit`, `bandit`, `lighthouse`
-- Use Serena MCP for code analysis patterns
-- Use Chrome DevTools MCP (`new_page` with `isolatedContext: "qa-test"`) for runtime verification and E2E testing
+- Choose available automated checks that match the stack, changed scope, and target; do not require unrelated tools or unrequested builds
+- Use configured code intelligence or the documented native fallback for code analysis patterns
+- Browser verification tooling and server selection follow `execution-protocol.md` Step 2.5. The Chrome-specific calls below are examples only; use the selected server's equivalents and report unverified UI checks.
+- Standards mapping (ISO/IEC 25010, ISO/IEC 29119) follows `iso-quality.md` when requested.
 - Document all findings with file:line references
 - Provide remediation code examples
 - Estimate fix time for each issue
@@ -325,6 +216,8 @@
 ## Runtime Verification (after static review)
 
 Record results in the structured table format defined in `execution-protocol.md` Step 2.5 (Recording Results).
+Run only applicable, authorized runtime checks on an available target. A static
+document/configuration review does not require starting or building an app.
 
 - [ ] Application starts without errors
 - [ ] All modified endpoints return expected status codes; verify with `list_network_requests()`

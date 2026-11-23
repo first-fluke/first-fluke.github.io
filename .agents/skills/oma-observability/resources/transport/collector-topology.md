@@ -1,19 +1,10 @@
----
-otel_spec: "1.x (stable API/SDK)"
-tools:
-  - "OTel Operator: v1beta1"
-  - "Fluent Bit: CNCF Graduated"
-  - "OTel Collector: v0.122.x"
----
-
 # Collector Topology: Deployment Modes and Kubernetes Patterns
-
 
 ---
 
 ## 1. Four Deployment Modes (OTel Operator `Spec.Mode`)
 
-The OpenTelemetry Operator manages collectors via the `OpenTelemetryCollector` CRD at **v1beta1** (beta stability as of 2025). The `spec.mode` field controls the deployment strategy.
+The OpenTelemetry Operator manages collectors via the `OpenTelemetryCollector` CRD at **v1beta1**. The `spec.mode` field controls the deployment strategy.
 
 | Mode | Kubernetes Kind | Replicas | Typical Use Case |
 |------|----------------|----------|-----------------|
@@ -34,11 +25,11 @@ Useful when collectors need stable network identity or persistent volumes (e.g.,
 **`Sidecar` (one per pod)**
 Injected by the operator via pod annotation (`sidecar.opentelemetry.io/inject: "true"`). Runs in the same pod as the application. See Section 3 for when sidecar is appropriate.
 
-> CRD stability note: `OpenTelemetryCollector` v1beta1 is beta; `Instrumentation` CRD is also v1beta1. GA graduation is tracked in [opentelemetry-operator](https://github.com/open-telemetry/opentelemetry-operator) releases.
+> CRD version note: `OpenTelemetryCollector` is `opentelemetry.io/v1beta1`; the `Instrumentation` CRD is `opentelemetry.io/v1alpha1`. Check the versions served by the installed operator (`kubectl api-resources --api-group=opentelemetry.io`); promotions are tracked in [opentelemetry-operator](https://github.com/open-telemetry/opentelemetry-operator) releases.
 
 ---
 
-## 2. 2026 Recommended Pattern: Two-Tier Hybrid
+## 2. Recommended Pattern: Two-Tier Hybrid
 
 The standard production pattern for Kubernetes clusters is a two-tier architecture separating node-level collection from centralized processing.
 
@@ -47,21 +38,25 @@ App Pod(s)
     │ OTLP gRPC/HTTP
     ▼
 DaemonSet Agent (1 per node)
-  - hostmetrics receiver
-  - filelog receiver
-  - kubeletstats receiver
-  - k8sattributes processor (resource enrichment)
-    │ OTLP gRPC
+  - hostmetrics / filelog / kubeletstats receivers
+  - memory_limiter and k8sattributes enrichment
+  - traces: loadbalancing exporter, routing_key: traceID
+    │ consistent traceID hash to individual gateway replicas
+    │ metrics/logs may use their separately configured normal load balancing
     ▼
-Deployment Gateway (N replicas, behind ClusterIP/LB)
-  - batch processor
-  - tail_sampling processor
-  - loadbalancing exporter (to tier-2 if needed)
-  - memory_limiter processor
+Deployment Gateway (N tail-sampler replicas, per-pod discovery)
+  - memory_limiter → tail_sampling → batch
+  - backend exporter
     │ OTLP / vendor protocol
     ▼
 Observability Backend (e.g., Grafana Cloud, Jaeger, Prometheus)
 ```
+
+Do not send traces through an ordinary ClusterIP/load balancer before independent
+tail samplers. It can split one trace across replicas. The traceID-aware exporter
+must be upstream of those samplers; an exporter after sampling cannot recover
+trace completeness. Resolve individual sampler replicas (for example via a
+headless Service), and validate late-span behavior during membership changes.
 
 **Agent layer responsibilities** (must be per-host):
 - `hostmetrics` receiver: CPU, memory, disk, network from `/proc`, `/sys`
@@ -72,10 +67,10 @@ Observability Backend (e.g., Grafana Cloud, Jaeger, Prometheus)
 **Gateway layer responsibilities**:
 - `batch` processor: reduce export RPCs, improve compression
 - `tail_sampling` processor: evaluate complete traces before sampling decision
-- `loadbalancing` exporter: consistent hash routing to tail-sampler replicas
+- Backend exporter: send the gateway's already-sampled traces to the selected backend. Put `loadbalancing` upstream of any further independent tail-sampler tier, not after the only sampler.
 - `memory_limiter` processor: prevent OOM under backpressure
 
-Example agent `OpenTelemetryCollector` manifest snippet:
+Example agent `OpenTelemetryCollector` manifest snippet for host metrics/logs only (traces additionally require an OTLP receiver and the traceID-aware `loadbalancing` exporter described above and in §6):
 
 ```yaml
 apiVersion: opentelemetry.io/v1beta1
@@ -150,7 +145,7 @@ Source: [OTel Kubernetes Collector Components](https://opentelemetry.io/docs/pla
 | `filelog` receiver | DaemonSet | Reads `/var/log/pods/` on each node |
 | `hostmetrics` receiver | DaemonSet | Reads `/proc`, `/sys`; host-only access |
 | `k8sattributes` processor | DaemonSet or Gateway | On agent: enriches at source; on gateway: enriches late |
-| `prometheus` receiver | Deployment (with caveats) | No automatic horizontal scaling for scrape target distribution; use sharding manually |
+| `prometheus` receiver | Deployment (with caveats) | Replicas do not distribute scrape targets on their own; use the Operator target allocator (see caveat below) |
 | `tail_sampling` processor | Deployment (Gateway) | Requires complete trace; combine with `loadbalancing` exporter |
 | `batch` processor | Both | Tuned independently per tier |
 | `memory_limiter` processor | Both (mandatory) | Always include; prevents OOM under traffic spikes |
@@ -170,8 +165,8 @@ Both runtimes expose metrics and events relevant to infrastructure observability
 
 Integration approaches:
 - `hostmetrics` receiver with `process` scraper captures container process CPU/memory
-- containerd exposes metrics via its built-in Prometheus endpoint (default `:1338/metrics`)
-- CRI-O exposes metrics via `:9537/metrics`; scrape with `prometheus` receiver on the DaemonSet agent
+- containerd serves Prometheus metrics at `/v1/metrics` on the TCP address set as `[metrics] address` in its `config.toml`
+- CRI-O serves metrics at `:9090/metrics` once `enable_metrics = true` is set under `[crio.metrics]` (`metrics_port` changes the port); scrape with `prometheus` receiver on the DaemonSet agent
 
 **cAdvisor integration**
 
@@ -285,17 +280,6 @@ Key considerations:
 - **Authentication**: Use workload identity / OIDC per cluster; avoid static credentials for cross-cluster OTLP export.
 
 ---
-
-## 8. Anti-Patterns
-
-| Anti-Pattern | Why It Fails | Correct Approach |
-|-------------|-------------|-----------------|
-| Sidecar collectors on standard Kubernetes nodes | One collector per pod; CPU/memory cost scales with pod count | Use DaemonSet agent per node |
-| Tail sampling in sidecar | Sidecar sees only spans from its pod; trace is incomplete across services | Run tail_sampling in gateway tier only |
-| Single gateway replica | No high availability; single point of failure under load | Minimum 2-3 replicas; use PodDisruptionBudget |
-| Missing `memory_limiter` processor | OOM kill under traffic spikes or backpressure from backend | Always add memory_limiter as first processor in every pipeline |
-| Prometheus receiver on multiple replicas without target allocator | Duplicate scrapes = duplicate metrics in backend | Use OTel Operator target allocator for Prometheus receiver |
-| Skipping `loadbalancing` exporter before tail sampler | Spans for same trace land on different replicas; sampling decision is wrong | Always pair tail_sampling with loadbalancing exporter upstream |
 
 ## References
 

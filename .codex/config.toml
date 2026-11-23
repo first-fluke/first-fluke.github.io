@@ -4,7 +4,7 @@ goals = true
 
 [mcp_servers.serena]
 command = "oma"
-args = [ "bridge", "--context", "codex" ]
+args = [ "bridge", "--context", "oma" ]
 startup_timeout_sec = 90
 
 [mcp_servers.serena.env]
@@ -19,4 +19,7 @@ enabled = false
 
 [feedback]
 enabled = false
+
+[agents]
+max_concurrent_threads_per_session = 16
 

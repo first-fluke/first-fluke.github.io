@@ -1,0 +1,184 @@
+---
+name: oma-translation
+description: "Translate or revise localized UI strings and prose while preserving meaning, terminology, placeholders, and structure."
+---
+
+# Translation - Context-Aware Localization
+
+## Scheduling
+
+### Goal
+Translate, review, or adapt multilingual content faithfully and naturally while preserving the
+parts that must remain exact: placeholders, code, links, formatting, terminology, and file
+structure.
+
+### Intent signature
+- Translate, localize, review a translation, adapt copy, or create a glossary/style guide.
+- Update target-language files after the source changed.
+
+### When to use
+- UI strings, error messages, locale files, documentation, reports, marketing copy, and prose.
+- Review of existing translations for accuracy, register, terminology, or naturalness.
+
+### When NOT to use
+- i18n infrastructure, locale registration, or key extraction -> use the relevant development skill.
+- Date/pluralization APIs or other code-level localization -> use the owning code-domain skill.
+
+### Expected inputs
+- Source text, target language or locale, content type, and requested output mode.
+- Existing locale files, glossary, surrounding context, and optional author sample.
+- Placeholder and formatting constraints when the source is structured.
+
+### Expected outputs
+- Natural target-language text or evidence-backed review findings.
+- Exact preservation of placeholders, code spans, links, headings, list structure, and locale keys.
+- Translator notes only for meaningful ambiguity or necessary cultural explanation.
+
+### Dependencies
+- Target profile: `resources/lang/{code}.md`, if one exists.
+- `resources/translation-rubric.md` for substantive content or review.
+- Selected external prose-style skills for English and Korean; loading and execution
+  are defined in `resources/style-skills.md`.
+- Shared prose diagnostics and translation exceptions for other target languages.
+- Existing siblings and glossary when translating into a project.
+- Configured `code_intelligence` capability when available for code-context navigation; native
+  search/read for local source and sibling translations, and when the capability is unavailable
+  or times out.
+
+## Structural Flow
+
+### Transitions
+- A profile exists -> load it; its target-language rules take precedence over shared guidance.
+- A locale variant is required -> resolve it before drafting.
+- No profile exists -> use shared guidance and note that limit once.
+- A short independent UI string with established siblings -> use protected-syntax and sibling checks; the full prose review is optional.
+- Long prose, documentation, marketing copy, mixed tables/code, or review mode -> use the rubric.
+- Ambiguous meaning that changes the result -> ask one targeted question or flag the choice.
+- Diff-sync -> modify only source-touched equivalents, located by headings and surrounding context, not line number.
+
+### Failure and recovery
+| Failure | Recovery |
+|---|---|
+| Missing target context | Use the source register and state the assumption, unless the ambiguity changes meaning |
+| Conflicting literal wording and project convention | Follow the established target convention and explain a material difference |
+| Placeholder or structure mismatch | Revise before emitting or applying a patch |
+| Unclear cultural reference | Add a concise note only when the target audience needs it |
+| Selected external style skill unavailable | Use the in-repo fallback in `resources/style-skills.md`, complete supported translation checks, and report that the external style pass did not run; do not substitute another language's style skill or claim it ran |
+
+### Exit
+- Success: the text is faithful, natural, structurally safe, and checked in proportion to content risk.
+- Partial: unresolved ambiguity, missing context, or an unavailable selected style pass
+  is stated without inventing an answer or claiming that pass ran.
+
+### Language profile loading
+
+Resolve the BCP 47 primary subtag and load one matching profile when present:
+
+| Target | Profile |
+|---|---|
+| Korean | `resources/lang/ko.md` |
+| Japanese | `resources/lang/ja.md` |
+| Chinese | `resources/lang/zh.md`; resolve the declared variant |
+| English | `resources/lang/en.md` |
+| Other | no profile; use shared guidance |
+
+Profiles define typography, register, and target-language checks. Shared guidance explains common
+risks. A profile wins if they conflict. Add a new profile from `resources/lang/_template.md` only
+when the task is to extend this skill.
+
+### Translation method
+
+1. Read for meaning, intended effect, domain terms, and protected syntax. Identify figurative
+   wording as **interpret**, **substitute**, or **retain**. Do not add a new metaphor or remove an
+   intentional one without a reason.
+2. Choose register from the source, target audience, and sibling translations. Apply
+   `translation_voice` from `.agents/oma-config.yaml` only as a rhythm/formality preference:
+   `formal`, `balanced` (default), or `interpreter`. It never overrides meaning or target norms.
+3. Reconstruct in the target language. Change word order, split or merge sentences, and omit
+   implied subjects only when the target language calls for it.
+4. Preserve author style only where it belongs: prose, dialogue, adaptation, or explicitly
+   user-authored documentation. Match observable rhythm and diction, never add facts, stance,
+   jokes, first person, or stronger emotion.
+
+### Verification
+
+Always check:
+
+- Every placeholder, code span, identifier, URL, and locale key is unchanged.
+- Headings, links, table rows, list nesting, and code blocks retain their structure.
+- The target follows its profile's typography and register rules.
+- Existing siblings are matched when they establish terminology or UI style.
+
+For substantive content and review mode, also check the rubric: naturalness, accuracy,
+register, terminology, and technical integrity. Apply the selected target-language
+style route while preserving intentional source style and content.
+
+### Review mode
+
+Review from evidence, not from an expectation that every draft is machine-translated. Record zero
+findings when no material defect is confirmed. Separate:
+
+- **Accuracy or safety defects**: changed meaning, broken placeholder, incorrect term, or wrong register.
+- **Supported style findings**: a concrete target-language issue with a reason and proposed fix.
+- **Preferences**: optional alternatives that do not make the existing translation wrong.
+
+Do not rewrite a sound translation merely to produce findings.
+
+### Batch and diff-sync work
+
+For batches, read the complete set first, translate values only, and maintain one terminology and
+register decision. Verify placeholders and key structure across the set.
+
+For diff-sync, map each source hunk by heading and surrounding context. Touch only the affected
+target section; leave unrelated text byte-identical. State updated sections, skipped cosmetic
+hunks, and material terminology decisions.
+
+### Output formats
+
+For a single text, present the translation and brief notes for ambiguities or adaptations. For
+files, preserve the input format and modify only requested values. For review, show the original,
+the suggested revision only when warranted, and the evidence for each finding.
+
+## Logical Operations
+
+### Canonical workflow path
+1. Identify the source, target locale, content type, and mode (translate, review, or
+   diff-sync). Protect exact tokens first: placeholders, code, URLs, keys, and structural markers.
+2. Load the one applicable language profile and relevant siblings; load the rubric for substantive
+   content or review. For substantive prose, select by the **target** BCP 47 primary subtag:
+   - `en` (including regional variants): load `resources/style-skills.md` and resolve `humanizer`.
+   - `ko` (including regional variants): load that resource and resolve `humanize-korean`.
+   - Other languages: load `../_shared/core/anti-ai-prose.md` with
+     `resources/anti-ai-patterns.md` and the target profile.
+   When a prose-style route is selected, record it with subject
+   `translation.route-selection` per `../_shared/runtime/route-selection.md`
+   (style skill, target subtag that selected it, and `translation_voice`).
+3. Infer and draft per Translation method.
+4. Apply the selected style implementation to the draft, preserving review-only mode
+   and translation fidelity, then run Verification, including diff-sync scope.
+5. Emit the requested translation, patch, or evidence-backed review. State a material
+   context limitation.
+
+### Resource scope and effects
+Changes locale or docs files only when the user asked for file changes; otherwise the result is
+translated text or review findings in the response. May retrieve a missing selected style-skill
+bundle from upstream over the network; installed or cached instructions are reused. Upstream
+intermediate files stay in a writable scratch workspace.
+
+### Guardrails
+1. Preserve meaning, protected syntax, and file structure before stylistic preference.
+2. Do not invent facts, opinions, emotional emphasis, examples, citations, or personality.
+3. Do not use a different language's profile as a substitute.
+4. Do not change untouched sections during diff-sync.
+5. Do not claim completion of a check that the available source cannot support.
+
+## References
+
+- Translation rubric: `resources/translation-rubric.md` (load for substantive content or review)
+- Selected style skills: `resources/style-skills.md` (English or Korean substantive prose)
+- Common prose diagnostics: `../_shared/core/anti-ai-prose.md` (other target languages, with translation exceptions when prose style needs review)
+- Translation exceptions and grammar diagnostics: `resources/anti-ai-patterns.md` (other target languages, with common diagnostics when prose style needs review)
+- Target profiles: `resources/lang/{ko,ja,zh,en}.md` (load one matching profile)
+- Profile template: `resources/lang/_template.md` (only when adding a profile)
+- Shared context loading: `../_shared/core/context-loading.md`
+- Shared quality principles: `../_shared/core/quality-principles.md`

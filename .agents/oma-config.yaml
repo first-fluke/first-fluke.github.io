@@ -111,12 +111,13 @@ telemetry: false
 hwp:
   version:
     pinned: 2.4.0
-default_cli: gemini
 
 # Added by oma update — new config keys (template defaults; edit freely)
 agents:
   eval:
     model: anthropic/claude-sonnet-4-6
+  default:
+    cli: gemini
 scm:
   conventional_commits: true
   branching_strategy: github-flow
@@ -150,3 +151,7 @@ scm:
     - "*.example"
     - "*.sample"
     - "*.template"
+
+# Added by oma update — new config keys (template defaults; edit freely)
+providers:
+  code_intelligence: serena

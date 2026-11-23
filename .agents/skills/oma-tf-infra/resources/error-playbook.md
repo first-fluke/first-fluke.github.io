@@ -3,9 +3,9 @@
 ## State Lock Error
 **Symptom:** `Error acquiring the state lock`
 **Recovery:**
-1. Check who holds the lock: `terraform force-unlock <LOCK_ID>` (use with caution)
-2. Verify no other terraform process is running
-3. If stale lock, confirm and force-unlock
+1. Read the lock owner, operation, timestamp and ID from the original lock error.
+2. Confirm the owning local/remote job has stopped; do not assume a missing local process means a remote apply ended.
+3. Only for a confirmed stale lock, use `terraform force-unlock <LOCK_ID>`. This removes a lock; it does not inspect ownership.
 
 ## Resource Already Exists
 **Symptom:** `Error: already exists` on create
@@ -29,7 +29,7 @@
    - AWS: `aws sts get-caller-identity`
    - GCP: `gcloud auth list`
    - Azure: `az account show`
-   - OCI: `oci iam region list`
+   - OCI: read `user` and `tenancy` from the active profile in `~/.oci/config`; `oci iam region list` only confirms that the profile authenticates
 2. Verify IAM policies attached to the identity
 3. Add missing permissions following least privilege
 
@@ -62,7 +62,7 @@
 3. Run `terraform init` to re-download modules
 
 ## General Principles
-- After 3 consecutive failures on the same issue, try a fundamentally different approach
+- After repeated failures on the same issue, try a fundamentally different approach
 - Check cloud provider status pages for service outages
 - Never modify `terraform.tfstate` manually; use `terraform state mv` / `terraform state rm` for state surgery
 - Always backup state before destructive operations: `terraform state pull > backup.tfstate`

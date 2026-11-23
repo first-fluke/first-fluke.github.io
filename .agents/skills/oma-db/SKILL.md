@@ -1,6 +1,6 @@
 ---
 name: oma-db
-description: Database specialist for SQL, NoSQL, and vector database modeling, schema design, normalization, indexing, transactions, integrity, concurrency control, backup, capacity planning, data standards, anti-pattern review, and compliance-aware database design. Use for database, schema, ERD, table design, document model, vector index design, RAG retrieval architecture, migration, query tuning, glossary, capacity estimation, backup strategy, database anti-pattern remediation work, and ISO 27001, ISO 27002, or ISO 22301-aware database recommendations.
+description: "Design schemas and migrations, tune queries, or plan vector retrieval and database operations. Application API implementation uses oma-backend."
 ---
 
 # DB Agent - Data Modeling & Database Architecture Specialist
@@ -41,32 +41,17 @@ Design, review, optimize, and document SQL, NoSQL, vector, and retrieval-oriente
 - External, conceptual, and internal schema documentation
 - Data standards, glossary, capacity estimate, indexing/partitioning plan, and backup/recovery strategy
 - Integrity, transaction, isolation, and concurrency recommendations
+- Application ownership recommendations, alternatives, transition priorities, and technical retention evidence when DB business logic is affected
 - Vector/RAG-specific embedding, chunking, filtering, reranking, and re-index plans when relevant
 
 ### Dependencies
 - Existing database schemas, migration files, query logs, workload descriptions, and application access paths
 - `resources/document-templates.md`, `resources/anti-patterns.md`, `resources/vector-db.md`, `resources/iso-controls.md`, `resources/migration-playbook.md`, and `resources/query-tuning.md`
 - SQL/NoSQL/vector database tools or project-specific migration toolchains when implementation is requested
-
-### Control-flow features
-- Branches by workload type, database model, transaction criticality, scale, retrieval needs, and compliance posture
-- May read schemas and write documentation, migrations, indexes, or query changes
-- Treats vector DBs as retrieval infrastructure, not canonical source-of-truth storage
+- The project's query tools and its migration, query, lint, or validation commands
+- Optional spreadsheet or diagram artifacts when capacity or ERD output is requested
 
 ## Structural Flow
-
-### Entry
-1. Identify workload, data domain, existing schema state, and target deliverable.
-2. Gather access patterns, consistency needs, volume, latency, retention, and recovery expectations.
-3. Decide whether the task is design, optimization, review, remediation, or implementation.
-
-### Scenes
-1. **PREPARE**: Classify workload and constraints.
-2. **ACQUIRE**: Read schemas, migrations, queries, docs, and operational assumptions.
-3. **REASON**: Model entities/aggregates, integrity, transactions, indexing, capacity, and compliance tradeoffs.
-4. **ACT**: Produce schema docs, migration guidance, query/index changes, or retrieval design.
-5. **VERIFY**: Run anti-pattern, integrity, consistency, and backup/recovery checks.
-6. **FINALIZE**: Deliver artifacts and note residual risks or validation steps.
 
 ### Transitions
 - If relational workload dominates, enforce 3NF unless denormalization is justified.
@@ -85,57 +70,32 @@ Design, review, optimize, and document SQL, NoSQL, vector, and retrieval-oriente
 
 ## Logical Operations
 
-### Actions
-| Action | SSL primitive | Evidence |
-|--------|---------------|----------|
-| Classify workload and model | `SELECT` | SQL, NoSQL, vector, cache, search, mixed |
-| Read schema/query evidence | `READ` | Migrations, ERDs, query patterns |
-| Compare design alternatives | `COMPARE` | Engine/model/index tradeoffs |
-| Infer integrity and capacity risks | `INFER` | Constraints, transactions, growth assumptions |
-| Validate anti-patterns | `VALIDATE` | Checklist and anti-pattern guide |
-| Write schema docs or changes | `WRITE` | Deliverables, migrations, query/index changes |
-| Report recommendation | `NOTIFY` | Final database guidance |
-
-### Tools and instruments
-- Project DB schemas, migrations, query tools, and migration commands
-- Document templates, anti-pattern guide, vector DB guide, and ISO control guide
-- Optional spreadsheet or diagram artifacts when capacity or ERD output is requested
-
 ### Canonical workflow path
-```bash
-rg --files -g '*.sql' -g '*prisma*' -g '*schema*' -g '*migration*'
-rg "CREATE TABLE|model |index|foreign key|transaction|embedding|vector" .
-```
+1. Identify the workload, data domain, existing schema state, and target deliverable, and decide whether the task is design, optimization, review, remediation, or implementation. Gather business entities, events, access patterns, consistency needs, volume, latency, retention, and recovery targets; state assumptions where schema or workload evidence is unavailable.
+2. Locate files and inspect symbols or content with the configured code-intelligence provider. For Serena, use `find_file`, `search_for_pattern`, `get_symbols_overview`, and `find_symbol`. Native search is limited to the provider exclusions and non-code paths permitted by the project's search policy.
+3. Read the existing schemas, migrations, ERDs, queries, docs, and operational assumptions.
+4. Classify the workload (OLTP, analytics, eventing, cache, search, mixed) and the data model (SQL, NoSQL, vector, mixed). Decide relational vs non-relational with explicit justification, comparing engine, model, and index tradeoffs.
+5. Design: produce external/conceptual/internal schema documentation; model SQL or NoSQL structures (entities or aggregates), keys, indexes, constraints, and lifecycle fields; define integrity, transaction scope, isolation level, and transparency requirements.
+6. Optimize: validate 3NF or deliberate denormalization; tune indexes, partitioning, archival strategy, hot/cold split, capacity, and backup plan. For vector systems, tune ANN, chunking, filtering, reranking, and observability as one pipeline.
+7. For affected triggers, stored procedures, functions, views, DB jobs, or ORM hooks, apply `resources/anti-patterns.md` §5 application ownership review. Existing usage receives the same strong improvement recommendation as new designs; a scoped query change does not require an unrelated database-wide migration.
+8. Run the project's migration, query-plan, or retrieval-quality commands only after identifying the database engine and migration tool.
+9. Run the relevant anti-pattern review (`resources/anti-patterns.md`) and the relevant `resources/checklist.md` sections, covering integrity, consistency, and backup/recovery. Update artifacts whose definitions or capacity assumptions changed.
+10. Deliver the artifacts (see Deliverables by Scope) and note residual risks or validation steps.
 
-Then run the project's migration, query-plan, or retrieval-quality commands only after identifying the database engine and migration tool.
-
-### Resource scope
-| Scope | Resource target |
-|-------|-----------------|
-| `CODEBASE` | Schema, migration, query, ORM, and retrieval files |
-| `LOCAL_FS` | Database design artifacts and result documents |
-| `PROCESS` | Migration, query, lint, or validation commands |
-| `USER_DATA` | Domain data definitions, retention rules, and sample access patterns |
-
-### Preconditions
-- Target database concern and scope are identifiable.
-- Existing schema/workload evidence is available or assumptions are stated.
-
-### Effects and side effects
-- May create or change schema docs, migrations, indexes, queries, or retrieval configuration.
-- May affect data integrity, performance, recovery posture, or compliance evidence.
-- Should not execute risky migrations without explicit user intent and verification.
+### Resource scope and effects
+Reads schema, migration, query, ORM, and retrieval files, along with domain data definitions, retention rules, and sample access patterns. May create or change schema docs, database design artifacts and result documents, migrations, indexes, queries, or retrieval configuration, and runs the project's migration, query, lint, or validation commands. A change may affect data integrity, performance, recovery posture, or compliance evidence. Do not execute a risky migration without explicit user intent and verification.
 
 ### Guardrails
+Apply framework, library, architecture, and data-model defaults only when the target project has no established choice. Scoped edits do not authorize a stack migration or unrelated infrastructure.
 1. Choose model first, engine second: workload, access pattern, consistency, and scale drive DB selection.
 2. For relational workloads, enforce at least **3NF** by default. Break 3NF only with explicit performance justification.
 3. For distributed/non-relational workloads, model around aggregates and access paths; document **BASE** and consistency tradeoffs.
 4. For relational transaction semantics, document **ACID** expectations explicitly. For distributed/non-relational tradeoffs, document consistency compromises explicitly.
-5. Always document the three schema layers: **external schema**, **conceptual schema**, **internal schema**.
+5. For full schema design, document external, conceptual and internal schema views. For a scoped index/query/model change, update only the affected existing views.
 6. Treat integrity as first-class: entity, domain, referential, and business-rule integrity must be explicit.
 7. Concurrency is never implicit: define transaction boundaries, locking strategy, and isolation level per critical flow.
-8. Data standards are mandatory: naming, definition, format, allowed values, and validation rules.
-9. Maintain living artifacts: glossary, schema decision log, and capacity estimation must be updated whenever the model changes.
+8. Apply existing data standards; add relevant naming, definition, format and validation rules for newly modeled data.
+9. Update affected existing glossary, decision and capacity artifacts when the change alters their assumptions. A query-only task does not require new modeling documents.
 10. Proactively flag anti-patterns and insecure shortcuts instead of silently implementing them.
 11. If the design weakens auditability, least privilege, traceability, backup/recovery, or data integrity, propose ISO 27001 / 27002 / 22301-friendlier alternatives.
 12. Vector DBs are retrieval infrastructure, not source-of-truth databases. Store embeddings and lightweight metadata there; keep canonical documents elsewhere.
@@ -144,23 +104,12 @@ Then run the project's migration, query-plan, or retrieval-quality commands only
 15. Retrieval quality is won at chunking, filtering, reranking, and observability, not only at the vector index layer.
 16. Schema or data changes on live tables follow expand-contract (parallel change): additive expand, dual-write + batched backfill, verified read switch, delayed contract. DDL on hot tables is lock-aware with timeouts; destructive steps ship in a separate deploy after a soak window.
 17. Query tuning starts from measurement and execution plans, never guesswork: measure, explain, nominate the dominant cost node, then optimize and re-measure.
+18. Strongly recommend application ownership of business policies, workflow orchestration, and external side effects in both new and existing systems. Apply the alternatives, retention evidence, and DB responsibility boundaries in `resources/anti-patterns.md` §5. Existing conventions do not exempt affected logic from improvement recommendations; they also do not authorize an unrelated rewrite or automatic removal of DB objects.
 
-### Default Workflow
-1. **Explore**
-   - Identify business entities, events, access patterns, volume, latency, retention, and recovery targets
-   - Classify workload: OLTP, analytics, eventing, cache, search, mixed
-   - Decide relational vs non-relational with explicit justification
-2. **Design**
-   - Produce external/conceptual/internal schema documentation
-   - Model SQL or NoSQL structures, keys, indexes, constraints, and lifecycle fields
-   - Define integrity, transaction scope, isolation level, and transparency requirements
-3. **Optimize**
-   - Validate 3NF or deliberate denormalization
-   - Tune indexes, partitioning, archival strategy, hot/cold split, and backup plan
-   - For vector systems, tune ANN, chunking, filtering, reranking, and observability as one pipeline
-   - Run anti-pattern review and update glossary and capacity estimation with every structural change
-
-### Required Deliverables
+### Deliverables by Scope
+For full modeling/design requests, use the following as applicable. Scoped tuning
+or migration work needs the relevant artifact delta, SQL/plan evidence and
+verification outcome; omit unaffected documents.
 - External schema summary by user/view/consumer
 - Conceptual schema with core entities or aggregates and relationships
 - Internal schema with physical storage, indexes, partitioning, and access paths
@@ -171,23 +120,12 @@ Then run the project's migration, query-plan, or retrieval-quality commands only
 - For vector/RAG systems: embedding version policy, chunking policy, hybrid retrieval strategy, and re-index / re-embedding plan
 
 ## References
-Follow `resources/execution-protocol.md` step by step.
-See `resources/examples.md` for input/output examples.
-Use `resources/document-templates.md` when you need concrete deliverable structure.
-Use `resources/anti-patterns.md` when reviewing or remediating logical, physical, query, and application-facing DB issues.
-Use `resources/vector-db.md` when the task involves vector databases, ANN tuning, semantic search, or RAG retrieval.
-Use `resources/iso-controls.md` when the user needs security-control, continuity, or audit-oriented DB recommendations.
-Use `resources/migration-playbook.md` when a schema or data change targets live tables (expand-contract, lock-aware DDL, batched backfill, cutover).
-Use `resources/query-tuning.md` when the task involves slow queries, execution plans, or index design.
-Before submitting, run `resources/checklist.md`.
-Vendor-specific execution protocols are injected automatically by `oh-my-agent agent:spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
-- Execution steps: `resources/execution-protocol.md`
-- Self-check: `resources/checklist.md`
-- Examples: `resources/examples.md`
+- Execution steps (follow for the selected task): `resources/execution-protocol.md`
+- Self-check (check the sections relevant to the task before handoff): `resources/checklist.md`
+- Examples: `resources/examples.md` (worked outputs for full design, RAG retrieval, live-table remediation, and DB business-logic requests)
 - Deliverable templates: `resources/document-templates.md`
-- Anti-pattern review guide: `resources/anti-patterns.md`
-- Live migration playbook: `resources/migration-playbook.md`
+- Anti-pattern review guide: `resources/anti-patterns.md` (schema/query review or affected business logic in DB objects and ORM hooks)
+- Live migration playbook: `resources/migration-playbook.md` (live schema/data changes or moving existing DB business logic into the application)
 - Query tuning and index design: `resources/query-tuning.md`
 - Vector DB and RAG guide: `resources/vector-db.md`
 - ISO control guide: `resources/iso-controls.md`
@@ -195,5 +133,5 @@ Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
 - Context loading: `../_shared/core/context-loading.md`
 - Clarification: `../_shared/core/clarification-protocol.md`
 - Context budget: `../_shared/core/context-budget.md`
-- Lessons learned: `../_shared/core/lessons-learned.md`
-- Observability handoff: `../oma-observability/SKILL.md` §Integrations — DB span conventions (N+1, lock-wait, pool), cardinality budgets
+- Lessons learned: `../_shared/core/lessons-learned.md` (matching prior failure or requested retrospective)
+- Observability handoff: `../oma-observability/SKILL.md` §Integrations — DB span conventions (N+1, connection pool), cardinality budgets

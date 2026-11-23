@@ -1,8 +1,3 @@
----
-otel_spec: "1.x (stable API/SDK)"
-otel_semconv: "1.43.0 (2026-07)"
----
-
 # Observability Agent - Execution Protocol
 
 ## Step 0: Parse Query
@@ -13,19 +8,19 @@ otel_semconv: "1.43.0 (2026-07)"
    - `--multi-tenant`, `--multi-cloud`: force boundary dimension to `multi-tenant`
    - `--layer=L3|L4|mesh|L7`: force specific layer focus
    - `--signal=metrics|logs|traces|profiles|cost|audit|privacy`: force signal focus
-2. **Detect keywords** (Korean and English) against `resources/intent-rules.md` trigger list
+2. **Detect intent signals** in the request; consult `resources/intent-rules.md` only when no flag is present and the intent is not obvious
 3. **Extract ambient context** from user message or project files:
    - Target platform: k8s, serverless (Lambda/Cloud Run), VM, bare metal
    - Scale tier: single-service, multi-service, multi-region
    - Compliance requirements: SOC2, ISO 27001, GDPR, PIPA
-4. **Log** resolved flags, detected language, and ambient context for transparency
+4. **Log** resolved flags and ambient context for transparency
 
 ## Step 1: Classify Intent
 
 1. If a flag is present → use that intent directly; skip keyword matching
-2. If no flag → apply keyword pattern matching from `resources/intent-rules.md`
-3. If ambiguous or no match → default to `investigate + tune` in parallel
-4. **Sparse-context gate**: even when an intent is matched (score ≥ 1), before proceeding to Step 2 check that ambient context is sufficient for the chosen intent. Minimum required context per intent:
+2. If no flag → classify from the request's signals, using `resources/intent-rules.md` when the intent is not obvious
+3. If ambiguous, choose the route best supported by the request; inspect available context before asking for missing information. Do not preload two playbooks by default.
+4. **Sparse-context gate**: even when an intent is matched, before proceeding to Step 2 check that ambient context is sufficient for the chosen intent. Minimum required context per intent:
    - `investigate`: service name OR symptom category (error code, metric name) OR time window
    - `setup` / `migrate`: target platform (k8s/serverless/VM) OR language/framework
    - `alert`: SLI target or service name
@@ -33,7 +28,7 @@ otel_semconv: "1.43.0 (2026-07)"
    - `tune`: signal type (metrics/logs/traces) OR problem (cost/cardinality/MTU)
    - `route`: tenant OR region OR cloud axis
 
-   If the minimum is not present, request clarification from the user before consuming reference material. A 1-2 keyword query that hits one intent keyword but carries no context (e.g., "metrics broken", "tracing broken") should prompt for service/symptom/scope rather than executing a playbook that cannot succeed.
+   If the minimum is not present, inspect available project context first. Ask only for information that affects the next decision and cannot be recovered locally; continue independent inspection while waiting, following the shared execution policy.
 5. Log selected intent and whether selection was `flag` or `auto`, plus any clarification requested
 
 Intent vocabulary:
@@ -51,31 +46,21 @@ Intent vocabulary:
 ## Step 2: Matrix Navigation
 
 1. Based on (intent × layer × boundary × signal), identify relevant cells in `resources/matrix.md`
-2. Collect file references for each cell marked `PASS` (covered) or `PARTIAL` (conditional)
+2. Select one primary intent guide and only the relevant rows or sections for matching `PASS` or `PARTIAL` cells. These describe documentation coverage, not successful verification of the target system.
 3. Flag any N/A cells the user is asking about; redirect to an alternative dimension rather than producing a stub answer
 4. Record the active (layer, boundary, signal) triple for use in Step 6 output header
 
 ## Step 3: Route Dispatch
 
-Dispatch based on intent. Use the table below as the primary routing map, then apply intent-specific detail.
-
-| Intent | Primary resource | Fallback |
-|--------|-----------------|---------|
-| `setup` | `resources/vendor-categories.md` → vendor-owned skill | `resources/standards.md` (OTel semconv) |
-| `migrate` | CNCF 2025-10 guide + `resources/vendor-categories.md §(h) Log Pipeline` | OTel Collector bridge config |
-| `investigate` | `resources/incident-forensics.md` (MRA + 6-dim localization) | `resources/signals/traces.md` + `resources/signals/logs.md` |
-| `alert` | `resources/boundaries/slo.md` (burn-rate rules) | `resources/observability-as-code.md` |
-| `trace` | `resources/boundaries/cross-application.md` (propagator matrix) | `resources/layers/mesh.md` (zero-code auto-instr) |
-| `tune` | `resources/transport/` (4 files; see below) | `resources/meta-observability.md` (cardinality guardrails) |
-| `route` | `resources/boundaries/multi-tenant.md` + `resources/transport/collector-topology.md` | `resources/boundaries/cross-application.md` |
+Dispatch by intent using the route table in `SKILL.md` §Routes (Intent), then apply the intent-specific detail below. Add layer, boundary, signal, and transport guides by the triggers in `SKILL.md` §References.
 
 ### setup intent
 - Consult `resources/vendor-categories.md`: select category based on constraints (OSS vs commercial, high-cardinality, FinOps, profiling)
-- Delegate to vendor-owned skill when one is installed (e.g., getsentry/sentry-sdk-setup, honeycombio/agent-skill, Dash0 otel-instrumentation, Datadog Labs dd-apm)
+- Delegate to a vendor-owned skill when one is installed; see `resources/vendor-categories.md §How to Delegate`
 - If no matching vendor skill is installed → guide user to `/oma-search --docs` for vendor documentation
 
 ### migrate intent
-- Fluentd as source → apply CNCF 2025-10 deprecation guide; recommend Fluent Bit or OTel Collector
+- Fluentd as source → verify current upstream support and plugin compatibility; compare Fluent Bit and OTel Collector only against the requested migration requirements
 - Legacy APM as source → provide OTel bridge config patterns; reference `resources/vendor-categories.md §(h)`
 
 ### investigate intent
@@ -84,17 +69,20 @@ Dispatch based on intent. Use the table below as the primary routing map, then a
 
 ### alert intent
 - Use `resources/boundaries/slo.md` for burn-rate calculation and multi-window alert rules
-- Use `resources/observability-as-code.md` for PrometheusRule CRD and Alertmanager routing tree
+- Use `resources/observability-as-code.md` for PrometheusRule packaging, CI validation, and rule tests
 
 ### trace intent
 - Use `resources/boundaries/cross-application.md` for W3C Trace Context propagator matrix across cloud providers
 - Use `resources/layers/mesh.md` for zero-code auto-instrumentation via service mesh
 
 ### tune intent
-- `resources/transport/udp-statsd-mtu.md`: UDP payload size thresholds and fragmentation risk
-- `resources/transport/otlp-grpc-vs-http.md`: protocol selection by environment and firewall constraints
-- `resources/transport/collector-topology.md`: DaemonSet vs sidecar vs gateway deployment patterns
-- `resources/transport/sampling-recipes.md`: head-based vs tail-based sampling policy selection
+Load the one guide that matches the observed problem; do not load the transport directory as a set.
+- Metric cardinality, series count, or a metrics bill driven by labels → `resources/meta-observability.md` Section C
+- Trace volume or sampling policy → `resources/transport/sampling-recipes.md`
+- UDP payload size, fragmentation, StatsD drops → `resources/transport/udp-statsd-mtu.md`
+- OTLP protocol selection, proxy or firewall constraints, batch and queue tuning → `resources/transport/otlp-grpc-vs-http.md`
+- DaemonSet vs sidecar vs gateway placement → `resources/transport/collector-topology.md`
+- Cost attribution by tenant, namespace, or workload → `resources/signals/cost.md`
 
 ### route intent
 - `resources/boundaries/multi-tenant.md`: tenant isolation strategies (attribute-based, pipeline-based, storage-based)
@@ -102,15 +90,15 @@ Dispatch based on intent. Use the table below as the primary routing map, then a
 
 ## Step 4: Collect Reference Material
 
-1. Pull referenced file sections into working context based on Step 3 routing results
-2. Check `resources/vendor-categories.md` timestamp: if older than one quarter, advise the user to verify against the CNCF landscape at https://landscape.cncf.io
+1. Load the primary guide selected in Step 3. Add a transport, boundary, or signal section only when a concrete question requires it; do not read the reference set wholesale
+2. Verify current official project documentation and CNCF status yourself when support or maturity affects the decision. Do not treat an old timestamp or version pin as proof of current status
 3. For commercial vendor references, check whether a vendor-owned skill is installed locally before suggesting manual setup
 
 ## Step 5: Validate Against Constraints
 
-1. Consult `resources/anti-patterns.md`: does the proposed approach violate any catalogued anti-pattern?
-2. Consult `resources/checklist.md`: will this pass Pre-prod and Prod gates?
-3. Run `resources/meta-observability.md` cardinality guardrail preview: flag any label dimension that risks unbounded growth
+1. Consult the relevant category in `resources/anti-patterns.md` when validating the proposed design; do not preload the full catalog
+2. Consult only the applicable sections of `resources/checklist.md`; report executed checks separately from proposed checks
+3. For setup, configuration changes, or label/cardinality design, use the relevant preview in `resources/meta-observability.md` and flag unbounded dimensions. For investigation or routing, load it only when pipeline health or cardinality is implicated
 4. If `--strict` flag is set → reject any semconv attribute in Development or Experimental stability tier; cite stable alternative
 5. If PII is involved → apply `resources/signals/privacy.md` redaction and sampling-aware baggage rules at collection, not only at storage
 6. If `--multi-tenant` or `--multi-cloud` → apply `resources/boundaries/multi-tenant.md` isolation rules; verify data residency is explicit
@@ -145,11 +133,11 @@ Layer: L7 + mesh    Boundary: cross-application    Signal: metrics + logs + trac
 
 Primary recommendation:
   - resources/transport/collector-topology.md §Two-tier hybrid — DaemonSet + Deployment gateway
-  - resources/vendor-categories.md §OSS Full-Stack — Grafana LGTM+ (2026-Q2)
+  - resources/vendor-categories.md §(a) OSS Full-Stack — Grafana LGTM+
 
 Secondary considerations:
   - resources/transport/sampling-recipes.md §Tail-based — consistent routing via loadbalancing exporter
-  - resources/anti-patterns.md §Section C — avoid sidecar as default on k8s; use DaemonSet
+  - resources/anti-patterns.md §C — avoid sidecar as default on k8s; use DaemonSet
 
 Delegation target:
   - No single vendor skill (OSS self-host); use oma-tf-infra for Terraform + /oma-search for component docs
@@ -158,7 +146,7 @@ Checklist items to verify:
   - [ ] memory_limiter processor placed before batch processor in pipeline
   - [ ] NTP synced on all nodes (< 100 ms drift)
   - [ ] cardinality budget set per service before enabling high-cardinality labels
-  - [ ] Fluentd replaced or bridged — CNCF 2025-10 deprecation in effect
+  - [ ] Source support and plugin compatibility checked before selecting a migration path
 ```
 
 ## On Error

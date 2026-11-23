@@ -6,18 +6,16 @@
 
 | Metric | Reading | Thresholds |
 |--------|---------|-----------|
-| McCabe V(G) = E - N + 2P (~ branch points + 1) | Min. test-case lower bound for branch coverage | <=10 ok / 11-20 caution / 21-50 high risk / 50+ untestable |
+| McCabe V(G) = E - N + 2P (~ branch points + 1) | Number of independent paths; not a branch-coverage minimum | <=10 ok / 11-20 caution / 21-50 high risk / 50+ investigate risk |
 | Cognitive Complexity | Human reading difficulty (nesting-weighted) | Primary indicator for the readability objective |
 | CK suite (CBO, LCOM, WMC) | Coupling/cohesion at class/module boundary | Triggers for Move/Extract Class |
 | Duplication % | Token/AST clone ratio | Duplicate Code smell, quantified |
 
 ```bash
-# radon and lizard are PyPI packages — run via uvx (no install needed).
-# Python
-uvx radon cc -s -a <path>      # cyclomatic
-uvx lizard <path>              # multi-language CC + NLOC + params
-# Any language with lizard support
-uvx lizard -l <lang> --CCN 10 <path>
+# Use tools that are already installed; do not download one to measure.
+radon cc -s -a <path>                 # Python: cyclomatic
+lizard <path>                         # multi-language CC + NLOC + params
+lizard -l <lang> --CCN 10 <path>      # one language, warn above CCN 10
 ```
 
 ## Layer 2 - Git forensics: "where change actually happens"
@@ -45,21 +43,25 @@ Corrections: use `--follow` for single-file rename history; register bulk mechan
 
 **+ SATD signal** (admitted debt, independent of structure and history):
 
-```bash
-rg -c 'TODO|FIXME|HACK|XXX' --type-add 'src:*.{ts,tsx,py,dart,go,java,kt}' -t src | sort -t: -k2 -nr | head -20
-```
+Use the configured code provider's content search for `TODO|FIXME|HACK|XXX`
+within source files. Count findings per file without bypassing the project's code
+search policy. Treat self-admitted debt as a signal, not a required refactor.
 
 ## Layer 3 - Hotspot: "what to fix first"
 
-`hotspot = complexity (L1) x change frequency (L2)` - the quantified form of the economic property and the budget's spending rank.
+`hotspot = complexity (L1) x change frequency (L2)` - the quantified form of the economic property.
+
+Use [hotspots.py](hotspots.py) from the repository root with an already-installed
+`lizard`. The helper preserves Git paths using NUL delimiters and passes each path
+as a subprocess argument. It never interpolates a filename into shell code or
+installs a measurement tool.
 
 ```bash
-# Recipe: top-churn files joined with complexity
-git log --format=format: --name-only --since="1 year ago" | grep -vE '(^$|lock)' \
-  | sort | uniq -c | sort -nr | head -30 | awk '{print $2}' \
-  | xargs -I{} sh -c 'echo "$(uvx lizard -C 999 {} 2>/dev/null | tail -1) {}"'
-# Or use code-maat / CodeScene for the full join
+python3 <skill-directory>/resources/hotspots.py --repo . --limit 30
 ```
+
+If lizard is unavailable, report that measurement gap rather than downloading it
+as part of a scoped refactor.
 
 ## Layer 4 - Safety-net instrumentation: "where refactoring is safe NOW"
 
@@ -72,7 +74,7 @@ git log --format=format: --name-only --since="1 year ago" | grep -vE '(^$|lock)'
 | Reliability | Flakiness rate | Non-deterministic tests destroy the "failure = behavior changed" signal; fix or quarantine first |
 
 ```bash
-# Per-registry commands (see governance.md for the registry)
+# Use the project's existing runner and coverage commands; examples:
 vitest run --coverage              # TS/JS breadth
 stryker run                        # TS/JS strength
 pytest --cov=<pkg> --cov-report=term-missing
@@ -83,7 +85,3 @@ flutter test --coverage           # Dart breadth (strength gap: compensate with 
 Tier by layer: dense unit tests on the pure core, few integration/contract tests on the shell, MC/DC only for safety-critical modules.
 
 When the net is missing, LLM-assisted test generation is viable for seeding characterization suites - prefer approaches guided by coverage or mutation feedback, and review generated assertions manually (generation quality is bounded by the feedback signal).
-
-## Outcome accounting (org level)
-
-Budget effectiveness closes with DORA: deployment frequency, change lead time, change failure rate, MTTR. Investment hypothesis: structural improvement -> lead time down + change failure rate down. Review budget consumption alongside DORA trends quarterly; Layer-2 signals are proxies, DORA is the outcome.

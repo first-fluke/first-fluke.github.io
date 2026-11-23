@@ -1,25 +1,11 @@
 # Debug Agent - Execution Protocol
 
-## Step 0: Prepare
-1. **Assess difficulty**: see `../../_shared/core/difficulty-guide.md`
-   - **Simple**: Condense Steps 1-2 to a minimal reproduction check, then Step 3 | **Medium**: All 4 steps | **Complex**: All steps + checkpoints
-   - Never skip reproduction entirely, even for Simple bugs (Guardrail 1: reproduce first, never guess)
-2. **Check lessons**: read your domain section in `../../_shared/core/lessons-learned.md`
-3. **Clarify requirements**: follow `../../_shared/core/clarification-protocol.md`
-   - Check **Uncertainty Triggers**: security/auth related bugs, existing code conflict potential?
-   - Determine level: LOW → proceed | MEDIUM → present options | HIGH → ask immediately
-4. **Budget context**: follow `../../_shared/core/context-budget.md` (use find_symbol, not read_file)
-
-**Intelligent Escalation**: When uncertain, escalate early. Don't blindly proceed.
-
-Follow these steps in order (adjust depth by difficulty).
+## Preparation
+Use the task's scope, existing project conventions, and acceptance criteria. Follow `../../_shared/core/execution-policy.md` when it has not already been supplied. Read only references needed by the selected operation; consult lessons or recovery guides for an observed issue. Expand planning depth only when the change requires it.
 
 ## Step 1: Understand
 - Gather: What happened? What was expected? Error messages? Steps to reproduce?
-- Read relevant code using Serena:
-  - `find_symbol("functionName")`: Locate the failing function
-  - `find_referencing_symbols("Component")`: Find all callers
-  - `search_for_pattern("error pattern")`: Find similar issues
+- Read relevant code following `../../_shared/core/code-intelligence.md`: locate the failing function, find callers, and search similar issues with configured tools or native fallback
 - Classify: logic bug, runtime error, performance issue, security flaw, or integration failure
 
 ## Step 2: Reproduce & Diagnose
@@ -30,7 +16,8 @@ Follow these steps in order (adjust depth by difficulty).
   - Race condition?
   - Missing validation?
   - Wrong assumption about data shape?
-- Check `resources/common-patterns.md` for known patterns
+
+Before fixing a confirmed cause in an active OMA debug workflow, record `debug.root-cause` with the actual causal mechanism, selected remedy, bug/reproduction revision as `instanceId`, and reproduction/trace evidence. Verify the same instance using the command pair in `.agents/workflows/debug.md`; a matching subject from an older diagnosis is insufficient.
 
 ## Step 3: Fix & Test
 - Write a regression test that:
@@ -43,10 +30,10 @@ Follow these steps in order (adjust depth by difficulty).
 - If found, fix proactively or report them
 
 ## Step 4: Document & Verify
-- Run `resources/checklist.md` items
+- Check applicable items in `resources/checklist.md`
 - Save bug report to `.agents/results/bugs/` using `resources/bug-report-template.md` (full template for Complex/CRITICAL/HIGH; condensed form in `resources/debugging-checklist.md` §Documentation Template for Simple/Medium)
 - Include: root cause, fix, prevention advice
-- Verify no regressions in related functionality
+- Review related functionality for regressions. Run broader suites only when the user or the active workflow requires it; otherwise report them as not run
 
 ## On Error
 See `resources/error-playbook.md` for recovery steps.

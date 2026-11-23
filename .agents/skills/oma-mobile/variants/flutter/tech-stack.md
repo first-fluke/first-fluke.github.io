@@ -1,13 +1,15 @@
 # Mobile Agent - Tech Stack Reference (Flutter)
 
+Starter reference for the selected platform. Preserve existing project choices. The caching implementation below applies only when caching is required; do not add it for an unrelated screen or widget change.
+
 ## Framework + State Management
 
-- **Language**: Dart 3.10+
-- **UI Framework**: Flutter 3.44+
-- **UI Toolkit**: Material Design 3 (Android) + iOS HIG adaptations via `CupertinoAdaptiveTheme` or `Platform.isIOS` guards
+- **Language**: Dart 3.13+
+- **UI Framework**: Flutter 3.47+
+- **UI Toolkit**: Material Design 3 (Android) + iOS HIG adaptations via the SDK's `.adaptive` constructors or `Platform.isIOS` guards
 - **State Management**: Riverpod 3.x with `@riverpod` code generation (`AsyncNotifier`, `Notifier`, `StreamNotifier`)
 - **Concurrency**: Dart async/await, `Stream`, `StreamController`, structured cancellation via `ref.onDispose`
-- **Minimum SDK**: Flutter 3.44 / Dart 3.10 / Android API 24 / iOS 16
+- **Minimum SDK**: Flutter 3.47 / Dart 3.13 / Android API 24 / iOS 16
 
 Riverpod 3.x with `@riverpod` codegen replaces manual `StateNotifierProvider` and hand-written provider constants. The code generator emits typed, cancellation-safe notifier subclasses at build time (`AsyncNotifier` for `Future` builds, `StreamNotifier` for `Stream` builds). Riverpod 3 drops the generated `FooRef` typedefs — provider and notifier build signatures take the unified `Ref` type. Provider state is disposed automatically when the last listener is removed; side-effectful providers use `ref.onDispose` to cancel in-flight requests.
 
@@ -34,7 +36,7 @@ RemoteDataSource  (Dio)  ──HTTP──►  Backend REST API
 
 ## Response Cache: Offline-First Repository (Drift)
 
-Read-through caching of API responses is **mandatory at the Repository (data) layer**, using a Drift database table as the local cache. The cache stores **decoded domain entities** — never raw HTTP bytes or JSON strings. The Dio client and its interceptors are never cache-aware.
+When response caching is required, implement it at the Repository (data) layer, using a Drift database table as the local cache. The cache stores **decoded domain entities** — never raw HTTP bytes or JSON strings. The Dio client and its interceptors are never cache-aware.
 
 **Placement rule — Repository layer, not transport.** Do **not** add a Dio cache interceptor (e.g. `dio_http_cache`, `dio_cache_interceptor`) as the system of record for domain reads. Such interceptors operate on raw bytes, making them invisible to the domain and untestable at the business-logic level. Cache the typed result *after* decoding instead.
 
@@ -88,7 +90,7 @@ See `snippets.md §3` for the canonical offline-first repository and `snippets.m
 
 Mock the `Repository` **interface** (abstract class), not the concrete implementation or Dio. `mocktail` stubs are preferred over hand-written fakes for brevity, but both are acceptable. Never mock Drift internals — test the real Drift DB in-memory (`NativeDatabase.memory()`) for repository-layer tests.
 
-Run tests with `flutter test` (unit + widget) and `flutter test integration_test/` (integration). Maestro `.yaml` flow files live in `maestro/` at the project root; see `snippets.md §11` for a runnable launch → add → assert flow.
+Test commands: `flutter test` (unit + widget) and `flutter test integration_test/` (integration); run them only when the user or the active workflow asks for a test run. Maestro `.yaml` flow files live in `maestro/` at the project root; see `snippets.md §8` for a runnable launch → add → assert flow.
 
 ## Project Layout
 
@@ -103,7 +105,7 @@ my_app/
     main.dart                             # runApp entry; ProviderScope at root
     core/
       di/
-        providers.dart                    # App-wide singleton providers (Dio, DB, SecureStorage)
+        providers.dart                    # App-wide singleton providers (Dio, DAOs, data sources, repositories)
       network/
         dio_client.dart                   # Dio factory + AuthInterceptor + RetryInterceptor (all in one file; see §5)
       database/
@@ -155,7 +157,7 @@ my_app/
 ## Architecture Pattern
 
 ```
-todos_screen.dart  (ConsumerWidget)
+todos_screen.dart  (ConsumerStatefulWidget)
   |  ref.watch(todosProvider)
   v
 todosProvider  (@riverpod StreamNotifier<List<Todo>>)
@@ -184,11 +186,15 @@ Each `features/<name>/` folder is a vertical slice owning its domain, data, and 
 
 The `@riverpod` notifier calls the repository directly — there is no use-case/interactor layer in this stack. Add a `usecases/` class only when a single user action coordinates multiple repositories or carries non-trivial orchestration logic; a straight pass-through to one repository method does not warrant one.
 
+<!-- oma-docs:ignore-start -->
 **Sanctioned layering exception (Drift).** `core/database/app_database.dart` imports the feature DAOs (e.g. `features/todos/data/local/todos_dao.dart`) to register them on `@DriftDatabase(daos: [...])`. This is a `core → features` upward import, the reverse of the normal dependency direction. It is the single allowed exception: Drift requires the database class to reference its tables and DAOs for code generation. No other `core` code may import from `features/`.
+<!-- oma-docs:ignore-end -->
 
 ## Navigation: GoRouter with Typed Routes
 
+<!-- oma-docs:ignore-start -->
 `go_router` 17.x with `go_router_builder` (typed route classes generated at build time via `build_runner`) is the navigation layer. Define route classes annotated with `@TypedGoRoute`; the generator emits `.g.dart` files with `push()` / `go()` helpers. `go_router_builder` is a dev-only builder — the `@TypedGoRoute` annotation and `GoRouteData` base class are imported from `package:go_router/go_router.dart`, never from `go_router_builder`.
+<!-- oma-docs:ignore-end -->
 
 Route guards (auth checks, onboarding redirects) are handled by `GoRouter.redirect` callbacks, not inside screens. Deep links are declared in `GoRoute.path` and handled by the platform-level `AndroidManifest.xml` / `Info.plist` intent filters.
 

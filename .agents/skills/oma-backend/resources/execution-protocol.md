@@ -1,22 +1,12 @@
 # Backend Agent - Execution Protocol
 
-## Step 0: Prepare
-1. **Assess difficulty**: see `../../_shared/core/difficulty-guide.md`
-   - **Simple**: Skip to Step 3 | **Medium**: All 4 steps | **Complex**: All steps + checkpoints
-2. **Check lessons**: read your domain section in `../../_shared/core/lessons-learned.md`
-3. **Clarify requirements**: follow `../../_shared/core/clarification-protocol.md`
-   - Check **Uncertainty Triggers**: business logic, security/auth, existing code conflicts?
-   - Determine level: LOW → proceed | MEDIUM → present options | HIGH → ask immediately
-4. **Budget context**: follow `../../_shared/core/context-budget.md` (read symbols, not whole files)
-
-**Intelligent Escalation**: When uncertain, escalate early. Don't blindly proceed.
-
-Follow these steps in order (adjust depth by difficulty).
+## Preparation
+Use the task's scope, existing project conventions, and acceptance criteria. Follow `../../_shared/core/execution-policy.md` when it has not already been supplied. Read only references needed by the selected operation; consult lessons or recovery guides for an observed issue. Expand planning depth only when the change requires it.
 
 ## Step 1: Analyze
 - Read the task requirements carefully
 - Identify which endpoints, models, and services are needed
-- Check existing code with Serena: `get_symbols_overview("app/api")`, `find_symbol("existing_function")`
+- Inspect existing structure and relevant symbols via `../../_shared/core/code-intelligence.md`; if the configured provider is unavailable, use native search only for paths outside this project or ignored paths
 - If the task is ORM-heavy, load `resources/orm-reference.md` before deciding on loading strategy, transaction scope, or client/session lifecycle
 - List assumptions; ask if unclear
 
@@ -29,21 +19,21 @@ Follow these steps in order (adjust depth by difficulty).
 
 ## Step 3: Implement
 - **Honor the task's `test_approach`** (see `../../_shared/core/test-approach.md`): for `tdd` tasks, write and run the focused test first (record the RED failure), make the minimal change (GREEN), then continue; for `tdd` the test comes before item 3 below
-- Create/modify files in this order:
+- Typical affected files (choose an order from actual dependencies):
   1. Database models + migrations
   2. Validation schemas (request/response)
   3. Service layer (business logic)
   4. API routes (thin, delegate to services)
   5. Tests (unit + integration)
-- Use `stack/api-template.*` as reference
+- Use the stack reference's `api-template.*` (`stack/`, or the matching `variants/<language>/`) as reference
 - Follow clean architecture: router -> service -> repository -> models
 
 ## Step 4: Verify
-- Run `resources/checklist.md` items
-- Run `../../_shared/core/common-checklist.md` items
-- Ensure all tests pass
+- Check applicable items in `resources/checklist.md`
+- Use `../../_shared/core/common-checklist.md` only for cross-domain verification
+- Select the affected tests and project checks; run them only when the user or the active workflow requires it, and report what was not verified
 - For `tdd` tasks, append the `TDD_EVIDENCE` block (test command, RED, GREEN) to the result file per `../../_shared/core/test-approach.md`
-- Confirm OpenAPI docs are complete
+- When the project publishes OpenAPI docs, confirm they cover the changed endpoints
 
 ## On Error
 See `resources/error-playbook.md` for recovery steps.

@@ -1,30 +1,24 @@
 {
   "mcpServers": {
-    "chrome-devtools": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@latest",
-        "--no-usage-statistics",
-        "--isolated"
-      ]
-    },
     "context7": {
       "serverUrl": "https://mcp.context7.com/mcp"
     },
     "serena": {
-      "command": "serena",
+      "command": "oma",
       "args": [
-        "start-mcp-server",
+        "bridge",
         "--context",
-        "antigravity",
-        "--project-from-cwd",
-        "--open-web-dashboard",
-        "false"
+        "oma"
       ],
       "env": {
         "SERENA_LOG_LEVEL": "info"
       }
+    },
+    "aside": {
+      "command": "aside",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

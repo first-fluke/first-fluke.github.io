@@ -1,6 +1,6 @@
 ---
 name: oma-brainstorm
-description: Design-first ideation that explores user intent, constraints, and approaches before any planning or implementation. Use for brainstorming, ideation, exploring concepts, and evaluating approaches.
+description: "Explore goals, constraints, and alternative approaches before choosing a design. Use when the user requests ideation or design exploration."
 ---
 
 # Brainstorm - Design-First Ideation
@@ -34,37 +34,19 @@ Explore user intent, constraints, and alternative approaches before planning or 
 
 ### Expected outputs
 - Clarified intent and constraints
-- Two or three approaches as prose briefs (scenario, mechanism, residual risk) plus a comparison matrix and recommended option
+- Viable approaches as prose briefs (scenario, mechanism, residual risk), with comparison and recommendation when alternatives aid the decision
 - Section-by-section approved design document
 - Blind-review issue list (Tier 1 resolved, Tier 2/3 resolved or explicitly deferred)
 - Saved design artifact before handoff to planning
 
 ### Dependencies
-- Shared context loading, reasoning templates, clarification protocol, quality principles, and skill routing
+- Shared context loading, clarification protocol, quality principles, and skill routing
 - Optional `resources/triz-lite.md` for contradiction-shaped approach seeding
 - Per-agent reviewer dispatch (e.g. `qa-reviewer`, `architecture-reviewer`) for the high-stakes blind-review escalation path
 - Downstream PM workflow for task decomposition after design approval
-
-### Control-flow features
-- Branches by ambiguity, user answers, approach comparison, and approval gates
-- Optional TRIZ-lite branch when a technical/UX contradiction blocks distinct approaches
-- Asks one question at a time
-- Blind review round before save; may dispatch fresh-context reviewer subagents for high-stakes designs (the only subagent-spawning path in this skill)
-- Stops before implementation or task planning
+- Project memory for coordination summaries; `docs/decisions/` for retained approach proposals
 
 ## Structural Flow
-
-### Entry
-1. Confirm that the request is exploratory rather than ready for implementation.
-2. Load enough project context to understand constraints.
-3. Start with intent and constraints, not solutions.
-
-### Scenes
-1. **PREPARE**: Explore context and frame the design question.
-2. **ACQUIRE**: Ask clarifying questions one at a time.
-3. **REASON**: Generate two or three approaches with tradeoffs.
-4. **VERIFY**: Get user approval section by section, then run a blind review round (independent lenses critique without seeing each other's feedback) before saving.
-5. **FINALIZE**: Save design and transition to planning when appropriate.
 
 ### Transitions
 - If requirements become clear and implementation-ready, transition to PM planning.
@@ -83,83 +65,28 @@ Explore user intent, constraints, and alternative approaches before planning or 
 
 ## Logical Operations
 
-### Actions
-| Action | SSL primitive | Evidence |
-|--------|---------------|----------|
-| Read context and idea | `READ` | User prompt and project context |
-| Ask targeted questions | `REQUEST` | Clarification phase |
-| Compare approaches | `COMPARE` | Tradeoff matrix |
-| Infer recommendation | `INFER` | Recommended option |
-| Emit option-selection decision | `CALL_TOOL` | `oma state:emit` + `oma state:verify --checkpoint option-selection` |
-| Validate approval | `VALIDATE` | Section-by-section confirmation |
-| Run blind review | `VALIDATE` | Independent lens critiques, tiered issue list, Tier 1 resolution |
-| Write design artifact | `WRITE` | `docs/plans/designs/` and memory |
-| Transition to plan | `NOTIFY` | Handoff summary |
-
-### Tools and instruments
-- Context loading, reasoning templates, clarification protocol
-- Optional TRIZ-lite resource for contradiction seeding
-- Project memory and `docs/plans/designs/` for persisted designs
-
 ### Canonical workflow path
-```text
-1. Ask one clarifying question at a time.
-2. (Optional) If technical/UX contradiction or same-axis approaches only → resources/triz-lite.md.
-3. Present 2-3 approaches as prose briefs, then matrix, then recommendation; get user pick, then emit and verify the `brainstorm.option-selection` L1 decision.
-4. Design section by section with user approval, then blind review: 4-8 independent lenses critique the design; resolve Tier 1 issues (fresh-context reviewer subagents for high-stakes designs).
-5. Save the approved design to `docs/plans/designs/` before handing off to planning.
-```
+1. Confirm that the request is exploratory or ambiguous rather than ready for implementation, and load enough project context to understand constraints. Ask one clarifying question at a time, starting with intent and constraints, not solutions.
+2. (Optional) If technical/UX contradiction or same-axis approaches only → `resources/triz-lite.md`.
+3. Present viable alternatives as prose briefs and compare them when useful; do not invent extra options to meet a count; reuse an existing selection or delegated choice and resolve only an open material choice. In an active OMA workflow, record the actual approach, rationale, evidence, and design/option revision with `brainstorm.option-selection`; verify with the matching `instanceId` as `--instance` (workflow Step 3 owns the commands).
+4. Design section by section within existing authorization, then blind review: independent lenses suited to the uncertainty and stakes critique the design; consolidate a tiered issue list and resolve Tier 1 issues (fresh-context reviewer subagents for high-stakes designs).
+5. Save the approved approach to `docs/decisions/{NNN}-{name}.md` and update `docs/decisions/index.md` before handing off to planning. Keep this directory versioned. Read `docs/plans/designs/` and `docs/design-docs/` only as legacy fallback until migration; `design` names UI work. Record a coordination summary that links the decision document, then hand off with a summary.
 
-### Resource scope
-| Scope | Resource target |
-|-------|-----------------|
-| `MEMORY` | User intent, assumptions, decisions |
-| `CODEBASE` | Existing project context when relevant |
-| `LOCAL_FS` | Approved design artifacts; optional TRIZ-lite appendix in design doc |
-
-### Preconditions
-- The user is still exploring or the request is ambiguous.
-- The agent can ask clarifying questions before implementation.
-
-### Effects and side effects
-- Produces design decisions and persisted design docs.
-- Influences downstream planning but does not implement code.
+### Resource scope and effects
+Reads existing project context when the idea must fit a codebase. Writes the approved design under `docs/decisions/` (the design document may carry an optional TRIZ-lite appendix), updates `docs/decisions/index.md`, and records a coordination summary in project memory. The high-stakes blind review is the only subagent-spawning path in this skill. The saved design feeds downstream planning; this skill does not implement code.
 
 ### Guardrails
 1. **No implementation or planning before design approval** - brainstorm produces a design document, not code or task plans
-2. **One question at a time** - ask clarifying questions sequentially, not in batches
-3. **Always propose 2-3 approaches** - mechanistically distinct when possible; label each `tactical` or `structural`. The recommended option defaults to `structural` and must address the root cause. Recommend `tactical` only for genuinely throwaway scope, not merely because of deadline or effort pressure; include trade-off analysis.
-4. **Prose before matrix** - explain each approach with scenario, plain-language mechanism, solves/leaves, and cost feel; then comparison matrix; then recommendation. Do not lead with matrix-only output
-5. **Section-by-section design** - present design incrementally with user confirmation at each step
+2. **One question at a time** - ask clarification and approval questions through the available asynchronous question tool first, following `../_shared/core/clarification-protocol.md`; fall back to a permitted question tool or plain text. Continue independent work while waiting, and never infer approval from silence or a preselected option.
+3. **Compare viable approaches** - offer two or three when they aid the decision, and explain constraints when fewer remain. Recommend according to the actual goal, effort, reversibility, and risk. Do not favor a larger structural change solely because of its label.
+4. **Explain viable approaches in prose** - state scenario, mechanism, residual risk, and effort. Use a comparison matrix when it helps the decision, then give the recommendation; a single constrained option needs its rationale, not invented alternatives
+5. **Section-by-section design** - present the design incrementally; reuse existing decisions and delegated authority, asking only for unresolved material choices under the shared execution policy
 6. **Blind review before save** - mandatory unless the design is trivially small (1-2 files, low stakes); lenses critique independently; use fresh-context reviewer subagents for architecturally significant, hard-to-reverse, or security-/compliance-sensitive designs
 7. **YAGNI** - do not over-engineer; design only what is needed for the stated goal
 8. **TRIZ-lite is optional** - only for technical/UX contradictions or same-axis collapse; max 3–5 principles from the curated set; no fake scores, full TRIZ/ARIZ, or classical matrices; seeds feed Step 3 briefs and do not replace user approval
-9. **Save design, then transition** - persist the approved design document before handing off to `/plan`
-
-### Execution Phases
-Follow the brainstorm workflow step by step:
-1. **Phase 1 - Context**: Explore the existing codebase and understand the project landscape
-2. **Phase 2 - Questions**: Ask clarifying questions one at a time to understand intent and constraints
-3. **Phase 3 - Approaches**: Optionally seed with TRIZ-lite when contradiction-shaped; present 2-3 prose approach briefs labelled tactical/structural, a matrix, and an engineering-first structural recommendation unless the work is genuinely throwaway
-4. **Phase 4 - Design**: Present the detailed design section by section, getting user approval at each step
-5. **Phase 5 - Blind Review**: Run 4-8 independent reviewer lenses on the design, consolidate into Tier 1/2/3 issues, resolve Tier 1 before save; escalate to fresh-context reviewer subagents for high-stakes designs. Skip only for trivially small designs (1-2 files, low stakes)
-6. **Phase 6 - Documentation**: Save the approved design to `docs/plans/designs/` and project memory
-7. **Phase 7 - Transition**: Hand off to `/plan` for task decomposition
-
-### Common Pitfalls
-- **Jumping to solutions**: Asking "how" before fully understanding "what" and "why"
-- **Too many questions at once**: Overwhelming the user with a wall of questions
-- **Single approach bias**: Presenting only one option without alternatives
-- **Matrix-only options**: Dumping a trade-off table without scenario/mechanism prose so the user cannot choose
-- **Same-axis "alternatives"**: Three intensities of the same knob (interval/TTL/debounce) presented as distinct approaches
-- **TRIZ on everything**: Loading triz-lite without a real contradiction, adding ceremony without better options
-- **Over-engineering**: Designing for hypothetical future requirements instead of stated needs
-- **Skipping confirmation**: Moving forward without explicit user approval on design decisions
-- **Skipping blind review**: Saving a non-trivial design without the independent critique round, or letting the design's author-context leak into escalated reviewer prompts
+9. **Save the selected approach, then transition** - persist it in `docs/decisions/` before handing off to `/plan`. Run-specific critique and `result-*.md` reports belong in `.agents/results/`; leave the destination in the source report when promoting a document into `docs/`
 
 ## References
-Vendor-specific execution protocols are injected automatically by `oma agent:spawn`.
-Source files live under `../_shared/runtime/execution-protocols/{vendor}.md`.
 - TRIZ-lite (optional Step 3 seeding): `resources/triz-lite.md`
 - Context loading: `../_shared/core/context-loading.md`
 - Clarification protocol: `../_shared/core/clarification-protocol.md`

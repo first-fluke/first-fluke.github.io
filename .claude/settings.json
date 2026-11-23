@@ -18,11 +18,11 @@
           {
             "name": "oma-hook-PreToolUse",
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'PreToolUse' --matcher 'Bash'",
-            "timeout": 13
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'PreToolUse' --matcher 'Bash|Grep|Glob|Edit|Write|MultiEdit'",
+            "timeout": 26
           }
         ],
-        "matcher": "Bash"
+        "matcher": "Bash|Grep|Glob|Edit|Write|MultiEdit"
       }
     ],
     "Stop": [
@@ -32,7 +32,7 @@
             "name": "oma-hook-Stop",
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'Stop'",
-            "timeout": 10
+            "timeout": 40
           }
         ]
       }
@@ -48,18 +48,57 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "name": "oma-hook-PostToolUse",
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'PostToolUse' --matcher 'Edit|Write|NotebookEdit|Skill|Read|MultiEdit'",
+            "timeout": 24
+          }
+        ],
+        "matcher": "Edit|Write|NotebookEdit|Skill|Read|MultiEdit"
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "name": "oma-hook-SubagentStart",
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'SubagentStart'",
+            "timeout": 8
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "name": "oma-hook-SubagentStop",
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/oma-hook.sh\" --vendor 'claude' --event 'SubagentStop'",
+            "timeout": 8
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
     "type": "command",
-    "command": "'bun' \"$CLAUDE_PROJECT_DIR/.claude/hooks/hud.ts\""
+    "command": "'bun' \"$CLAUDE_PROJECT_DIR/.claude/hooks/oma/hud.ts\""
   },
   "permissions": {
     "allow": [
       "Bash(bun run:*)",
       "Bash(bunx tsx:*)",
       "Bash(git add:*)",
-      "mcp__serena__*"
+      "mcp__serena__*",
+      "Bash(ls *)",
+      "Bash(oma *)"
     ]
   },
   "env": {
@@ -71,7 +110,12 @@
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
     "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
     "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1",
-    "ENABLE_PROMPT_CACHING_1H": "1"
+    "ENABLE_PROMPT_CACHING_1H": "1",
+    "CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP": "1",
+    "BASH_MAX_TIMEOUT_MS": "86400000",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS": "50",
+    "MCP_SERVER_CONNECTION_BATCH_SIZE": "10",
+    "CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS": "7200000"
   },
   "skipDangerousModePermissionPrompt": true,
   "effortLevel": "xhigh",

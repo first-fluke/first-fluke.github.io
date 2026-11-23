@@ -1,13 +1,13 @@
 # Image Agent - Execution Protocol
 
-## Step -1: Clarify / Amplify Prompt (agent-side, before `oma image generate`)
+## Step -1: Resolve the Brief (agent-side, before `oma image generate`)
 
-Run the **Clarification Protocol** in `SKILL.md` before shelling out.
+Apply **Creative brief** in `SKILL.md` before shelling out.
 
 ## Step 0: Parse Request
 
 1. Extract prompt and flags from the invocation.
-2. Resolve defaults from shipped code defaults → the `image:` section of `.agents/oma-config.yaml` → env vars → CLI flags (lowest to highest precedence). `config/image-config.yaml` is not consulted.
+2. Resolve defaults from shipped code defaults → the `image:` section of `.agents/oma-config.yaml` → env vars → CLI flags (lowest to highest precedence).
 3. Validate:
    - `count` ∈ [1, 5]
    - `size` is `auto` or any `WxH` passing `size-guard.ts` (each edge ∈ [16, 3840], multiples of 16, aspect ratio 1:3..3:1).
@@ -17,9 +17,12 @@ Run the **Clarification Protocol** in `SKILL.md` before shelling out.
    - `reference` (if any): each path exists, is a regular file ≤ 5MB, magic-byte-matches PNG/JPEG/GIF/WebP, ≤ 10 total, and duplicate paths are rejected with exit 4.
 4. If invalid: exit code 4 and a message identifying the offending field.
 
-## Step 0.5: Reference Image Handling
+## Step 0.5: Reference-guided regeneration
 
-When `--reference <path...>` is supplied:
+When `--reference <path...>` is supplied, the operation is reference-guided regeneration: it may
+follow subject, style, lighting, or composition, but it cannot promise a pixel-preserving edit.
+Before continuing, reject pixel/mask operations (inpainting, object removal, selective replacement,
+crop, resize, or conversion) and route them to an editor or deterministic image processor.
 
 1. Validate every path via `reference-guard.ts`. On failure → exit 4.
 2. Vendor support check (only `codex` and `antigravity` support references):
@@ -30,22 +33,7 @@ When `--reference <path...>` is supplied:
    - `antigravity` provider copies each reference into a per-run temp dir, exposes it to agy via `--add-dir <tmpdir>`, and lists the resulting paths inline in the agy prompt.
 4. Record reference paths in `manifest.json` under `reference_images` (top-level array of absolute paths).
 
-### Auto-forward attached images (MANDATORY)
-
-If the user asks to generate/edit an image AND a host-attached image is visible to the agent (e.g. `[Image: source: <path>]` in a Claude Code system message, Antigravity workspace upload, or explicit user-provided path), the agent MUST pass it via `--reference <path>`. Do not fall back to describing the image in prose. Do not ask the user to re-type the path. If `oma image generate --help` shows no `--reference` flag, instruct the user to run `oma update` and retry; do not silently degrade.
-
-### Host-Specific Reference Paths
-
-Agents invoking `oma image generate --reference` should surface the following host-specific locations to the user:
-
-| Host CLI | Attachment Surface | Path pattern |
-|----------|--------------------|--------------|
-| **Claude Code** | `[Image: source: ...]` in system messages | `~/.claude/image-cache/<session-uuid>/<N>.png` (undocumented, verified empirically; cache is cleared on session end) |
-| **Antigravity IDE** | Workspace upload via "Upload to Agent" | Project workspace upload dir; exact path shown in IDE file tree |
-| **Codex CLI as host** | `-i` flag attaches to LLM context only | No filesystem path exposed. User must provide an explicit path (e.g., `~/Downloads/foo.png`). In-conversation pastes cannot be forwarded. |
-| **Gemini CLI as host** | Varies by version | Prefer explicit paths over paste |
-
-Agents should prefer user-supplied explicit paths (e.g., `~/Downloads/otter.jpeg`) over host-cache paths when durability across sessions matters.
+A host-attached image is forwarded through `--reference` automatically. The rule and the per-host attachment paths are in `invocation.md` ("Auto-forward Attached References").
 
 ## Step 1: Vendor Selection
 
@@ -65,7 +53,7 @@ Agents should prefer user-supplied explicit paths (e.g., `~/Downloads/otter.jpeg
 2. If `--dry-run`: print the plan (vendors, counts, outDir, cost) and exit 0.
 3. If estimate ≥ `cost_guardrail.estimate_threshold_usd` and not `--yes`/`OMA_IMAGE_YES=1`:
    - Interactive terminal (stdin is a TTY): prompt user on stderr: `Estimated cost $X.XX. Proceed? (y/N)`. Decline → exit 1.
-   - Non-interactive (no TTY — agents, CI): no prompt is possible; exit 1 with a message naming `--yes`/`OMA_IMAGE_YES=1`. **Calling agents**: confirm the cost with the user in-conversation (`--dry-run` prints the estimate), then re-run with `-y`. Never pass `-y` preemptively without user confirmation.
+   - Non-interactive (no TTY — agents, CI): no prompt is possible; exit 1 with a message naming `--yes`/`OMA_IMAGE_YES=1`. **Calling agents**: confirm the cost with the user in-conversation (`--dry-run` prints the estimate), then re-run with `-y`. Pass `-y` only when the run fits an existing budget authorization or newly approved spend.
 
 ## Step 3: Cancellation Setup
 
@@ -91,7 +79,7 @@ Agents should prefer user-supplied explicit paths (e.g., `~/Downloads/otter.jpeg
    - `[oma image] <vendor> ok (Xs) -> <file>`
    - `[oma image] <vendor> failed (<kind>): <reason>`
 2. Print manifest path.
-3. For `--format json`: write `{exitCode, manifestPath, runs}` to stdout as one JSON object.
+3. For `--output json`: write `{exitCode, manifestPath, runs}` to stdout as one JSON object.
 
 ## Step 7: Exit Code Aggregation
 
